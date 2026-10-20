@@ -1,6 +1,6 @@
 ---
 name: solve-novel-software
-description: Resolve uncertain feasibility, algorithms, protocols, or cross-system design before and during complex software implementation. Use when a wrong technical assumption could invalidate substantial work, or when correctness has no obvious test oracle.
+description: Resolve consequential technical uncertainty with a small falsifying experiment and an independent correctness oracle.
 ---
 
 # Solve novel software problems
@@ -9,28 +9,9 @@ Turn a technical uncertainty into evidence that supports an implementation
 decision. This procedure complements the project's implementation workflow.
 It does not require a new planning process for routine changes.
 
-## Experiment willingly within a small budget
-
-Treat user time, model usage, and review effort as constrained resources. Before
-adding research, a probe, or another agent, name the decision it could change.
-Prefer a local source read or an existing deterministic check when it answers
-the question. Keep coupled work with one implementer; delegate only a bounded,
-independent question that earns its coordination cost. Retain required review.
-
-When a plausible idea can be tested cheaply and reversibly within the authorized
-scope, try the smallest informative experiment without seeking certainty first.
-State the hypothesis and stop condition. A negative result is useful evidence.
-Anticipate likely needs from the stated goal and observed context; label those
-predictions as assumptions and choose reversible steps that remain useful if
-the prediction is wrong. Do not convert a prediction into an unrequested feature
-or infer permission for costly, destructive, or external actions.
-
-Do not default to repeated candidate generation, reviewer panels, benchmark
-campaigns, or recurring self-improvement jobs. Preserve explicit budgets. If no
-numeric budget exists, use the smallest sufficient check and reassess before
-expanding it. After two failed repair cycles, revisit the premise and evidence
-before another attempt. Do not weaken acceptance to save cost; report a material
-verification gap when it cannot be resolved.
+Before research or a probe, name the decision it could change. Prefer the
+smallest reversible check of the assumption most likely to invalidate useful
+work. Preserve the host's resource, authorization, and review boundaries.
 
 ## Find the decision that matters
 
@@ -112,41 +93,9 @@ them. A one-time probe can answer a question without adding a permanent guard.
 After the final relevant edit, verify the integrated behavior against the
 original acceptance conditions and obtain required independent review.
 
-## Remove residue from the current change
-
-During the normal final diff review, connect each new abstraction, dependency,
-fallback, configuration option, and helper to a current requirement or an
-observed constraint. Inspect new branches for abandoned hypotheses and temporary
-workarounds. Remove task-owned residue whose lack of purpose is established;
-preserve unrelated work and follow the existing cleanup rules.
-
-If extending the code needs another special case, check whether the current
-representation still fits the requirement before adding it. Prefer a supported
-framework mechanism over a custom substitute when it satisfies the contract.
-Do not make code shorter by concealing state transitions, removing required
-recovery, or weakening tests. Passing tests and low line counts do not by
-themselves establish maintainability.
-
-Use one scoped independent review where required, with evidence for concrete
-defects rather than a general quality score. Recheck fixes and affected behavior.
-Once acceptance checks and required review are satisfied, stop optional critique
-and polishing unless new evidence identifies a problem.
-
-## Preserve what the next session needs
-
-Update one existing task record at decision boundaries and before handoff.
-Keep it small enough to read before resuming work. Record the accepted outcome,
-constraints, current decision and rejected alternative, evidence locations,
-remaining uncertainties, owned work, and next useful action.
-
-Tie completed checks to the state they checked. If code, dependencies,
-configuration, or relevant inputs change, identify the invalidated evidence
-and rerun only the affected checks. Resume from the artifacts and current
-repository state; a previous summary is a navigation aid, not fresh evidence.
-
-Report implemented behavior, supporting evidence, and remaining limitations.
-Distinguish a design that appears feasible from an integrated implementation
-that passed its acceptance checks.
+Keep the decision, evidence, unverified assumptions, checked state, and next
+action in the existing task record. Report feasibility separately from an
+integrated implementation that passed its acceptance conditions.
 
 The research basis and limits are in
 [references/evidence.md](references/evidence.md). Read it when revising this

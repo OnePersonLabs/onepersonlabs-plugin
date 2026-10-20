@@ -80,7 +80,7 @@ class SlopHookTests(unittest.TestCase):
     def test_tool_spoof_is_not_assistant_feedback_and_duplicate_is_idempotent(self):
         self.assertIsNone(self.event("PreToolUse", tool_input={"command": "result verified without checking"}))
         first = self.event("PreToolUse", assistant_text="result verified without checking")
-        self.assertIn("SLOP_CHECK", first["hookSpecificOutput"]["additionalContext"])
+        self.assertIn("Slop advisory", first["hookSpecificOutput"]["additionalContext"])
         alert_id = hook.export_feedback(self.db)[0]["alert_id"]
         self.assertIsNone(self.event("PreToolUse", tool_input={"command": f"SLOP_CHECK {alert_id} true"}))
         self.assertIsNone(self.event("PreToolUse", assistant_text="result verified without checking"))
@@ -109,20 +109,20 @@ class SlopHookTests(unittest.TestCase):
         self.event("PreToolUse", assistant_text="result verified without checking")
         alert_id = hook.export_feedback(self.db)[0]["alert_id"]
         quoted = f"> SLOP_CHECK {alert_id} true\n```text\nSLOP_CHECK {alert_id} true\n```"
-        self.assertEqual(self.event("Stop", last_assistant_message=quoted)["decision"], "block")
+        self.assertIsNone(self.event("Stop", last_assistant_message=quoted))
         self.assertIsNone(hook.export_feedback(self.db)[0]["feedback"])
 
-    def test_missing_marker_one_continuation_then_unresolved(self):
+    def test_unrated_advisory_does_not_reopen_turn(self):
         self.event("PreToolUse", assistant_text="result verified without checking")
         first_stop = self.event("Stop", last_assistant_message="Finished.")
-        self.assertEqual(first_stop["decision"], "block")
+        self.assertIsNone(first_stop)
         self.assertIsNone(self.event("Stop", last_assistant_message="Finished."))
         self.assertIsNone(hook.export_feedback(self.db)[0]["feedback"])
 
     def test_malformed_marker_stays_unresolved_and_cooldown_suppresses_repeat(self):
         self.event("PreToolUse", assistant_text="result verified without checking")
         alert_id = hook.export_feedback(self.db)[0]["alert_id"]
-        self.assertEqual(self.event("Stop", last_assistant_message=f"SLOP_CHECK {alert_id} maybe")["decision"], "block")
+        self.assertIsNone(self.event("Stop", last_assistant_message=f"SLOP_CHECK {alert_id} maybe"))
         self.assertIsNone(hook.export_feedback(self.db)[0]["feedback"])
         second = {"hook_event_name": "PreToolUse", "session_id": "session-1", "turn_id": "turn-2",
                   "last_assistant_message": "result verified without checking", "transcript_path": str(self.transcript)}
@@ -134,12 +134,18 @@ class SlopHookTests(unittest.TestCase):
                                             "message": "result verified without checking"}})
         self.assertIsNotNone(hook.handle_event(second, self.config, db_path=self.db, now=161))
 
-    def test_stop_hook_active_does_not_recurse(self):
-        self.event("PreToolUse", assistant_text="result verified without checking")
-        self.assertIsNone(self.event("Stop", last_assistant_message="Finished.", stop_hook_active=True))
-        self.assertEqual(self.event("Stop", last_assistant_message="Finished.")["decision"], "block")
+    def test_stop_finding_is_persisted_unrated_without_reopening_turn(self):
+        self.assertIsNone(self.event("Stop", last_assistant_message="result verified without checking"))
+        alerts = hook.export_feedback(self.db)
+        self.assertEqual(len(alerts), 1)
+        self.assertEqual(alerts[0]["event"], "Stop")
+        self.assertEqual(alerts[0]["evidence_ids"], ["incident-1"])
+        self.assertIsNone(alerts[0]["feedback"])
+        self.assertIsNone(self.event("Stop", last_assistant_message="result verified without checking",
+                                     stop_hook_active=True))
+        self.assertEqual(len(hook.export_feedback(self.db)), 1)
 
-    def test_only_one_continuation_even_with_multiple_alerts(self):
+    def test_optional_feedback_rates_only_its_alert(self):
         other = {**self.detector, "id": "premise.other", "pattern": "second bad result",
                  "evidence_ids": ["incident-2"]}
         self.write_catalog([self.detector, other])
@@ -147,9 +153,10 @@ class SlopHookTests(unittest.TestCase):
         self.event("PreToolUse", assistant_text="second bad result")
         alerts = hook.export_feedback(self.db)
         self.assertEqual(len(alerts), 2)
-        self.assertEqual(self.event("Stop", last_assistant_message="Finished.")["decision"], "block")
+        self.assertIsNone(self.event("Stop", last_assistant_message="Finished."))
         marker = f"SLOP_CHECK {alerts[0]['alert_id']} true"
         self.assertIsNone(self.event("Stop", last_assistant_message=marker))
+        self.assertEqual([row["feedback"] for row in hook.export_feedback(self.db)], ["true", None])
 
     def test_single_event_records_only_warned_alert(self):
         other = {**self.detector, "id": "premise.other", "pattern": "second bad result",

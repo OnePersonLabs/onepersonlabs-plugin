@@ -1,6 +1,6 @@
 ---
 name: design-perceptual-interfaces
-description: Design or critique consequential visual representations, expressive interfaces, and semantic motion through perceptual contracts, visual alternatives, and rendered evidence. Use for new visual direction, confusing relationships or uncertainty, and interaction transformations. Skip literal copy, label, spacing, or token edits whose meaning and behavior stay unchanged; those need only the normal scoped edit and check.
+description: Design or critique consequential visual meaning, expressive interfaces, and semantic motion through rendered evidence.
 ---
 
 # Design perceptual interfaces

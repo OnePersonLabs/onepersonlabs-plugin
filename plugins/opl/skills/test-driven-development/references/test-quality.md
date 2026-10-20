@@ -89,7 +89,7 @@ preserve or a defect to change:
 
 - A characterization test records behavior that must remain stable during a
   refactor.
-- A regression test demonstrates a known defect and must fail before its fix.
+- A regression test distinguishes a known defect from the corrected behavior.
 - A test added after already-correct implementation still provides protection,
   but it is not evidence that the implementation was test-driven.
 

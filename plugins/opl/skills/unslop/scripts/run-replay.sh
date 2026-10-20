@@ -3,7 +3,7 @@
 # Run an unslop rule-development replay in a tmux holodeck.
 #
 # Usage:
-#   run-replay.sh <forged-session-id> <rule-file> <workspace-dir> --agent claude|codex [--timeout <seconds>]
+#   run-replay.sh <forged-session-id> <rule-file> <workspace-dir> --agent claude|codex [--timeout <seconds>] [--model MODEL] [--effort EFFORT]
 #
 # Why tmux? Print/exec modes strip the interactive environment (skills, hooks,
 # plugins, permissions). The original slop often only reproduces under the full
@@ -21,10 +21,20 @@ shift 3
 
 AGENT=""
 TIMEOUT=300
+MODEL="gpt-6.1-sol"
+EFFORT="medium"
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --agent)
             AGENT="${2:?--agent requires claude or codex}"
+            shift 2
+            ;;
+        --model)
+            MODEL="${2:?--model requires a value}"
+            shift 2
+            ;;
+        --effort)
+            EFFORT="${2:?--effort requires a value}"
             shift 2
             ;;
         --timeout)
@@ -63,7 +73,7 @@ if [[ "$AGENT" == "claude" ]]; then
     REPLAY_CMD=(claude --resume "$FORGED_SESSION_ID" --fork-session --append-system-prompt "$RULE_CONTENT")
     PROCESS_PATTERN="claude"
 else
-    REPLAY_CMD=(codex fork "$FORGED_SESSION_ID" -c "model=\"gpt-5.5\"" "Rule under test: $RULE_CONTENT"$'\n\ncontinue')
+    REPLAY_CMD=(codex fork "$FORGED_SESSION_ID" --model "$MODEL" -c "model_reasoning_effort=$EFFORT" "Rule under test: $RULE_CONTENT"$'\n\ncontinue')
     PROCESS_PATTERN="codex"
 fi
 

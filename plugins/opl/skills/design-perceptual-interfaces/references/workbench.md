@@ -23,7 +23,6 @@ Example manifest, with paths relative to the manifest:
   "ready_selector": "[data-capture-ready='true']",
   "state_attribute": "data-capture-state",
   "declared_time_attribute": "data-time-ms",
-  "declared_time_attribute": "data-time-ms",
   "viewport": {"width": 1280, "height": 900},
   "reduced_motion": "no-preference",
   "frames": [

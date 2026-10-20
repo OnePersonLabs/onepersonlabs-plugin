@@ -62,11 +62,6 @@ def connect(path: Path) -> sqlite3.Connection:
           session_id TEXT PRIMARY KEY,
           turn_id TEXT NOT NULL
         );
-        CREATE TABLE IF NOT EXISTS continuations (
-          session_id TEXT NOT NULL,
-          turn_id TEXT NOT NULL,
-          PRIMARY KEY(session_id,turn_id)
-        );
         CREATE TABLE IF NOT EXISTS transcript_cursors (
           session_id TEXT PRIMARY KEY,
           path TEXT NOT NULL,
@@ -285,28 +280,16 @@ def handle_event(payload: dict[str, Any], config: dict[str, Any], *, db_path: Pa
                                "VALUES(?,?,?,?)", ((session_id, turn_id, evidence_id, digest)
                                                  for evidence_id in evidence_ids))
                 emitted.append((digest, match))
-                # One warning per event keeps every recorded alert visible to the agent.
+                # Bound each event to one persisted finding and one advisory when supported.
                 break
         if emitted and event != "Stop":
-            notices = [f"Slop check {alert_id} ({match['pattern_id']}): {STEERING[match['steering']]} "
-                       f"Report SLOP_CHECK {alert_id} true or SLOP_CHECK {alert_id} false."
+            notices = [f"Slop advisory {alert_id} ({match['pattern_id']}): {STEERING[match['steering']]}"
                        for alert_id, match in emitted]
             warning = " ".join(notices)
             warning = warning[:600 - len(REMINDER_SUFFIX)] + REMINDER_SUFFIX
             return {"hookSpecificOutput": {"hookEventName": event, "additionalContext": warning}}
-        if event == "Stop" and not payload.get("stop_hook_active"):
-            pending = db.execute("SELECT alert_id,pattern_id FROM alerts WHERE session_id=? "
-                                 "AND turn_id=? AND feedback IS NULL ORDER BY created_at LIMIT 1",
-                                 (session_id, turn_id)).fetchone()
-            already_continued = db.execute("SELECT 1 FROM continuations WHERE session_id=? AND turn_id=?",
-                                           (session_id, turn_id)).fetchone()
-            if pending and not already_continued:
-                db.execute("INSERT INTO continuations(session_id,turn_id) VALUES(?,?)", (session_id, turn_id))
-                warning = f"Slop check {pending['alert_id']} ({pending['pattern_id']}): "
-                warning += "If the warning applies, correct the response; otherwise continue. "
-                warning += f"Report SLOP_CHECK {pending['alert_id']} true or SLOP_CHECK {pending['alert_id']} false."
-                warning = warning[:600 - len(REMINDER_SUFFIX)] + REMINDER_SUFFIX
-                return {"decision": "block", "reason": warning}
+        # Stop findings remain available to later audit without reopening the turn.
+        # An absent optional self-assessment stays NULL; it is not a false alarm.
     return None
 
 
