@@ -11,9 +11,15 @@ specifies another location.
 Interpret an unqualified reference to `AGENTS.md` as `plugins/opl/AGENTS.md`
 unless the user explicitly specifies another file.
 
-After completing a standalone, one-shot unit of work and its required checks,
-commit and push that unit, then run `$opl:refresh-local-plugins`, unless the user
-specifies a different delivery boundary.
+During authorized implementation, make small, coherent, verified task-owned
+checkpoint commits before moving into another concern. Do not blanket-stage,
+force broken splits, or push/refresh after each checkpoint.
+
+Deliver the completed change through a PR with the full series reviewed against
+its frozen starting baseline. Preserve checkpoint history. Human merge is the
+default. After merge, synchronize the base and run `$opl:refresh-local-plugins`
+with the service recovery and post-refresh checks below. A task-specific delivery
+boundary can override this default.
 
 OPL's `plugins/opl/AGENTS.md` has an independent positive integer instruction
 revision in its `opl-instructions-version` marker. Increment and stage that

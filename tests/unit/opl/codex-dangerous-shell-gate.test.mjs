@@ -46,4 +46,3 @@ test('dangerous shell permits explicit repository cleanup in PowerShell', () => 
   })
   assert.equal(result.status, 0, result.stderr)
 })
-

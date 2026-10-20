@@ -166,7 +166,7 @@ function oplFixture(t) {
     'config_file = "stale-task.toml"',
     '',
     '[agents.opl-retired]',
-    'config_file = "retired.toml"',
+    configFileLine(join(versionOne, 'agents', 'retired.toml')),
     '',
   ].join('\n'))
   writeJson(registration, [])

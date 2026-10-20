@@ -75,7 +75,10 @@ class ConfigCheckTests(unittest.TestCase):
             "[agents.opl-existing]\n"
             "config_file = \"C:/old-plugin/agents/existing.toml\" # path moves\n\n"
             "[agents.opl-stale]\n"
-            "config_file = \"C:/old-plugin/agents/stale.toml\"\n\n"
+            f"config_file = {json.dumps(str(self.plugin / 'agents' / 'stale.toml'))}\n\n"
+            "[agents.opl-custom]\n"
+            "config_file = \"C:/personal/custom.toml\"\n"
+            "description = \"User-authored role\"\n\n"
             "[features]\n"
             "hooks = false\nplugins = false\n",
             encoding="utf-8",
@@ -88,20 +91,26 @@ class ConfigCheckTests(unittest.TestCase):
         self.assertTrue(result["agents"]["interrupt_message"])
         self.assertNotIn("opl-stale", result["agents"])
         self.assertEqual(set(name for name in result["agents"] if name.startswith("opl-")),
-                         {"opl-existing", "opl-future-role"})
+                         {"opl-existing", "opl-future-role", "opl-custom"})
         self.assertEqual(result["agents"]["opl-existing"]["config_file"],
                          str((self.plugin / "agents" / "existing.toml").resolve()))
         self.assertEqual(result["agents"]["opl-future-role"]["config_file"],
                          str((self.plugin / "agents" / "future-role.toml").resolve()))
         self.assertFalse(result["features"]["hooks"])
+        self.assertEqual(result["agents"]["opl-custom"], {
+            "config_file": "C:/personal/custom.toml", "description": "User-authored role"})
         self.assertIn("# keep this comment", self.config.read_text(encoding="utf-8"))
+        before_repeat = self.config.read_bytes()
+        repeat, status = checker.command_reconcile(self.home, self.plugin)
+        self.assertEqual(status, 0)
+        self.assertTrue(repeat["compliant"])
+        self.assertEqual(self.config.read_bytes(), before_repeat)
 
     def test_fix_sets_full_policy_and_accepts_effective_defaults(self):
         self.agent("role.toml")
         self.config.write_text(
             "[features]\nhooks = false\nplugins = false\n\n"
-            "[agents]\ndefault_subagent_model = \"gpt-5.6-terra\"\n"
-            "default_subagent_reasoning_effort = \"xhigh\"\n",
+            "[agents]\n",
             encoding="utf-8",
         )
         report, status = checker.command_check(self.home, self.plugin)
@@ -138,7 +147,6 @@ class ConfigCheckTests(unittest.TestCase):
         report, status = checker.command_check(self.home, plugin)
         self.assertEqual(status, 1)
         self.assertNotIn("features.current_time_reminder.enabled", {item["path"] for item in report["findings"]})
-        self.assertIn("features.multi_agent_v2", {item["path"] for item in report["findings"]})
         _, status = checker.command_fix(self.home, plugin)
         self.assertEqual(status, 0)
         result = self.parsed()
@@ -195,7 +203,7 @@ class ConfigCheckTests(unittest.TestCase):
             b"# General documentation\r\nmodel = \"gpt-6.1-sol\"\r\n",
         )
 
-    def test_stale_marker_is_removed_then_the_audit_resumes(self):
+    def test_stale_marker_is_observed_read_only_then_removed_by_explicit_fix(self):
         self.agent("role.toml")
         role_path = json.dumps(str((self.plugin / "agents" / "role.toml").resolve()))
         self.config.write_text(
@@ -206,13 +214,70 @@ class ConfigCheckTests(unittest.TestCase):
             f"[agents.opl-role]\nconfig_file = {role_path}\n",
             encoding="utf-8",
         )
+        original = self.config.read_bytes()
+        before = {str(path.relative_to(self.home)): path.read_bytes()
+                  for path in self.home.rglob("*") if path.is_file()}
+        inspected = checker.inspect(self.home, self.plugin)
+        self.assertEqual(inspected[0], original)
         report, status = checker.command_check(self.home, self.plugin)
         self.assertEqual(status, 0)
         self.assertTrue(report["compliant"])
-        self.assertEqual(report["removed_ignore_markers"], ["0.1.0"])
-        self.assertNotIn("opl:ignore-config-check", self.config.read_text(encoding="utf-8"))
+        self.assertEqual(report["stale_ignore_markers"], ["0.1.0"])
+        previous = sys.stdin
+        try:
+            sys.stdin = io.StringIO('{"hook_event_name":"SessionStart"}')
+            _output, status = checker.command_hook(self.home, self.plugin)
+            self.assertEqual(status, 0)
+        finally:
+            sys.stdin = previous
+        self.assertEqual({str(path.relative_to(self.home)): path.read_bytes()
+                          for path in self.home.rglob("*") if path.is_file()}, before)
+        fixed, status = checker.command_fix(self.home, self.plugin)
+        self.assertEqual(status, 0)
+        self.assertTrue(fixed["applied"]["changed"])
+        self.assertEqual(self.config.read_bytes(), checker.remove_stale_markers(original, "0.2.0"))
+        after_fix = {str(path.relative_to(self.home)): path.read_bytes()
+                     for path in self.home.rglob("*") if path.is_file()}
+        checker.command_fix(self.home, self.plugin)
+        self.assertEqual({str(path.relative_to(self.home)): path.read_bytes()
+                          for path in self.home.rglob("*") if path.is_file()}, after_fix)
 
-    def test_defaults_file_drives_repair_without_engine_changes(self):
+    def test_explicit_reconcile_and_ignore_replace_stale_markers_transactionally(self):
+        for command in (checker.command_reconcile, checker.command_ignore):
+            with self.subTest(command=command.__name__):
+                original = b"# opl:ignore-config-check version=0.1.0\nmodel = \"gpt-6.1-sol\"\n"
+                self.config.write_bytes(original)
+                report, status = command(self.home, self.plugin)
+                self.assertEqual(status, 0)
+                self.assertTrue(report["applied"]["changed"])
+                receipt = json.loads(Path(report["applied"]["receipt"]).read_text(encoding="utf-8"))
+                self.assertEqual(Path(receipt["files"][0]["backup"]).read_bytes(), original)
+                self.assertEqual(self.parsed()["model"], "gpt-6.1-sol")
+                matching, stale = checker.marker_state(self.config.read_bytes(), "0.2.0")
+                self.assertEqual(stale, [])
+                self.assertEqual(matching, command == checker.command_ignore)
+                snapshot = {str(path.relative_to(self.home)): path.read_bytes()
+                            for path in self.home.rglob("*") if path.is_file()}
+                command(self.home, self.plugin)
+                self.assertEqual({str(path.relative_to(self.home)): path.read_bytes()
+                                  for path in self.home.rglob("*") if path.is_file()}, snapshot)
+
+    def test_hook_notice_continues_task_without_mutation(self):
+        self.agent("role.toml")
+        self.config.write_text("# opl:ignore-config-check version=0.1.0\n", encoding="utf-8")
+        before = self.config.read_bytes()
+        previous = sys.stdin
+        try:
+            sys.stdin = io.StringIO('{"hook_event_name":"SessionStart"}')
+            output, status = checker.command_hook(self.home, self.plugin)
+        finally:
+            sys.stdin = previous
+        self.assertEqual(status, 0)
+        self.assertIn("Continue the user's task", output["hookSpecificOutput"]["additionalContext"])
+        self.assertEqual(self.config.read_bytes(), before)
+        self.assertEqual(list(self.home.iterdir()), [self.config])
+
+    def test_defaults_file_drives_repair_and_preserves_explicit_child_preferences(self):
         self.agent("role.toml")
         (self.plugin / "config.defaults.toml").write_text(
             "[features]\nhooks = false\n\n[agents]\ndefault_subagent_model = \"gpt-6.1-sol\"\nmax_depth = 3\n",
@@ -222,13 +287,13 @@ class ConfigCheckTests(unittest.TestCase):
         report, status = checker.command_check(self.home, self.plugin)
         self.assertEqual(status, 1)
         self.assertEqual({item["path"] for item in report["findings"] if item["code"] == "setting_mismatch"},
-                         {"features.hooks", "agents.default_subagent_model", "agents.max_depth"})
+                         {"features.hooks", "agents.max_depth"})
         fixed, status = checker.command_fix(self.home, self.plugin)
         self.assertEqual(status, 0)
         self.assertIn("applied", fixed)
         result = self.parsed()
         self.assertFalse(result["features"]["hooks"])
-        self.assertEqual(result["agents"]["default_subagent_model"], "gpt-6.1-sol")
+        self.assertEqual(result["agents"]["default_subagent_model"], "gpt-6-luna")
         self.assertEqual(result["agents"]["max_depth"], 3)
 
     def test_policy_settings_require_exact_scalar_types(self):
