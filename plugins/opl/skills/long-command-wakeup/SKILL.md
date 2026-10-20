@@ -30,15 +30,18 @@ Resolve the exact loaded skill directory and use its
 Select Python 3.11 or newer: `python` on Windows and `python3` on POSIX, honoring
 `PYTHON_BIN` when set. Verify the interpreter and helper before launch.
 
-Choose a safety timeout appropriate to the operation. It is a guard, not an
-estimate. Pass the program and arguments separately after `--`; do not build
+Preserve the command's existing timeout contract. Omit `--timeout-seconds`
+when it has no deadline. Supply that option only for an already permitted or
+explicitly requested deadline; do not invent one from a runtime estimate.
+The worker waits for process exit when the option is omitted.
+
+Pass the program and arguments separately after `--`; do not build
 them from untrusted text or use `eval`. If shell syntax is genuinely necessary,
 pass the platform shell as the explicit program and use a fixed, reviewed
 command string.
 
 ```text
 <python> -B -X utf8 <skill>/scripts/run_and_wake.py start \
-  --timeout-seconds <seconds> \
   --cwd <working-directory> \
   -- <program> <arguments...>
 ```
@@ -46,7 +49,7 @@ command string.
 The helper resolves the current thread from `CODEX_THREAD_ID`; pass `--thread`
 only when an explicit thread id is already known. It verifies `codex queue`
 before launching, starts one detached worker, and prints a JSON receipt with the
-worker PID, timeout, and result directory. Report that receipt and end the turn.
+worker PID, timeout (`null` when omitted), and result directory. Report that receipt and end the turn.
 Explain that the watcher will submit a completion message to this thread; Codex
 must deliver it to start another turn. The launch receipt confirms the watcher
 started, not that future delivery is guaranteed. Do not poll the process, its

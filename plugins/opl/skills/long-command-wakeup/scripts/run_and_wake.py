@@ -64,14 +64,14 @@ def parse_args() -> argparse.Namespace:
 
     start = subparsers.add_parser("start", help="validate and start a detached worker")
     start.add_argument("--thread")
-    start.add_argument("--timeout-seconds", required=True, type=float)
+    start.add_argument("--timeout-seconds", type=float)
     start.add_argument("--cwd", default=os.getcwd())
     start.add_argument("--result-root")
     start.add_argument("command", nargs=argparse.REMAINDER)
 
     worker = subparsers.add_parser("_worker", help=argparse.SUPPRESS)
     worker.add_argument("--thread", required=True)
-    worker.add_argument("--timeout-seconds", required=True, type=float)
+    worker.add_argument("--timeout-seconds", type=float)
     worker.add_argument("--cwd", required=True)
     worker.add_argument("--result-dir", required=True)
     worker.add_argument("--codex-bin", required=True)
@@ -87,7 +87,9 @@ def normalized_command(value: list[str]) -> list[str]:
     return command
 
 
-def validate_timeout(value: float) -> float:
+def validate_timeout(value: float | None) -> float | None:
+    if value is None:
+        return None
     if not math.isfinite(value) or value <= 0:
         raise ValueError("--timeout-seconds must be a positive finite number")
     return value
@@ -156,8 +158,7 @@ def start_worker(args: argparse.Namespace) -> int:
         "_worker",
         "--thread",
         thread,
-        "--timeout-seconds",
-        str(timeout_seconds),
+        *(["--timeout-seconds", str(timeout_seconds)] if timeout_seconds is not None else []),
         "--cwd",
         str(cwd),
         "--result-dir",

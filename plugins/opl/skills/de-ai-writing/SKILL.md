@@ -1,6 +1,6 @@
 ---
 name: de-ai-writing
-description: Generate or revise human-facing prose to remove common signs of AI writing based on Wikipedia's Signs of AI writing. Use by default for explanatory, persuasive, editorial, marketing, social, email, and other prose written primarily for people; use $simplified-technical-english for normative, operational, agent-consumed, or implementation-guiding prose.
+description: Generate or revise human-facing prose to remove common signs of AI writing based on Wikipedia's Signs of AI writing. Use for drafting, rewriting, or auditing articles, explanations, marketing, social posts, and email; precise operational instructions belong to $opl:simplified-technical-english.
 ---
 
 # De-AI writing

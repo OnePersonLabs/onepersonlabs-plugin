@@ -321,7 +321,8 @@ def evaluate(config: dict[str, Any], inventory: dict[str, str], defaults: dict[s
         if current is None:
             findings.append({"code": "agent_missing", "path": f"agents.{name}", "expected": path, "actual": None})
         elif not isinstance(current, dict) or current.get("config_file") != path:
-            findings.append({"code": "agent_path_mismatch", "path": f"agents.{name}.config_file",
+            code = "agent_path_mismatch" if opl_owned_role(name, current) else "agent_ownership_conflict"
+            findings.append({"code": code, "path": f"agents.{name}.config_file",
                              "expected": path,
                              "actual": current.get("config_file") if isinstance(current, dict) else current})
     for name in registered:
@@ -511,6 +512,8 @@ def render_config(original: bytes, config: dict[str, Any], inventory: dict[str, 
         elif not isinstance(existing, dict):
             raise ConfigCheckError(f"agents.{name} must be a TOML table before it can be updated")
         elif existing.get("config_file") != path:
+            if not opl_owned_role(name, existing):
+                raise ConfigCheckError(f"agents.{name} points outside a verified OPL package; preserve this user profile and resolve the name conflict explicitly")
             text = _update_table_values(text, ("agents", name), {"config_file": path})
     return text.encode("utf-8-sig") if original.startswith(b"\xef\xbb\xbf") else text.encode("utf-8")
 

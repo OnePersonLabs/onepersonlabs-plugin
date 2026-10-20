@@ -1,6 +1,6 @@
 ---
 name: configure-harness
-description: Configure a Codex harness by inventorying available skills, plugins, tools, and routing; comparing evidence and cost; interviewing the user by capability; and testing proposed changes before applying them. Use for a personal harness setup or a measured harness reconfiguration, not for a one-off task.
+description: Configure or diagnose a Codex harness by inventorying capabilities, preparing reversible configuration changes, and optionally measuring routing or profile receipt. Use for personal harness setup, profile probes, or host input failures; repository workflow setup belongs to $opl:setup-repo-workflow.
 ---
 
 # Configure Harness
@@ -18,24 +18,35 @@ Use the inventory as one source of truth, including the enabled/disabled distinc
 
 ## Choose capability by capability
 
-Group real user needs into small capability categories. For each category, show a short card for each viable option: exact name, what it enables, current availability, material cost or eligibility, and evidence quality. The inventory's description summary is at most 256 characters per item; keep the exact name in its own field and do not treat the summary as the full instruction text. Ask about one category at a time and write the choice and reason through `decide --home PATH --decision PATH`. Reuse recorded choices when resuming; revisit one only when the user changes it or new evidence makes it stale.
+Group real user needs into small capability categories. For each category, show a short card for each viable option: exact name, what it enables, current availability, material cost or eligibility, and evidence quality. The inventory's description summary is at most 256 characters per item; keep the exact name in its own field and do not treat the summary as the full instruction text. Present one category at a time, collect unresolved choices under the host's question timing rules, and write each settled choice and reason through `decide --home PATH --decision PATH`. Reuse recorded choices when resuming; revisit one only when the user changes it or new evidence makes it stale.
 
 Compare the current route and the strongest alternative before adding a capability. Prefer disabling a redundant route before adding another overlapping instruction. Choose the narrowest supported scope: per-skill invocation policy when that owns activation; plugin enablement when the whole plugin is at issue; task-specific instructions where no supported control exists. Never patch installed caches as configuration. An inventory or recommendation alone does not authorize installation, external account creation, payment, or changes to the user's live profile.
 
-## Measure uncertain behavior
+## Optional measurement and diagnosis
 
-For activation, selection, or recovery behavior that materially affects the choice, read [references/evaluation.md](references/evaluation.md). Agree on a finite run budget and record it with `plan --home PATH --spec PATH` before sampling. Use a fresh native Luna agent to execute the explicit capability tests in one bounded batch and a separate fresh Sol agent to judge only the resulting evidence against the predefined rubric. Do not send either agent the whole conversation or the desired result. Record observations with `record --home PATH --run ID --record PATH` and conclusions with `report --home PATH --run ID --report PATH`.
+Use deterministic inventory and existing evidence first. Model evaluation is
+optional and requires an explicit finite budget and authorization for AI usage.
+For an explicitly requested live profile probe or interrupted instrumentation,
+read [profile probe and restoration](references/profile-probe.md). Discovery and
+restoration do not require running the model probe. For an observed host question
+tool failure, read [host input diagnosis](references/host-input.md).
 
-Use fresh context for each unaided production-route test. Repeat only when the choice depends on consistency, within the agreed budget; at most one bounded follow-up batch is the default. Reuse the bounded Luna and Sol agents for that follow-up; fresh unaided production-route contexts remain separate. Report supported, rejected, conditional, or inconclusive conclusions without promising that future routing is guaranteed. If a required model is unavailable, stop that test and disclose the gap; do not silently substitute a model.
+For authorized model measurements, read [evaluation](references/evaluation.md).
+The existing bounded evaluation engine uses a Luna executor and Sol judge;
+choose it only when that separate judgment can change the decision. Record its
+explicit budget before sampling. Deterministic probes and local evidence do not
+require two agents or a model evaluation. Report unmeasured routing as unknown.
 
 ## Review, apply, and recover
 
-Show the concrete proposed state, ownership of each change, evidence, remaining uncertainty, and expected effects. Use `prepare --home PATH --files PATH --output PATH` with a JSON list of reviewed `target` and `candidate` files to prepare file changes. Use `apply --home PATH --plan PATH` only after the reviewed change is authorized. Retain the returned receipt before proceeding to another change; use `rollback --home PATH --receipt PATH` for a failed or rejected application. The managed section may be absent on first setup: review its placement, then create exactly one. Stop on duplicate headings or ambiguous ownership rather than guessing where text belongs.
+Show the concrete proposed state, ownership of each change, evidence, remaining uncertainty, and expected effects. Use `prepare --home PATH --files PATH --output PATH` with a JSON list of reviewed `target` and `candidate` files to prepare file changes. Use `apply --home PATH --plan PATH` only after the reviewed change is authorized. Reuse existing authorization within its scope; do not ask again for an already approved transaction. Retain the returned receipt before proceeding to another change; use `rollback --home PATH --receipt PATH` for a failed or rejected application. The managed section may be absent on first setup: review its placement, then create exactly one. Stop on duplicate headings or ambiguous ownership rather than guessing where text belongs.
 
 For OPL startup configuration, present the discovered OPL roles and each
 required setting from the plugin-root `config.defaults.toml` file before
-preparing a transaction. Reconcile only OPL-prefixed role registrations and
-that documented startup baseline. Preserve non-OPL registrations and unrelated
-configuration.
+preparing a transaction. Reconcile only role registrations whose `config_file` provenance establishes
+OPL ownership, and that documented startup baseline. A name prefix alone does
+not establish ownership. Preserve custom registrations and unrelated configuration. Root model and reasoning preferences are outside this
+features/agents transaction contract; inspect them without adding them to a
+harness apply plan.
 
-For a global instruction change outside the harness-owned `Harness Policies (managed by $opl:configure-harness)` section, use `$opl:update-instructions` to update the full file. It replaces outdated instructions after one approval and saves the old file byte for byte in a dated backup; it does not merge custom rules. Put essential, unmeasured constraints inline. Add compact conditional pointers to category policies and procedures only when their targets resolve and their route can be verified; avoid circular pointers. Add a runtime recovery hook only after measured failures show a hook is needed; no hook is part of the default setup. Verify the root route, a relevant documentation event, and subagent behavior separately in fresh contexts. Give the user the durable run location and any remaining uncertainty.
+For a global instruction change outside the harness-owned `Harness Policies (managed by $opl:configure-harness)` section, use `$opl:update-instructions` to update the full file. It replaces outdated instructions under established authorization and saves the old file byte for byte in a dated backup; it does not merge custom rules. Put essential, unmeasured constraints inline. Add compact conditional pointers to category policies and procedures only when their targets resolve and their route can be verified; avoid circular pointers. Add a runtime recovery hook only after measured failures show a hook is needed; no hook is part of the default setup. When an authorized evaluation tests routing, verify the root route, a relevant documentation event, and subagent behavior separately in fresh contexts. Otherwise report routing as unmeasured. Give the user the durable run location and any remaining uncertainty.

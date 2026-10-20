@@ -149,6 +149,7 @@ function oplFixture(t) {
     '',
   ].join('\n'))
   writeJson(join(source, '.codex-plugin', 'plugin.json'), { name: 'opl', version: '0.2.0' })
+  writeJson(join(home, 'plugins/cache/example-market/opl/0.1.0/.codex-plugin/plugin.json'), { name: 'opl', version: '0.1.0' })
   writeAgentRole(source, 'task')
   writeAgentRole(source, 'scout')
   writeJson(marketplacePath, {
@@ -163,7 +164,7 @@ function oplFixture(t) {
     'config_file = "personal.toml"',
     '',
     '[agents.opl-task]',
-    'config_file = "stale-task.toml"',
+    configFileLine(join(home, 'plugins/cache/example-market/opl/0.1.0/agents/task.toml')),
     '',
     '[agents.opl-retired]',
     configFileLine(join(versionOne, 'agents', 'retired.toml')),
@@ -224,7 +225,7 @@ test('an explicit OPL refresh dynamically reconciles added, removed, and rebound
   assert.match(contents, configFilePattern(f.rolePath('0.2.0', 'scout')))
   assert.doesNotMatch(contents, /\[agents\.opl-retired\]/u)
 
-  writeFileSync(f.config, contents.replace(configFileLine(f.rolePath('0.2.0', 'task')), 'config_file = "manually-stale.toml"'))
+  writeFileSync(f.config, contents.replace(configFileLine(f.rolePath('0.2.0', 'task')), configFileLine(f.rolePath('0.1.0', 'task'))))
   result = f.invoke()
   assert.equal(result.status, 0, result.stderr)
   contents = readFileSync(f.config, 'utf8')

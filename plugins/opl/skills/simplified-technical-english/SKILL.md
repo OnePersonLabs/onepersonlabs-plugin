@@ -1,6 +1,6 @@
 ---
 name: simplified-technical-english
-description: Write or revise normative specifications, operational instructions, agent-consumed text, and implementation-guiding technical prose with Simplified Technical English principles. Use during other workflows that author such text; do not impose this register on human-facing explanatory or persuasive prose.
+description: Write or revise specifications, procedures, agent instructions, and implementation guidance with precise technical English. Use when authoring those artifacts; ordinary replies do not require a writing workflow.
 ---
 
 # Simplified Technical English for software work

@@ -39,6 +39,8 @@ class ConfigCheckTests(unittest.TestCase):
         helper.mkdir(parents=True)
         shutil.copy2(ROOT / "plugins" / "opl" / "skills" / "configure-harness" / "scripts" / "application.py",
                      helper / "application.py")
+        (self.plugin / "scripts").mkdir()
+        shutil.copy2(SCRIPT, self.plugin / "scripts" / SCRIPT.name)
 
     @property
     def config(self):
@@ -63,6 +65,9 @@ class ConfigCheckTests(unittest.TestCase):
     def test_reconcile_discovers_new_files_and_preserves_personal_agents(self):
         self.agent("existing.toml")
         self.agent("future-role.toml")
+        old_plugin = self.root / "previous-opl"
+        (old_plugin / ".codex-plugin").mkdir(parents=True)
+        (old_plugin / ".codex-plugin/plugin.json").write_text('{"name":"opl"}', encoding="utf-8")
         self.config.write_text(
             "# keep this comment\n"
             "[agents]\n"
@@ -73,7 +78,7 @@ class ConfigCheckTests(unittest.TestCase):
             "[agents.personal]\n"
             "config_file = \"C:/personal.toml\"\n\n"
             "[agents.opl-existing]\n"
-            "config_file = \"C:/old-plugin/agents/existing.toml\" # path moves\n\n"
+            f"config_file = {json.dumps(str(old_plugin / 'agents/existing.toml'))} # path moves\n\n"
             "[agents.opl-stale]\n"
             f"config_file = {json.dumps(str(self.plugin / 'agents' / 'stale.toml'))}\n\n"
             "[agents.opl-custom]\n"

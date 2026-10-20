@@ -1,11 +1,11 @@
 ---
 name: session-history-rebuild
-description: Reconstruct a repository's development history from canonical Codex sessions when a complete, auditable conversation and evolving design record are explicitly requested.
+description: Reconstruct a complete, auditable repository conversation and evolving design history from canonical Codex sessions. Explicit reconstruction only; focused history lookup belongs to $opl:session-reader.
 ---
 
 # Session History Rebuild
 
-Use this skill only on explicit invocation. When loaded, announce it by name: `Using $session-history-rebuild.` The default scope is the current repository's indexed session rollouts. Add related checkout roots or separate lineages only when evidence calls for them; never infer a lineage from a similar name alone.
+Use this skill only on explicit invocation. The default scope is the current repository's indexed session rollouts. Add related checkout roots or separate lineages only when evidence calls for them; never infer a lineage from a similar name alone.
 
 Use `$opl:session-reader` as the canonical index provider. Refresh its index, confirm its `status` has no relevant stale sources, then freeze a SQLite snapshot and UTC cutoff. Never read raw rollout JSONL directly. The helpers in [references/CLI.md](references/CLI.md) read only the frozen index.
 

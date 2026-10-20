@@ -1,6 +1,11 @@
 # Bounded behavior evaluation
 
-Read this reference when a configuration decision depends on observed activation, selection, or recovery behavior. Define the test before running it. Do not evaluate every catalog item merely because it appears in inventory.
+Use this optional engine only when an authorized, explicitly budgeted model
+comparison can change a configuration decision and separate judgment is useful.
+Its fixed Luna executor and Sol judge are an evaluation protocol, not a default
+setup requirement. Deterministic inventory, probes, and existing evidence do not
+need this engine. Define the test before running it; do not evaluate each catalog
+item merely because it appears in inventory.
 
 ## Manifest and budget
 

@@ -1,6 +1,6 @@
 ---
 name: refresh-local-plugins
-description: Refresh locally modified Codex plugins in existing user-level Windows and WSL Codex homes. Use after local edits or pulls, for stale installed copies, or to preview a refresh. For isolated tests, pass --target-home "<absolute-path>"; not for publishing.
+description: Refresh changed source plugins in existing Windows and WSL user-level Codex homes, or preview the per-home plan. Use after local edits or pulls and for stale installed copies; publishing is separate.
 ---
 
 # Refresh Local Plugins
@@ -31,6 +31,19 @@ the user to specify a target home for a normal refresh or substitute
 
 Keep discovery and preview requests read-only: use `--dry-run`, which checks
 both accessible homes without installing.
+
+## Preserve collaboration service availability
+
+When the workspace requires the human-collaboration refresh lifecycle, use
+`$opl:human-collaboration`'s `pause-for-refresh` from that workspace before
+installation. Continue only after it proves both listener shutdown and process
+exit, or reports the service was not running. An unresponsive live service
+blocks refresh. Do not add repeated service probes.
+
+After the installation attempt, run installed `resume-after-refresh` from the
+same workspace even if installation failed. Use the source helper if the
+installed helper is unavailable. It restarts only a previously running service;
+retain its pause record on failure. Open and report a returned new pairing URL.
 
 ## Run the bundled helper
 

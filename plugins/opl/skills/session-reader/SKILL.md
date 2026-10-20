@@ -1,6 +1,6 @@
 ---
 name: session-reader
-description: Safely index, search, inspect, and extract bounded message ranges from large Codex rollout JSONL session logs. Use when Codex needs to find prior user or agent messages, browse recent sessions, search across active or archived session history, inspect rollout metadata, or read a focused transcript without loading raw session files into context.
+description: Find prior Codex messages, browse sessions, or extract focused transcript ranges through the canonical bounded index. Use for active or archived history lookup and rollout metadata; full repository history reconstruction belongs to $opl:session-history-rebuild.
 ---
 
 # Session Reader

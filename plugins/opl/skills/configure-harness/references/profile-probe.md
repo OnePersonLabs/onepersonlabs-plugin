@@ -1,11 +1,10 @@
----
-name: probe-agent-profile-usage
-description: Run a bounded live Codex subagent-profile activation probe, capture what selected agents actually received, and restore temporary profile edits. Explicitly invoke only for profile-usage testing.
----
+# Live profile probe
 
-# Probe Agent Profile Usage
-
-Use this skill only when explicitly asked to test Codex subagent profile discovery, selection, or context receipt. It edits discovered profile TOMLs temporarily and launches one bounded `codex exec`.
+Use the live `run` path only for an explicitly authorized, bounded test of
+Codex profile discovery, selection, or context receipt. It temporarily edits
+discovered profile TOMLs and launches one `codex exec`. Agree on its AI budget
+before running it. For interrupted instrumentation, inspect the saved log and
+state, then use `uninstrument` without starting another model run.
 
 Run `scripts/profile_probe.py discover --repo REPO` first. It reads the active user Codex home (`CODEX_HOME`, otherwise `~/.codex`) and the repo's `.codex/config.toml`, follows each `agents.<name>.config_file` relative to its declaring config, and adds direct `*.toml` files from both `agents/` directories. It deduplicates identical paths and stops on distinct files with the same profile name because receipts could not distinguish them. This is an inventory of candidate profiles; Codex still decides which profiles it loads for the actual trusted project.
 
@@ -14,12 +13,12 @@ Choose one realistic, bounded task that gives the expected profiles a natural re
 Put the task prompt in a UTF-8 text file and run:
 
 ```powershell
-python plugins/opl/skills/probe-agent-profile-usage/scripts/profile_probe.py run `
+python plugins/opl/skills/configure-harness/scripts/profile_probe.py run `
   --repo . `
   --prompt-file C:/path/to/probe-prompt.txt `
   --log C:/path/to/profile-usage.jsonl `
-  --expected opl-docs-researcher `
-  --expected opl-explorer `
+  --expected researcher `
+  --expected explorer `
   --timeout 600
 ```
 
@@ -30,7 +29,7 @@ For `run`, omit `--home`: discovery uses the inherited `CODEX_HOME` or `~/.codex
 The runner restores every profile byte-for-byte on success or failure by default. Use `--keep-instrumented` when the user asks to leave the profile changes in place. Keep the JSONL and per-model/effort `.exec.txt`, `.stdout`, and `.stderr` artifacts to inspect the outcome. If an earlier manual `instrument` was interrupted, restore it with:
 
 ```powershell
-python plugins/opl/skills/probe-agent-profile-usage/scripts/profile_probe.py uninstrument --repo . --log C:/path/to/profile-usage.jsonl
+python plugins/opl/skills/configure-harness/scripts/profile_probe.py uninstrument --repo . --log C:/path/to/profile-usage.jsonl
 ```
 
 `instrument` and `uninstrument` can also be run separately. Instrumentation is idempotent for an unchanged file set. If a profile changes while instrumented, restoration refuses to overwrite it; inspect the reported path and restore deliberately. Do not use temporary homes/configs for the live probe. Temporary fixtures are appropriate only for isolated unit checks.

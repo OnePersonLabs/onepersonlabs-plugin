@@ -1,17 +1,17 @@
 ---
 name: update-instructions
-description: Update an outdated global AGENTS.md from installed OPL defaults after one approval, saving the existing file as a dated backup.
+description: Update outdated global AGENTS.md from installed OPL defaults under established authorization, with a dated byte-exact backup.
 ---
 
 # Update OPL Instructions
 
 The user owns their global instructions. When an update is available, inspect
-the effective target and installed OPL version, then ask once whether to replace
+the effective target and installed OPL version, then reuse applicable update authorization or ask once whether to replace
 the target with the installed `AGENTS.md`. Explain that active custom rules will
 be replaced and the existing file will be saved as a dated backup. A clear yes
 authorizes that update; do not ask the user to review a candidate or diff.
 
-## Inspect and ask once
+## Inspect and establish authorization
 
 Run `scripts/instructions.py inspect` with Python, relative to this skill's
 directory. The helper resolves the active Codex home and effective global file,
@@ -23,12 +23,14 @@ instructions are outside this installed plugin.
 - Matching versions: report that the target is current and stop.
 - User version above installed version: report that this installation is older
   and stop. Never downgrade the target.
-- Missing, unversioned, or invalid target: include that state in the one update
-  question. If the user agrees, replace it with installed OPL instructions and
+- Missing, unversioned, or invalid target: include that state in the update
+  proposal. When authorized, replace it with installed OPL instructions and
   preserve any existing bytes in a backup.
-- Older valid version: state both versions and ask once whether to update.
+- Older valid version: state both versions and establish authorization to update.
 
-Before asking, explain that replacing the target discards active custom rules.
+If update authorization already covers this target and replacement, proceed
+within that scope. Otherwise, before asking, explain that replacing the target
+discards active custom rules.
 The user can recover them from the exact backup, but they are not merged into
 the new file. If the user declines, stop without writing files.
 

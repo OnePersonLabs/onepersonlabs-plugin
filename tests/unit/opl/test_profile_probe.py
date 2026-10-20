@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 
-SCRIPT = Path(__file__).resolve().parents[3] / "plugins" / "opl" / "skills" / "probe-agent-profile-usage" / "scripts" / "profile_probe.py"
+SCRIPT = Path(__file__).resolve().parents[3] / "plugins" / "opl" / "skills" / "configure-harness" / "scripts" / "profile_probe.py"
 SPEC = importlib.util.spec_from_file_location("profile_probe", SCRIPT)
 profile_probe = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = profile_probe
