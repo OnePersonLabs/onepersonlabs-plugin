@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -34,11 +34,6 @@ for (const pluginName of ['opl']) {
     }
   })
 }
-
-test('OPL owns the repository-independent GitHub Issues deferral provider', () => {
-  const scripts = readdirSync(join(repositoryRoot, 'plugins', 'opl', 'scripts'))
-  assert.ok(scripts.includes('codex-github-issues-deferral-handler.py'))
-})
 
 test('OnePersonLabs manifest exports its hooks', () => {
   const manifest = readJson(

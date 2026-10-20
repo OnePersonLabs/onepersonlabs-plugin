@@ -29,12 +29,6 @@
             "command": "python3 -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-dangerous-shell-gate.py\"",
             "timeout": 20,
             "commandWindows": "python -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-dangerous-shell-gate.py\""
-          },
-          {
-            "type": "command",
-            "command": "python3 -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-model-selection-gate.py\"",
-            "timeout": 20,
-            "commandWindows": "python -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-model-selection-gate.py\""
           }
         ]
       }
@@ -47,46 +41,6 @@
             "command": "python3 -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-task-watch.py\" hook",
             "timeout": 3,
             "commandWindows": "python -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-task-watch.py\" hook"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-git-line-ending-hook.py\"",
-            "commandWindows": "python -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-git-line-ending-hook.py\"",
-            "timeout": 3
-          },
-          {
-            "type": "command",
-            "command": "python3 -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-marketplace-refresh-hook.py\"",
-            "timeout": 20,
-            "commandWindows": "python -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-marketplace-refresh-hook.py\""
-          }
-        ]
-      },
-      {
-        "matcher": "Edit|Write|ApplyPatch|apply_patch",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-skill-review-gate.py\"",
-            "timeout": 20,
-            "commandWindows": "python -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-skill-review-gate.py\""
-          },
-          {
-            "type": "command",
-            "command": "python3 -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-artifact-discipline-gate.py\"",
-            "timeout": 20,
-            "commandWindows": "python -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-artifact-discipline-gate.py\""
-          },
-          {
-            "type": "command",
-            "command": "python3 -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-skill-reference-sigil-gate.py\"",
-            "timeout": 20,
-            "commandWindows": "python -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-skill-reference-sigil-gate.py\""
           }
         ]
       },
@@ -120,18 +74,6 @@
             "command": "python3 -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-task-watch.py\" hook",
             "timeout": 3,
             "commandWindows": "python -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-task-watch.py\" hook"
-          },
-          {
-            "type": "command",
-            "command": "python3 -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-response-discipline-gate.py\"",
-            "timeout": 20,
-            "commandWindows": "python -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-response-discipline-gate.py\""
-          },
-          {
-            "type": "command",
-            "command": "python3 -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-skill-review-gate.py\"",
-            "timeout": 20,
-            "commandWindows": "python -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-skill-review-gate.py\""
           }
         ]
       },
