@@ -1,6 +1,6 @@
 # OPL
 
-One-Person Labs developer tooling for Codex: skills, specialist agents, shared instructions, and workflow hooks.
+One-Person Labs developer tooling for Codex: focused skills, shared instructions, integrations, and advisory workflow hooks.
 
 ## Install
 
@@ -9,7 +9,7 @@ codex plugin marketplace add https://github.com/OnePersonLabs/opl
 codex plugin add opl@opl
 ```
 
-Start a new Codex task after installation. Invoke skills with `$opl:<skill-name>`, such as `$opl:review-changes`, `$opl:debug`, or `$opl:adhd`.
+Start a new Codex task after installation. Invoke skills with `$opl:<skill-name>`, such as `$opl:setup-repo-workflow`, `$opl:debug`, or `$opl:adhd`.
 
 ## Develop
 
@@ -47,6 +47,18 @@ The installed-copy checkpoint uses a separate Codex home, compares the installed
 ```sh
 npm run install:local -- --plugin opl
 ```
+
+## Development workflow
+
+Use `$opl:setup-repo-workflow` explicitly to configure one repository through its
+existing instructions, GitHub conventions, local checks, review lane, and merge
+policy. Ordinary authorized work uses `$opl:github-workflow` for issue capture
+and state maintenance. Projects remain independent. The builder owns PR repairs;
+small checked commits make the series reviewable. Local verification is primary.
+Human merge is the default. Setup does not install unattended dispatch.
+
+The [overhaul audit](docs/opl-overhaul.md) records package dispositions, sources,
+verification, and the separately tracked automation qualification.
 
 ## License
 
