@@ -23,7 +23,7 @@ leave the sender unable to distinguish rejection from consumption. These are
 delivery-contract gaps, not prompt-writing problems. The decisive sources are
 the tagged [worker](https://github.com/vnovick/itervox/blob/v0.2.1/internal/orchestrator/worker.go),
 [input operation](https://github.com/vnovick/itervox/blob/v0.2.1/internal/orchestrator/issue_control.go#L273-L295),
-[handler](https://github.com/vnovick/itervox/blob/v0.2.1/internal/server/handlers.go#L816-L834)
+[handler](https://github.com/vnovick/itervox/blob/v0.2.1/internal/server/handlers.go#L766-L787)
 and [event loop](https://github.com/vnovick/itervox/blob/v0.2.1/internal/orchestrator/event_loop.go).
 
 The native `input_required` helper path is real, but launches a model run. It

@@ -76,7 +76,7 @@ builder. That worker also excludes input-required exits from `pr_opened`
 automation. An early callback can therefore arrive before the pending question
 exists.
 
-The [HTTP handler](https://github.com/vnovick/itervox/blob/v0.2.1/internal/server/handlers.go#L816-L834)
+The [HTTP handler](https://github.com/vnovick/itervox/blob/v0.2.1/internal/server/handlers.go#L766-L787)
 returns 202 after
 [`ProvideInput`](https://github.com/vnovick/itervox/blob/v0.2.1/internal/orchestrator/issue_control.go#L273-L295)
 enqueues an identifier and message without looking up a parked owner. The
@@ -121,7 +121,7 @@ can hold new admission during review; it does not alone prove the complete
 landing lifecycle. A process limit and an issue-through-landing limit are
 different contracts.
 
-The released [event-loop selector](https://github.com/vnovick/itervox/blob/v0.2.1/internal/orchestrator/event_loop.go#L363-L372)
+The released [event-loop selector](https://github.com/vnovick/itervox/blob/v0.2.1/internal/orchestrator/event_loop.go#L330-L350)
 uses [critical-path ordering](https://github.com/vnovick/itervox/blob/v0.2.1/internal/orchestrator/sort_critical_path.go#L76-L145)
 by default: priority first, then downstream reach and chain length. The selectable
 strict mode puts downstream reach and chain length first. These are actual native dispatch modes,
