@@ -158,15 +158,16 @@ class PolicyTests(unittest.TestCase):
         ]}
         self.assertEqual(policy.evaluate_policy(value, inventory(skill('a', 'a'), skill('b', 'b'))), [])
 
-    def test_ignored_rule_requires_exact_known_id_and_reason(self):
+    def test_ignored_rule_uses_exact_id_and_reports_unavailable_rules(self):
         value = {'version': 1, 'rules': [{'id': 'built-in',
                  'whenEnabled': {'kind': 'skill', 'name': 'debug'},
                  'required': [{'kind': 'mcp', 'name': 'docs'}]}],
                  'ignoreRules': [{'id': 'built-in', 'reason': 'This project uses offline docs.'}]}
         self.assertEqual(policy.evaluate_policy(value, inventory(skill('debug', 'debug'))), [])
         value['ignoreRules'][0]['id'] = 'typo'
-        with self.assertRaisesRegex(policy.PolicyError, r'project#/ignoreRules/0/id: unknown rule ID'):
-            policy.evaluate_policy(value, inventory(), source='project')
+        findings = policy.evaluate_policy(value, inventory(), source='project')
+        self.assertEqual(findings[0]['code'], 'unknown_ignore_rule')
+        self.assertEqual(findings[0]['severity'], 'warning')
 
     def test_normalization_is_independent_and_has_explicit_defaults(self):
         value = {'version': 1, 'required': [{'kind': 'skill', 'name': 'debug', 'whenEnabled': {}}]}
@@ -250,15 +251,14 @@ class PolicyTests(unittest.TestCase):
         self.assertEqual(active, [initial[0], {'kind': 'skill', 'name': 'research'},
                                   {'kind': 'mcp', 'name': 'remote-docs'}, *initial[1:]])
 
-    def test_discovery_omits_ignored_rules_and_rejects_unknown_ignore_ids(self):
+    def test_discovery_omits_ignored_rules_and_keeps_unrelated_selectors(self):
         value = {'version': 1, 'rules': [{'id': 'ignored',
                  'whenEnabled': {'kind': 'skill', 'name': 'research'},
                  'required': [{'kind': 'mcp', 'name': 'docs'}]}],
                  'ignoreRules': [{'id': 'ignored', 'reason': 'Offline project.'}]}
         self.assertEqual(policy.active_selectors(value, inventory(skill('research', 'research'))), [])
         value['ignoreRules'][0]['id'] = 'misspelled'
-        with self.assertRaisesRegex(policy.PolicyError, r'policy#/ignoreRules/0/id: unknown rule ID'):
-            policy.active_selectors(value, inventory())
+        self.assertEqual(policy.active_selectors(value, inventory()), [{'kind': 'skill', 'name': 'research'}])
 
     def test_discovery_uses_exact_own_path_binding_and_deduplicates_selectors(self):
         owner = {'kind': 'skill', 'name': 'research', 'path': 'C:/Installed/research/SKILL.md'}

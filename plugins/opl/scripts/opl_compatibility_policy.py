@@ -226,10 +226,6 @@ def _label(selector):
 
 
 def _ignored_rule_ids(policy, source):
-    known_ids = {rule['id'] for rule in policy['rules']}
-    for i, entry in enumerate(policy['ignoreRules']):
-        if entry['id'] not in known_ids:
-            raise PolicyError(f"{source}#/ignoreRules/{i}/id: unknown rule ID {entry['id']!r}")
     return {entry['id'] for entry in policy['ignoreRules']}
 
 
@@ -282,7 +278,13 @@ def evaluate_policy(policy: dict, inventory: dict, source: str = 'policy') -> li
     ignored = _ignored_rule_ids(policy, source)
     items = inventory.get('items', [])
     complete = inventory.get('complete', {})
-    findings = []
+    known_ids = {rule['id'] for rule in policy['rules']}
+    findings = [
+        {'code': 'unknown_ignore_rule', 'severity': 'warning', 'ruleId': entry['id'],
+         'source': source, 'matches': [], 'reason': entry['reason'],
+         'message': f"Ignored rule ID {entry['id']!r} is unavailable; this exception has no effect."}
+        for entry in policy['ignoreRules'] if entry['id'] not in known_ids
+    ]
     active_required = []
     active_disallowed = []
 
