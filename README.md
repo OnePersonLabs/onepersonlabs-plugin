@@ -2,6 +2,8 @@
 
 One-Person Labs developer tooling for Codex: focused skills, shared instructions, integrations, and advisory workflow hooks.
 
+🧭 **[Understand OPL at a glance](docs/opl-at-a-glance.md)** -- roles, work flow, choices and what is actually active.
+
 ## Install
 
 ```sh
@@ -49,6 +51,11 @@ npm run install:local -- --plugin opl
 ```
 
 ## Development workflow
+
+For substantial explanations, teaching or human interaction design,
+`$opl:build-understanding` helps make relationships, changes and choices easier
+to grasp. Choose useful representations and worked cases; keep precise words
+and simple exchanges where they serve the task best.
 
 For consequential tool, architecture, infrastructure or integration choices,
 `$opl:research-solutions` finds credible current implementations and checks their
