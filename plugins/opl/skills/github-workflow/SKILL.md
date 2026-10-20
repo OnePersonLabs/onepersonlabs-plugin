@@ -53,8 +53,11 @@ position do not establish work order or authority.
 Use repository-native workflow instructions when present. If the repository
 needs explicit setup, use `$opl:setup-repo-workflow`; do not configure a new
 workflow during routine issue maintenance. Without a project override, keep one
-primary issue through landing with up to two optional bounded helpers. Independent
-projects can proceed concurrently. More primary issues require project opt-in.
+primary issue through landing with up to two optional bounded helpers per primary
+session. Independent projects can proceed concurrently. More primary issues
+require project opt-in. Read the setup skill's
+[native workflow choices](../setup-repo-workflow/references/native-workflow.md)
+when mapping worker/helper settings and explaining aggregate concurrency.
 Use native notifications or waits, not model polling of idle work.
 
 For each actionable issue, state the change, impact, acceptance evidence,
