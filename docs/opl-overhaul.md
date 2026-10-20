@@ -117,7 +117,26 @@ Shipped optional child defaults are Luna/high; Slop reading is Luna/medium.
 
 Focused checks passed: revision validation 9; lifecycle/shell/boundaries 12;
 compatibility 46; configuration preservation/recovery 16; Slop Buster 48.
-The OPL package contract checkpoint passed. Integration and independent implementation review are recorded at completion.
+The OPL package contract checkpoint passed. Windows full installed-copy validation
+passed with 27 unit test files and trust verified for all 23 hooks. WSL Codex
+0.155.1 passed its isolated package/discovery/trust checkpoint for the same 23
+hooks; Windows CLI is 0.160.1. Changed Python/JSON/TOML parsed and all changed
+local Markdown links resolved (88 files checked). Bash replay syntax passed.
+
+One fresh independent reviewer inspected the entire frozen-baseline series
+through `5c59609` and the final test-only deletion, reporting no material finding.
+It also checked the four recorded comparison outcomes and snapshot identity.
+No further model calls were made. Full repository pre-push gates run at delivery.
+
+Two inherited last30days tests were removed: one mirrored canonical metadata
+already validated generically; another asserted exact setup prose that moved to
+a conditional reference. Its eight runtime contract tests remain and pass.
+Configuration fixes fill optional child defaults only when absent, preserve
+explicit child choices, and refuse ambiguous user-profile name collisions.
+
+Global instructions fell from 5,148 to 1,332 whitespace-separated words (552 to
+163 lines). This measures instruction size, not model quota or accepted-change
+cost. The final skill inventory is 27 packages versus 35 initially.
 
 ### Four isolated software comparisons
 
