@@ -23,6 +23,7 @@ Invoke a skill with `$opl:<skill-name>`. Common starting points:
 | --- | --- |
 | [$opl:review-changes](skills/review-changes/SKILL.md) | Review a concrete patch. |
 | [$opl:debug](skills/debug/SKILL.md) | Investigate and reproduce a failure. |
+| [$opl:design-perceptual-interfaces](skills/design-perceptual-interfaces/SKILL.md) | Explore consequential design and inspect implemented meaning, motion, and visual craft. |
 | [$opl:test-driven-development](skills/test-driven-development/SKILL.md) | Verify behavior through realistic tests. |
 | [$opl:adhd](skills/adhd/SKILL.md) | Preserve task state and keep one active path. |
 | [$opl:configure-harness](skills/configure-harness/SKILL.md) | Compare capabilities and review a deliberate setup. |

@@ -12,7 +12,8 @@
       "mcpMode": "launcher-contract",
       "uiMode": "python",
       "uiTests": [
-        "tests/ui/opl/test_human_collaboration_ui.py"
+        "tests/ui/opl/test_human_collaboration_ui.py",
+        "tests/ui/opl/test_design_specimens.py"
       ]
     }
   }

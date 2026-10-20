@@ -1,0 +1,7 @@
+interface:
+  display_name: "Perceptual Interface Design"
+  short_description: "Explore design, preserve meaning, inspect real UI"
+  default_prompt: "Use $design-perceptual-interfaces to improve this consequential visual or interaction design with proportionate evidence."
+
+policy:
+  allow_implicit_invocation: true

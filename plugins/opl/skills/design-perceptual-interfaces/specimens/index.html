@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Perceptual specimen cabinet</title>
+  <link rel="stylesheet" href="cabinet.css">
+  <script src="cabinet.js" defer></script>
+</head>
+<body>
+<main id="cabinet" data-capture-ready="false">
+  <header class="masthead">
+    <a class="wordmark" href="./index.html"><span class="mark" aria-hidden="true">◒</span> PERCEPTUAL LAB</a>
+    <span class="status"><span aria-hidden="true">○</span> Design hypotheses · not validated</span>
+  </header>
+  <section class="intro">
+    <p class="eyebrow">SPECIMEN CABINET / 01—03</p>
+    <h1>Change the view.<br><em>Keep the meaning.</em></h1>
+    <p class="intro-note">Three small studies in what an interface should preserve when something changes. Try the transition, interrupt it, then inspect a still frame.</p>
+  </section>
+  <div class="workspace">
+    <nav class="scenes" aria-label="Specimen">
+      <button data-scene="regroup" aria-pressed="true"><span class="number">01</span><span><strong>Same objects, new order</strong><small>Conversation regrouping</small></span><span aria-hidden="true">↗</span></button>
+      <button data-scene="heading" aria-pressed="false"><span class="number">02</span><span><strong>Reality &amp; revision</strong><small>Heading and inference</small></span><span aria-hidden="true">↗</span></button>
+      <button data-scene="relationship" aria-pressed="false"><span class="number">03</span><span><strong>More support, same link</strong><small>Evidence and confidence</small></span><span aria-hidden="true">↗</span></button>
+      <aside class="scope-note"><span class="eyebrow">READ THIS AS</span><p>A runnable technical probe. Smooth movement is not proof of comprehension, usefulness, or aesthetic preference.</p></aside>
+    </nav>
+    <section class="specimen" aria-labelledby="scene-title">
+      <header class="specimen-head"><div><p id="scene-kicker" class="eyebrow"></p><h2 id="scene-title"></h2></div><span id="frame-badge" class="badge">Before</span></header>
+      <p id="variant-note" class="variant-note" hidden></p>
+      <div id="stage" class="stage"></div>
+      <div id="selection-detail" class="selection-detail"></div>
+      <div class="transport" aria-label="Transition controls">
+        <button id="apply" class="primary">Apply change <span aria-hidden="true">→</span></button>
+        <button id="reverse">Reverse</button>
+        <button id="retarget">Interrupt &amp; retarget</button>
+        <button id="pause">Pause</button>
+      </div>
+      <div class="frame-controls">
+        <label>Frozen frame <select id="phase" aria-label="Frozen frame">
+          <option value="before">Before</option><option value="response">Response · 16 ms</option>
+          <option value="quarter">Quarter · 300 ms</option><option value="mid">Mid · 600 ms</option>
+          <option value="late">Late · 900 ms</option><option value="settled">Settled · 1200 ms</option>
+          <option value="interrupted">Interrupted · 600 ms</option><option value="reversed">Reversed · 1200 ms</option>
+        </select></label>
+        <label class="check"><input id="reduced" type="checkbox"> Reduced motion</label>
+        <output id="frame-readout" class="mono"></output>
+      </div>
+      <div class="notes">
+        <section><h3>What stays true</h3><p id="invariant"></p></section>
+        <section><h3>What to test with people</h3><p id="hypothesis"></p></section>
+      </div>
+      <p id="announcement" class="sr-only" role="status" aria-live="polite"></p>
+    </section>
+  </div>
+  <footer>LOCAL SPECIMENS <span>No live data · no external services · handcrafted alternatives are not a model or skill comparison.</span></footer>
+</main>
+</body>
+</html>
+
