@@ -14,7 +14,7 @@ Start a new Codex task after installation. Invoke skills with `$opl:<skill-name>
 ## Develop
 
 Use Node.js 24 or later, Python 3, Git, and the Codex CLI.
-Hooks require Python 3.11 or later. Research workflows require Python 3.12 or later.
+Hooks require Python 3.11 or later. The `$opl:last30days` engine requires Python 3.12 or later.
 
 ```sh
 npm ci
@@ -50,15 +50,25 @@ npm run install:local -- --plugin opl
 
 ## Development workflow
 
+For consequential tool, architecture, infrastructure or integration choices,
+`$opl:research-solutions` finds credible current implementations and checks their
+release, integration and recovery contracts. It is automatically discoverable;
+routine repairs do not require a solution survey.
+
 Use `$opl:setup-repo-workflow` explicitly to configure one repository through its
 existing instructions, GitHub conventions, local checks, review lane, and merge
-policy. Ordinary authorized work uses `$opl:github-workflow` for issue capture
+policy. Choose trusted serial commits, parallel worktree integration or PR
+delivery under project authority. Setup explains independent workers, optional
+helpers and their aggregate budget without adding another configuration schema.
+Ordinary authorized work uses `$opl:github-workflow` for issue capture
 and state maintenance. Projects remain independent. The builder owns PR repairs;
 small checked commits make the series reviewable. Local verification is primary.
 Human merge is the default. Setup does not install unattended dispatch.
 
-The [overhaul audit](docs/opl-overhaul.md) records package dispositions, sources,
-verification, and the separately tracked automation qualification.
+The [overhaul audit](docs/opl-overhaul.md) records package dispositions, sources
+and verification. The [runtime comparison](docs/runtime-research.md) and
+[local Itervox proposal](docs/itervox-upstream-proposal.md) explain the separately
+tracked automation contracts. They install no runtime or worker service.
 
 ## License
 

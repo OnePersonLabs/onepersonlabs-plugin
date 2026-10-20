@@ -136,7 +136,7 @@ explicit child choices, and refuse ambiguous user-profile name collisions.
 
 Global instructions fell from 5,148 to 1,332 whitespace-separated words (552 to
 163 lines). This measures instruction size, not model quota or accepted-change
-cost. The final skill inventory is 27 packages versus 35 initially.
+cost. The Stage 1 skill inventory is 27 packages versus 35 initially.
 
 ### Four isolated software comparisons
 
@@ -188,3 +188,27 @@ Delivery is PR first, human merge, then source synchronization and Windows/WSL
 installation refresh. The current session retains its previously loaded tools
 and instructions until a fresh session. An isolated installed-copy check is not
 a refresh of the user's active homes.
+
+## Current-reference research and workflow delivery
+
+[Issue #6](https://github.com/OnePersonLabs/opl/issues/6) owns the companion delivery
+against frozen baseline `3ce8948d19a834c66834c0bb015b48b1c153cfe5`. It preserves the
+eight Stage 1 commits and PR #5. The new source instruction revision is 56, and
+the new skill brings the inventory to 28 packages.
+
+| Change | Reason and dependencies | Evidence boundary |
+| --- | --- | --- |
+| Add `$opl:research-solutions`, implicitly discoverable, with a short global route | Make current expert/maintainer research and assembled-contract inspection automatic for consequential choices. Keep the procedure conditional and routine repairs proportionate. | [Supported skill metadata](https://learn.chatgpt.com/docs/build-skills). Structure and discovery metadata do not prove automatic invocation or accepted-change savings. |
+| Extend explicit `$opl:setup-repo-workflow` and its native reference | Distinguish serial commits, parallel worktrees/local integration and PR delivery; preserve existing tracker, checks, protections, builder repairs and resumption. | [Native worktrees](https://git-scm.com/docs/git-worktree), [Codex helper settings](https://learn.chatgpt.com/docs/agent-configuration/subagents). Two helpers is per primary session, excluding the primary; independent roots and extra reviews add to the total. |
+| Align `$opl:github-workflow` helper scope and conditional reference | Keep one owner for issue reconciliation and one native-setting reference; no duplicate backlog or controller. | Project settings use supported native files. The harness application helper owns global files and cannot apply project files. |
+| Publish the [runtime comparison](runtime-research.md) and [local upstream proposal](itervox-upstream-proposal.md) | Preserve source/version limits, concern coverage and the missing native observation, feedback-delivery and landing contracts. | Itervox is a candidate, not a selected or qualified runtime. No OPL adapter, runtime, service, fork, upstream submission or live pilot is included. |
+
+The four Stage 1 model comparisons above remain the complete authorized evaluation
+set. This delivery adds no invocation tests, AI evaluations or live qualification.
+The integration checkpoint passed OPL contract checks, all 27 unit test files,
+source/installed inventory comparison and trust verification for 23 hooks in the
+isolated Windows Codex home. Relative links and changed skill metadata passed
+structural checks. This evidence covers package structure and existing executable
+contracts; automatic discovery outcomes and runtime behavior were not model-tested.
+Active Windows/WSL refresh follows human merge; isolated installed checks do not
+change active homes or the instructions already loaded by a session.
