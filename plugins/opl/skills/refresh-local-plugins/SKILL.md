@@ -1,6 +1,6 @@
 ---
 name: refresh-local-plugins
-description: Refresh changed source plugins in existing Windows and WSL user-level Codex homes, or preview the per-home plan. Use after local edits or pulls and for stale installed copies; publishing is separate.
+description: Refresh source plugins and automatically refresh their existing installations in the other Windows or WSL Codex home. Use after local edits or pulls, for stale installed copies, or to preview the per-home plan; publishing is separate.
 ---
 
 # Refresh Local Plugins
@@ -21,13 +21,20 @@ it catches committed changes after a pull as well as uncommitted edits. Do not
 select every marketplace plugin unless the user explicitly asks for all. Honor
 explicit plugin selections when supplied.
 
-The helper handles the native user-level `~/.codex` and the other accessible
-Windows or WSL user-level `~/.codex` in one invocation. It translates paths
-between environments as needed, uses each environment's registered checkout
-for that marketplace, and invokes its normal `node` and Codex CLI. It skips
-missing homes and reports unavailable environments. Do not ask
-the user to specify a target home for a normal refresh or substitute
-`CODEX_HOME`, an isolated test home, or another profile.
+Run the helper once for a normal refresh. When Windows and WSL both have a
+user-level `~/.codex`, it automatically refreshes the selected plugins already
+installed in the other environment. This also applies to explicit `--plugin`
+selections. The other environment's Codex installed-plugin inventory determines
+eligibility; a leftover cache does not. An installed but disabled plugin remains
+eligible and the refresh enables it. A plugin absent there is skipped.
+
+The helper translates paths, uses each environment's registered checkout for
+the marketplace, and invokes its normal `node` and Codex CLI. It skips missing
+homes and reports unavailable environments. A failure in one environment does
+not cancel the attempt in the other. Report incomplete refreshes by environment.
+Do not use internal `--local-only` routing for a normal refresh. Honor an explicit
+request to refresh only one environment or home. Do not ask for a target home or
+substitute `CODEX_HOME`, an isolated test home, or another profile.
 
 Keep discovery and preview requests read-only: use `--dry-run`, which checks
 both accessible homes without installing.
@@ -48,7 +55,7 @@ retain its pause record on failure. Open and report a returned new pairing URL.
 ## Run the bundled helper
 
 Use `--repo` when the checkout is not the current directory. No `--plugin` and
-no `--target-home` refreshes modified plugins in both existing user-level homes:
+no `--target-home` refreshes modified installed plugins in both existing user-level homes:
 
 ```text
 node <loaded-skill-directory>/scripts/install-local.mjs --repo <source-checkout>
@@ -56,9 +63,11 @@ node <loaded-skill-directory>/scripts/install-local.mjs --repo <source-checkout>
 
 Repeat `--plugin <name>` for explicitly selected plugins. Use `--plugin all`
 alone only for an explicit whole-marketplace request. `--dry-run` prints the
-per-home plan without mutation. `CODEX_BIN` can select a native Codex executable
+per-home plan without mutation, including read-only Codex inventory queries in
+the other environment. `CODEX_BIN` can select a native Codex executable
 or JavaScript entrypoint. The helper retains `--target-home` for isolated tests
-and explicit exceptional requests; a normal skill invocation does not use it.
+and explicit exceptional requests; it targets only that home. A normal skill
+invocation does not use it.
 
 The helper validates selected sources and existing marketplace registration
 before installation. A same-name marketplace pointing elsewhere is a conflict,

@@ -78,7 +78,7 @@ function preparationFor(repo) {
   return { command: `${manager} run plugin:prepare-local` }
 }
 
-function installationPlan({ repo = process.cwd(), plugins, targetHome, beforePreparation = false }) {
+function installationPlan({ repo = process.cwd(), plugins, targetHome, beforePreparation = false, installedPluginIds }) {
   if (!Array.isArray(plugins) || !plugins.length) plugins = ['modified']
   if (!targetHome) {
     targetHome = join(homedir(), '.codex')
@@ -102,9 +102,12 @@ function installationPlan({ repo = process.cwd(), plugins, targetHome, beforePre
     entries.set(entry.name, entry)
   }
   const names = ['all', 'modified'].includes(plugins[0]) ? [...entries.keys()] : [...new Set(plugins)]
-  const selected = names.map((name) => {
+  for (const name of names) {
+    if (!entries.has(name)) throw new Error(`Unknown plugin ${name}; available: ${[...entries.keys()].join(', ')}`)
+  }
+  const eligible = installedPluginIds ? names.filter((name) => installedPluginIds.has(`${name}@${marketplace.name}`)) : names
+  const selected = eligible.map((name) => {
     const entry = entries.get(name)
-    if (!entry) throw new Error(`Unknown plugin ${name}; available: ${[...entries.keys()].join(', ')}`)
     const path = typeof entry.source === 'string' ? entry.source : entry.source?.source === 'local' ? entry.source.path : undefined
     if (typeof path !== 'string' || !path || isAbsolute(path)) throw new Error(`${name}: refresh requires a relative local plugin source`)
     if ((path !== '.' && !path.startsWith('./')) || path.split(/[\\/]/u).includes('..')) {
@@ -120,7 +123,7 @@ function installationPlan({ repo = process.cwd(), plugins, targetHome, beforePre
   const changed = plugins[0] === 'modified'
     ? selected.filter((plugin) => {
       const installedPlugin = join(home, 'plugins', 'cache', marketplace.name, plugin.name)
-      return existsSync(installedPlugin) && statSync(installedPlugin).isDirectory()
+      return (installedPluginIds || existsSync(installedPlugin) && statSync(installedPlugin).isDirectory())
         && (beforePreparation || !sameContents(plugin.source, installedCopy(home, marketplace.name, plugin.name, plugin.source)))
     })
     : selected
@@ -188,7 +191,7 @@ function powershellLiteral(value) { return `'${value.replaceAll("'", "''")}'` }
 function posixLiteral(value) { return `'${value.replaceAll("'", "'\\''")}'` }
 
 export function counterpartInvocation({ platform, script, repo, plugins = [], dryRun = false, translate }) {
-  const extra = [...plugins.flatMap((name) => ['--plugin', name]), ...(dryRun ? ['--dry-run'] : []), '--local-only', '--registered-source']
+  const extra = [...plugins.flatMap((name) => ['--plugin', name]), ...(dryRun ? ['--dry-run'] : []), '--local-only', '--registered-source', '--installed-only']
   if (platform === 'win32') {
     const args = [translate(script), '--repo', translate(repo), ...extra]
     return { executable: 'wsl.exe', args: ['--exec', 'bash', '-lc', `node ${args.map(posixLiteral).join(' ')}`] }
@@ -237,8 +240,8 @@ function runCounterpart({ repo, plugins, dryRun }) {
   return command(invocation.executable, invocation.args)
 }
 
-export async function refreshUserHomes({ repo = process.cwd(), plugins = [], dryRun = false, localOnly = false, useRegisteredSource = false, env = process.env } = {}) {
-  if (localOnly) return installLocal({ repo: useRegisteredSource ? registeredSource(repo, env) : repo, plugins, dryRun, env })
+export async function refreshUserHomes({ repo = process.cwd(), plugins = [], dryRun = false, localOnly = false, useRegisteredSource = false, installedOnly = false, env = process.env } = {}) {
+  if (localOnly) return installLocal({ repo: useRegisteredSource ? registeredSource(repo, env) : repo, plugins, dryRun, installedOnly, env })
   const outcomes = []
   const home = join(homedir(), '.codex')
   if (existsSync(home) && statSync(home).isDirectory()) {
@@ -270,17 +273,27 @@ export async function refreshUserHomes({ repo = process.cwd(), plugins = [], dry
 }
 
 export async function installLocal(options) {
+  const env = options.env ?? process.env
+  if (options.installedOnly) {
+    const listed = codexJson(['plugin', 'list', '--json'], {
+      root: realpathSync(options.repo ?? process.cwd()), home: options.targetHome ?? join(homedir(), '.codex'),
+    }, env)
+    if (!Array.isArray(listed?.installed) || listed.installed.some((plugin) => typeof plugin?.pluginId !== 'string' || typeof plugin.installed !== 'boolean')) {
+      throw new Error('Codex plugin list did not return a valid installed array')
+    }
+    // Inventory, rather than cache directories, owns whether this home has opted in.
+    options = { ...options, installedPluginIds: new Set(listed.installed.filter((plugin) => plugin.installed).map((plugin) => plugin.pluginId)) }
+  }
   const preparation = preparationFor(options.repo ?? process.cwd())
   let plan = installationPlan({ ...options, beforePreparation: Boolean(preparation) })
   if (options.dryRun) {
-    console.log(JSON.stringify({ ...plan, ...(preparation ? { preparation, selectionPendingPreparation: true } : {}), dryRun: true }, null, 2))
+    console.log(JSON.stringify({ ...plan, ...(preparation && plan.plugins.length ? { preparation, selectionPendingPreparation: true } : {}), dryRun: true }, null, 2))
     return plan
   }
   if (!plan.plugins.length) {
     console.log(`No modified plugins for ${plan.home}.`)
     return plan
   }
-  const env = options.env ?? process.env
   mkdirSync(plan.home, { recursive: true })
   const listed = codexJson(['plugin', 'marketplace', 'list', '--json'], plan, env)
   if (!Array.isArray(listed?.marketplaces)) throw new Error('Codex marketplace list did not return a marketplaces array')
@@ -349,20 +362,21 @@ export async function runInstallLocal(args = process.argv.slice(2)) {
     'target-home': { type: 'string' },
     'local-only': { type: 'boolean' },
     'registered-source': { type: 'boolean' },
+    'installed-only': { type: 'boolean' },
     'dry-run': { type: 'boolean' },
     help: { type: 'boolean', short: 'h' },
   } })
   if (values.help) {
     console.log('Usage: node install-local.mjs [--repo DIR] [--plugin NAME ... | --plugin all | --plugin modified] [--target-home ABSOLUTE_PATH] [--dry-run]')
-    console.log('No --plugin selects source bundles changed from each installed copy. No --target-home refreshes existing user-level Windows and WSL homes. Use --plugin all explicitly for every plugin.')
+    console.log('No --plugin selects source bundles changed from each installed copy. No --target-home also refreshes the selected plugins already installed in the other Windows or WSL home. Use --plugin all explicitly for every plugin.')
     console.log('Authorized installs also trust and verify the selected plugins\' current hooks through Codex, without interactive onboarding.')
     console.log('A declared plugin:prepare-local package script runs before comparison and installation; preparation failure stops that home. Dry runs report preparation without executing it.')
-    console.log('--dry-run validates local sources and prints the plan without invoking Codex or changing files; registrations are checked on installation.')
+    console.log('--dry-run prints the plan without changing files; counterpart discovery reads Codex registrations and installed-plugin inventory.')
     console.log('Requires Node.js 22+ and Codex with plugin commands (verified with 0.151.0). CODEX_BIN can select a native executable or JS entrypoint.')
     return
   }
-  if (values['target-home']) return installLocal({ repo: values.repo, plugins: values.plugin, targetHome: values['target-home'], dryRun: values['dry-run'] })
-  return refreshUserHomes({ repo: values.repo, plugins: values.plugin, dryRun: values['dry-run'], localOnly: values['local-only'], useRegisteredSource: values['registered-source'] })
+  if (values['target-home']) return installLocal({ repo: values.repo, plugins: values.plugin, targetHome: values['target-home'], dryRun: values['dry-run'], installedOnly: values['installed-only'] })
+  return refreshUserHomes({ repo: values.repo, plugins: values.plugin, dryRun: values['dry-run'], localOnly: values['local-only'], useRegisteredSource: values['registered-source'], installedOnly: values['installed-only'] })
 }
 
 if (process.argv[1] && existsSync(process.argv[1]) && realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) {
