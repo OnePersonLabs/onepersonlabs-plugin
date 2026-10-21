@@ -1,0 +1,7 @@
+interface:
+  display_name: "Optimize"
+  short_description: "Measure candidate improvements reliably"
+  default_prompt: "Use $onepersonlabs:optimize when improving a working system and the winning change is unknown."
+
+policy:
+  allow_implicit_invocation: true
