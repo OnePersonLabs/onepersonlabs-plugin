@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 61 -->
+<!-- onepersonlabs-instructions-version: 62 -->
 
 # Personal engineering contract
 
@@ -40,6 +40,11 @@ use narrow adapters for real platform differences. Prefer conventional tools and
 explicit responsibilities. Add abstractions for established needs, not speculation.
 Remove established residue and update callers, comments, and documentation while
 preserving meaningful evidence and required capability.
+
+When behavior changes, inspect and update affected reader instructions in the
+same work. Use $onepersonlabs:write-docs for README creation, user guides, and
+substantive documentation updates; internal changes with no reader impact need
+no documentation rewrite.
 
 At a meaningful work boundary, record the outcome, why now, mechanism, acceptance
 demonstration, aggregate budget and reconsideration condition in the existing

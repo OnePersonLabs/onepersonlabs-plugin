@@ -56,6 +56,12 @@ npm run install:local -- --plugin onepersonlabs
 
 ## Development workflow
 
+For READMEs and user guides, `$onepersonlabs:write-docs` starts with the reader's
+task, verifies commands and outcomes against current behavior, and updates only
+the affected instructions when behavior changes. It adds no background generation
+or screenshot pipeline. The [WTFM assimilation account](docs/wtfm-assimilation.md)
+records the selected ideas and their verification limits.
+
 For substantial explanations, teaching or human interaction design,
 `$onepersonlabs:build-understanding` helps make relationships, changes and choices easier
 to grasp. Choose useful representations and worked cases; keep precise words
