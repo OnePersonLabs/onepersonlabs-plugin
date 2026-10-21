@@ -17,7 +17,7 @@ import threading
 import uuid
 from urllib.parse import parse_qs, urlsplit
 
-from inbox import Conflict, Inbox, InboxError, MAX_TEXT, label, now, text
+from inbox import Conflict, Inbox, InboxError, MAX_TEXT, label, now, text, validate_contribution
 from catalog import Catalog
 
 WEB = Path(__file__).resolve().parent.parent / "web"
@@ -289,7 +289,14 @@ class HumanHandler(BaseHTTPRequestHandler):
                 raise InboxError("request must be an object")
             path = urlsplit(self.path).path
             if path == "/api/contribute":
-                inbox, thread = self.server.catalog.resolve_session(data.get("session"))
+                # A 422 proves rejection before any submission. Later failures may
+                # follow a committed receipt and must retain the frozen retry payload.
+                try:
+                    validate_contribution(data.get("title"), data.get("body"), data.get("request_id"))
+                    inbox, thread = self.server.catalog.resolve_session(data.get("session"))
+                except InboxError as error:
+                    self.json(422, {"error": str(error)})
+                    return
             else:
                 inbox = self.server.catalog.resolve(data.get("workspace"))
             if path == "/api/draft":

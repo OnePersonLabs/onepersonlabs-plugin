@@ -28,7 +28,7 @@ window.onepersonlabsAnnotate = function (options) {
   }
   const render = () => {
     $('ol').replaceChildren(...state.notes.map((note, index) => {
-      const item = document.createElement('li'); item.textContent = `${index + 1}. ${note.note}`; return item
+      const item = document.createElement('li'); item.textContent = note.note; return item
     }))
     $('#add').disabled = Boolean(state.pending)
     $('#send').disabled = !state.notes.length
@@ -65,7 +65,8 @@ window.onepersonlabsAnnotate = function (options) {
     if (!selected || !note) { status('Pin an element and add a note first.'); return }
     state.notes.push({...selected, note}); selected = null; state.selection = null; state.draft = ''; $('textarea').value = ''
     $('#selected').textContent = 'Choose another element to add a note.'
-    save(); render()
+    const retained = save(); render()
+    if (retained) status('Note saved. Add another, or review in the inbox.')
   }
   $('#send').onclick = () => {
     if (!state.pending) {

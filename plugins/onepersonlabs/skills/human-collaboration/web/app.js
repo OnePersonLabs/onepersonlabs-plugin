@@ -569,7 +569,14 @@ async function newContribution(seed = null) {
       }
       await openItem(`H${String(receipt.item).padStart(3, '0')}`, undefined, session.workspace_id)
       notice('Your contribution is saved. The root owes you an outcome.')
-    } catch (error) { notice(`Contribution retained for retry. ${error.message}`) }
+    } catch (error) {
+      if (error.status === 422) {
+        delete local.pendingSend
+        title.disabled = body.disabled = target.disabled = false
+        persistContribution()
+        notice(`Please correct your contribution. ${error.message}`)
+      } else notice(`Contribution retained for retry. ${error.message}`)
+    }
     finally { send.disabled = false }
   }, 'primary')
   detail.append(button('Back to inbox', () => { detail.hidden = true; $('#app').classList.remove('detail-open') }, 'back'),

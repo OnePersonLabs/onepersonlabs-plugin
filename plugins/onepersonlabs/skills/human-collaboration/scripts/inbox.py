@@ -48,6 +48,13 @@ def text(value: Any, field: str, *, empty: bool = False, limit: int = MAX_TEXT) 
     return value
 
 
+def validate_contribution(title: str, body: str, request_id: str) -> None:
+    """Validate before any mutation, for both CLI and HTTP contribution callers."""
+    text(title, "title", limit=2000)
+    text(body, "contribution")
+    text(request_id, "request ID", limit=200)
+
+
 def number(value: Any, field: str, low: int, high: int) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or not low <= value <= high:
         raise InboxError(f"{field} must be an integer from {low} to {high}")
@@ -528,9 +535,7 @@ class Inbox:
 
     def contribute(self, title: str, body: str, request_id: str, thread: str | None = None) -> dict:
         """Create a human-initiated thread and its receipt in one transaction."""
-        text(title, "title", limit=2000)
-        text(body, "contribution")
-        text(request_id, "request ID", limit=200)
+        validate_contribution(title, body, request_id)
         with self.transaction() as db:
             thread = self.session(db, thread)
             previous = db.execute("SELECT * FROM submissions WHERE request_id=?", (request_id,)).fetchone()

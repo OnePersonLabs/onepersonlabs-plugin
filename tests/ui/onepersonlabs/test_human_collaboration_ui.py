@@ -88,6 +88,22 @@ class HumanUiTests(unittest.TestCase):
     def assert_no_overflow(self):
         self.assertTrue(self.page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"))
 
+    def test_rejected_contribution_can_be_corrected_after_reload(self):
+        self.page.get_by_role("button", name="Start a contribution", exact=True).click()
+        self.page.locator("#new-title").fill("x" * 2001)
+        self.page.locator("#new-body").fill("Retain this feedback while I correct its subject.")
+        self.page.get_by_role("button", name="Send contribution", exact=True).click()
+        expect(self.page.locator("#notice")).to_contain_text("Please correct")
+        expect(self.page.locator("#new-title")).to_be_enabled()
+        self.assertEqual(self.inbox.snapshot()["pending"], [])
+        self.page.reload()
+        self.page.get_by_role("button", name="Start a contribution", exact=True).click()
+        expect(self.page.locator("#new-title")).to_be_enabled()
+        self.page.locator("#new-title").fill("Corrected subject")
+        self.page.get_by_role("button", name="Send contribution", exact=True).click()
+        expect(self.page.locator(".message.human")).to_contain_text("Retain this feedback")
+        self.assertEqual(len(self.inbox.snapshot()["pending"]), 1)
+
     def test_page_feedback_survives_reload_lost_response_and_reaches_outcome(self):
         from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
         class Product(BaseHTTPRequestHandler):
