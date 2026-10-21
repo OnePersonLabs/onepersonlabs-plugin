@@ -88,8 +88,38 @@ it now checks the actual shipping version, and the six migration tests pass.
 The initial browser test used text-content matching on a textarea; correcting its
 oracle to the input value resolved that test error without a product change.
 
-Full integration and installed-home evidence follows below after delivery.
+Native review covered the complete series from `a2d7319` to `70699e5`. It found
+an unmatched paired-baseline regression-bound error and a rejected-contribution
+recovery error. Aligned statistics repair the first. Explicit pre-mutation
+rejections and producer-owned UTF-8 field/request limits repair the second.
+A transport probe showed that responding before reading an oversized POST could
+reset the browser connection; checking declared limits before freezing/upload
+removed that failure path. Both corrected browser journeys pass. The same reviewer
+found no remaining defects through `14203e1` after two focused continuations.
+
+Contract checks, 31 unit-test files, and both UI-test files passed during integration;
+affected optimization, inbox, and browser cases passed after repairs. The clean
+installed-copy checkpoint compared source inventory and verified 23 hook hashes.
+Its initial persistent test home referred to the obsolete checkout and old agent
+profiles. That isolated fixture was preserved and rebuilt; user homes were not
+changed by the checkpoint. The mandatory pre-push gate reruns deterministic
+verification and package installation before publication. Its final result and
+Windows/WSL refresh receipts are maintained in issue #15.
+
+The document-citation helper checked this account: the donor SHA is an intentional
+external-repository reference, verified against the inspected donor checkout.
+STE findings were reviewed; possessive apostrophes and the unchanged MIT quotation
+are intentional. No campaign-only runtime artifacts are needed by shipping files.
 No AI behavioral evaluation or invocation test was run. Source and deterministic
 checks establish integration; they do not measure agent judgment improvements or
 human comprehension. Aggregate work uses one root and two reused bounded helpers;
 there is no standing fleet or runtime scheduler.
+
+
+At integration completion, elapsed work was approximately 25 minutes. The root
+used two bounded research helpers, then two isolated implementation helpers reused
+for related packets, and one native reviewer with two repair continuations.
+No fixed time or AI-token budget was agreed; aggregate billed usage is unavailable.
+The two product defects made progress through bounded repairs. No unresolved
+repair loop remains. Reconsider the browser adapter if opener isolation becomes
+the normal target environment, or a host-native annotation interface supersedes it.
