@@ -92,7 +92,12 @@ never authorizes writes. Do not translate a missing SHA after rebase/squash or
 infer publication from a push report. A non-null fix also requires saved
 verification `passed` or `pre-existing-failure` before conversation completion.
 
-After publication is proven, the root workflow must fetch fresh conversations,
+After publication is proven, fetch fresh conversations through the supported
+GitHub connector or read-only CLI. Exhaust every relevant page of review threads,
+PR comments, reviews, and nested replies before matching sources or prior replies.
+Follow each connection's cursor independently. A partial or unavailable result
+cannot establish absence or completion; retain pending state and report the gap.
+The root workflow must
 reconcile every saved source by identity and current decoded body hash, and
 inspect replies and resolution independently before retrying. A POST receipt or
 saved progress is not proof of visible submission. Adopt a prior reply only
