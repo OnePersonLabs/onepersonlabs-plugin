@@ -176,23 +176,26 @@ def _validate_config(before: bytes | None, after: bytes) -> None:
                 raise ValueError("duplicate skills.config path")
             result[path] = entry
         return result
-    original_by_path = indexed(old_entries)
-    proposed_by_path = indexed(new_entries)
-    if not set(original_by_path).issubset(proposed_by_path):
-        raise ValueError("existing skills.config entries cannot be removed")
-    for path, entry in proposed_by_path.items():
-        if "enabled" in entry and not isinstance(entry["enabled"], bool):
-            raise ValueError("skills.config enabled must be a boolean")
-        if path not in original_by_path:
-            if set(entry) != {"path", "enabled"}:
-                raise ValueError("new skills.config entries may only set path and enabled")
-        elif "enabled" in original_by_path[path] and "enabled" not in entry:
-            raise ValueError("existing skills.config enabled cannot be removed")
-        if path in original_by_path:
-            without_enabled = {key: value for key, value in entry.items() if key != "enabled"}
-            prior = {key: value for key, value in original_by_path[path].items() if key != "enabled"}
-            if without_enabled != prior:
-                raise ValueError("other skills.config settings cannot change")
+    # Unrelated repairs preserve existing skill preferences verbatim. Validate
+    # the skill-edit contract only when this transaction changes that list.
+    if old_entries != new_entries:
+        original_by_path = indexed(old_entries)
+        proposed_by_path = indexed(new_entries)
+        if not set(original_by_path).issubset(proposed_by_path):
+            raise ValueError("existing skills.config entries cannot be removed")
+        for path, entry in proposed_by_path.items():
+            if "enabled" in entry and not isinstance(entry["enabled"], bool):
+                raise ValueError("skills.config enabled must be a boolean")
+            if path not in original_by_path:
+                if set(entry) != {"path", "enabled"}:
+                    raise ValueError("new skills.config entries may only set path and enabled")
+            elif "enabled" in original_by_path[path] and "enabled" not in entry:
+                raise ValueError("existing skills.config enabled cannot be removed")
+            if path in original_by_path:
+                without_enabled = {key: value for key, value in entry.items() if key != "enabled"}
+                prior = {key: value for key, value in original_by_path[path].items() if key != "enabled"}
+                if without_enabled != prior:
+                    raise ValueError("other skills.config settings cannot change")
     if "skills" in old_rest:
         old_rest["skills"].pop("config", None)
     if "skills" in new_rest:

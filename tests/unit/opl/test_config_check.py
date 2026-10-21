@@ -131,6 +131,29 @@ class ConfigCheckTests(unittest.TestCase):
         self.assertEqual({key: result["agents"][key] for key in defaults["agents"]}, defaults["agents"])
         self.assertIn("opl-role", result["agents"])
 
+    def test_fix_preserves_unchanged_name_only_skill_preference_and_exact_backup(self):
+        preference = ('[[skills.config]]\n'
+                      'name = "example:skill"\n'
+                      'enabled = false\n\n')
+        original = (preference + '[agents.opl-stale]\nconfig_file = '
+                    + json.dumps(str(self.plugin / 'agents/stale.toml')) + '\n').encode()
+        self.config.write_bytes(original)
+        fixed, status = checker.command_fix(self.home, self.plugin)
+        self.assertEqual(status, 0)
+        self.assertIn(preference, self.config.read_text(encoding="utf-8"))
+        self.assertEqual(self.parsed()["skills"]["config"],
+                         [{"name": "example:skill", "enabled": False}])
+        self.assertNotIn("opl-stale", self.parsed()["agents"])
+        receipt = Path(fixed["applied"]["receipt"])
+        self.assertEqual((receipt.parent / "0.backup").read_bytes(), original)
+
+        # Unrelated repairs may preserve an existing preference, not edit it.
+        application = checker.load_application(self.plugin)
+        changed = self.root / "changed.toml"
+        changed.write_bytes(self.config.read_bytes().replace(b'enabled = false', b'enabled = true'))
+        with self.assertRaises(ValueError):
+            application.prepare(self.home, [{"target": str(self.config), "candidate": str(changed)}])
+
     def test_shipped_defaults_load_and_repair(self):
         plugin = ROOT / "plugins" / "opl"
         expected = tomllib.loads((plugin / "config.defaults.toml").read_text(encoding="utf-8"))
