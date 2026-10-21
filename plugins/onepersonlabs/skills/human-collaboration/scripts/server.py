@@ -17,9 +17,10 @@ import threading
 import uuid
 from urllib.parse import parse_qs, urlsplit
 
-from inbox import Conflict, Inbox, InboxError, MAX_TEXT, label, now, text, validate_contribution
+from inbox import Conflict, Inbox, InboxError, MAX_TEXT, CONTRIBUTION_LIMITS, label, now, text, validate_contribution
 from catalog import Catalog
 
+MAX_REQUEST = MAX_TEXT * 2
 WEB = Path(__file__).resolve().parent.parent / "web"
 ACTIVITY = logging.getLogger("onepersonlabs.human")
 STATIC = {"/": ("index.html", "text/html; charset=utf-8"),
@@ -245,7 +246,8 @@ class HumanHandler(BaseHTTPRequestHandler):
             self.authenticate()
             query = parse_qs(parsed.query)
             if parsed.path == "/api/inbox":
-                self.json(200, self.server.catalog.snapshot())
+                self.json(200, {**self.server.catalog.snapshot(),
+                                "contribution_limits": {**CONTRIBUTION_LIMITS, "request": MAX_REQUEST}})
             elif parsed.path == "/api/service":
                 self.json(200, {"catalog_id": self.server.catalog.id, "wake_root": self.server.wake})
             elif parsed.path == "/api/item":
@@ -279,8 +281,9 @@ class HumanHandler(BaseHTTPRequestHandler):
             if self.headers.get_content_type() != "application/json":
                 raise InboxError("send application/json")
             length = int(self.headers.get("Content-Length", "0"))
-            if not 0 < length <= MAX_TEXT * 2:
-                raise InboxError("invalid request size")
+            if not 0 < length <= MAX_REQUEST:
+                self.json(413, {"error": "invalid request size"})
+                return
             raw = self.rfile.read(length)
             if len(raw) != length:
                 raise InboxError("incomplete request body")

@@ -20,6 +20,7 @@ import uuid
 
 SCHEMA = 3
 MAX_TEXT = 128 * 1024
+CONTRIBUTION_LIMITS = {"title": 2000, "body": MAX_TEXT, "request_id": 200}
 MAX_SOURCE = 512 * 1024
 DISPOSITIONS = {"adopted", "partial", "not_adopted", "explained", "follow_up"}
 
@@ -50,9 +51,9 @@ def text(value: Any, field: str, *, empty: bool = False, limit: int = MAX_TEXT) 
 
 def validate_contribution(title: str, body: str, request_id: str) -> None:
     """Validate before any mutation, for both CLI and HTTP contribution callers."""
-    text(title, "title", limit=2000)
-    text(body, "contribution")
-    text(request_id, "request ID", limit=200)
+    text(title, "title", limit=CONTRIBUTION_LIMITS["title"])
+    text(body, "contribution", limit=CONTRIBUTION_LIMITS["body"])
+    text(request_id, "request ID", limit=CONTRIBUTION_LIMITS["request_id"])
 
 
 def number(value: Any, field: str, low: int, high: int) -> int:

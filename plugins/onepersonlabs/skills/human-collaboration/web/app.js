@@ -557,6 +557,17 @@ async function newContribution(seed = null) {
     try {
       const session = sessions.find((candidate) => candidate.id === target.value)
       const payload = local.pendingSend || {title: local.title, body: local.body, request_id: local.request_id, session: session.id, workspace: session.workspace_id}
+      if (!local.pendingSend) {
+        // Use the producer's byte limits before freezing or uploading a request.
+        const limits = snapshot.contribution_limits, encoder = new TextEncoder()
+        for (const [field, value] of Object.entries({...payload, request: JSON.stringify(payload)})) {
+          if (limits?.[field] && encoder.encode(value).length > limits[field]) {
+            const error = new Error(`${field === 'title' ? 'Subject' : field === 'request' ? 'Contribution' : field} exceeds ${limits[field]} bytes.`)
+            error.status = 422
+            throw error
+          }
+        }
+      }
       local.pendingSend = payload
       persistContribution()
       title.disabled = body.disabled = target.disabled = true
@@ -570,7 +581,7 @@ async function newContribution(seed = null) {
       await openItem(`H${String(receipt.item).padStart(3, '0')}`, undefined, session.workspace_id)
       notice('Your contribution is saved. The root owes you an outcome.')
     } catch (error) {
-      if (error.status === 422) {
+      if (error.status === 422 || error.status === 413) {
         delete local.pendingSend
         title.disabled = body.disabled = target.disabled = false
         persistContribution()
