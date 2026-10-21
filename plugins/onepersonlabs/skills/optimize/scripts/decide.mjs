@@ -216,7 +216,15 @@ export function compareObjective({
   type,
   comparison,
   maxRegression,
+  aggregation = "median",
 }) {
+  // A ladder may compare an initial candidate prefix with a complete baseline.
+  // Every statistic, including thresholds and bounds, uses the same pairs.
+  if (comparison.method === "paired" && candidateSamples?.length &&
+      baselineSamples?.length >= candidateSamples.length) {
+    baselineValue = aggregateSamples(baselineSamples.slice(0, candidateSamples.length), aggregation)
+    candidateValue = aggregateSamples(candidateSamples, aggregation)
+  }
   const delta = signedDelta(baselineValue, candidateValue, direction)
   const denom = Math.abs(baselineValue)
   const relative = denom > 0 ? delta / denom : 0
@@ -390,6 +398,9 @@ export function decide(input) {
         continue
       }
     }
+    if (comparison.method === "paired" && cand.samples.length) {
+      base.aggregate = aggregateSamples(base.samples.slice(0, cand.samples.length), aggregation)
+    }
     const result = compareObjective({
       baselineValue: base.aggregate,
       candidateValue: cand.aggregate,
@@ -399,6 +410,7 @@ export function decide(input) {
       type: objective.type,
       comparison,
       maxRegression: objective.max_regression,
+      aggregation,
     })
     comparisons[objective.name] = result
     if (result.verdict === "improved") improved.push({ name: objective.name, ...result })

@@ -112,3 +112,18 @@ test("combined changes require their own comparison and all declared targets to 
   })
   assert.equal(composition.verdict, "improved")
 })
+
+
+test("unmatched baseline tail cannot erase a paired required regression", () => {
+  const result = decide({
+    spec: {primary: {name: "time", direction: "minimize"},
+      objectives: [{name: "memory", direction: "minimize", max_regression: {value: 2}}],
+      comparison: {method: "paired", relative_threshold: 0.02}},
+    baseline: {metrics: {time: {samples: [100, 100, 1000, 1000]}, memory: {samples: [100, 100, 1000, 1000]}}},
+    candidate: {metrics: {time: {samples: [80, 80]}, memory: {samples: [120, 120]}}},
+  })
+  assert.equal(result.decision, "revert")
+  assert.equal(result.comparisons.time.delta, 20)
+  assert.equal(result.comparisons.memory.delta, -20)
+  assert.deepEqual(result.violated_objectives, ["memory"])
+})
