@@ -32,9 +32,11 @@ global registry, or
 controller. A repeated setup must inspect current state and apply only missing
 or changed settings; preserve unrelated text and metadata.
 
-Select trusted serial commits, parallel worktree integration, or PR delivery
-under existing project authority and protections. Record the selected lane and
-its completion condition; worktrees do not themselves require GitHub PRs.
+Default to trusted serial work in the selected checkout and branch. New delivery
+branches and PRs require an explicit user or project choice; parallel independent
+writers still need isolated worktrees/branches. Retain existing project authority
+and protections. Record the selected lane and its completion condition; worktrees
+do not themselves require GitHub PRs.
 
 Default to one primary issue through landing and up to two optional bounded
 helpers per primary session. Explain the aggregate thread budget and map only
@@ -55,6 +57,11 @@ Configure a review lane that covers correctness, acceptance, comprehensibility,
 and consequential failure paths. Preserve independent review requirements and
 existing merge protections. Keep local completion, merged delivery, release,
 and human or device qualification separate.
+For selected PR delivery, default to automatic merge after required checks and
+reviews pass, preserving reviewable commits. Honor explicit manual-merge policy.
+Native auto-merge waits only on GitHub-enforced requirements; finish required
+local checks/reviews before enabling an immediately available merge. Verify
+actual landing and base synchronization before reporting delivery complete.
 
 ## Verify and hand off
 

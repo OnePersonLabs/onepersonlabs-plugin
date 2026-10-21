@@ -15,9 +15,20 @@ During authorized implementation, make small, coherent, verified task-owned
 checkpoint commits before moving into another concern. Do not blanket-stage,
 force broken splits, or push/refresh after each checkpoint.
 
-Deliver the completed change through a PR with the full series reviewed against
-its frozen starting baseline. Preserve checkpoint history. Human merge is the
-default. After merge, synchronize the base and run `$opl:refresh-local-plugins`
+Work in the selected checkout and branch by default. New delivery branches and
+PRs are opt-in; parallel independent writers still need separate worktrees and
+branches. Preserve small, coherent commits that are understandable and reviewable
+on their own, and leave working states.
+
+After completing a standalone unit and its required checks, push its checkpoint
+commits to the selected branch. If PR delivery is selected, review the full series
+against its frozen starting baseline, repair findings, and merge automatically
+once required checks and reviews pass. Preserve checkpoint history; do not squash
+unrelated units together. Use native auto-merge for outstanding GitHub requirements;
+complete required local checks and reviews before an immediately available merge.
+Keep branch protections and explicit manual-merge requirements in force.
+
+After landing, synchronize the accepted base and run `$opl:refresh-local-plugins`
 with the service recovery and post-refresh checks below. A task-specific delivery
 boundary can override this default.
 

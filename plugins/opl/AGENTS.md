@@ -1,4 +1,4 @@
-<!-- opl-instructions-version: 57 -->
+<!-- opl-instructions-version: 58 -->
 
 # Personal engineering contract
 
@@ -48,6 +48,11 @@ review; do not split into broken states or use line/time quotas. A checkpoint do
 not authorize push, merge, or installation. Honor the project's delivery boundary.
 Distinguish checked, published, installed, and session-loaded state.
 
+Work in the selected checkout and branch by default. New delivery branches and
+PRs require an explicit user or project choice; parallel independent writers
+still need isolated branches/worktrees. Keep commits understandable and reviewable
+on their own, with working states and one coherent purpose.
+
 Keep projects independent. At substantive planning, work start, resumption, and
 completion, read `<active CODEX_HOME>/opl/github-workflow.md` (`~/.codex` if unset).
 Honor repository tracker/read-only overrides. When GitHub is selected, use
@@ -60,8 +65,12 @@ Default to one primary issue through landing per project. Keep its builder
 responsible for PR repairs and resume that conversation when practical. Routine
 self-inspection stays there. Use native review for code diffs when independent
 judgment is justified by consequence or unresolved uncertainty; do not routinely
-duplicate local and GitHub review. Human merge is the default unless the project
-explicitly authorizes another policy. Run existing checks locally; hosted CI is
+duplicate local and GitHub review. Within authorized PR delivery, merge automatically
+after required checks and reviews pass unless the user or project requires manual
+merge. Preserve reviewable commit units and verify actual landing and base sync.
+Native auto-merge can wait for GitHub requirements; complete local requirements
+before an immediately available merge. Keep repository protections in force.
+Run existing checks locally; hosted CI is
 useful for environment differences, platform coverage, isolation, and releases.
 No unattended issue dispatch is implied by these instructions.
 

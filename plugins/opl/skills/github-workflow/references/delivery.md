@@ -16,6 +16,13 @@ Review the complete series from a frozen baseline. Batch broader affected checks
 once at an integration boundary; rerun evidence invalidated by repairs.
 A closed unmerged PR is not done.
 
+When PR delivery is selected, complete required checks and reviews, then merge
+automatically under the project's protections unless manual merge is required.
+Use native auto-merge for GitHub-enforced requirements; finish local requirements
+before an immediately available merge. Preserve coherent commit units, verify
+the merged state, and synchronize the accepted base. Enabling auto-merge is not
+proof of landing and does not install a builder wakeup or next-issue dispatcher.
+
 When choosing a review surface or interpreting its usage, read
 [review lane](../../setup-repo-workflow/references/native-workflow.md#review-lane).
 That reference records local versus GitHub usage categories and the dated

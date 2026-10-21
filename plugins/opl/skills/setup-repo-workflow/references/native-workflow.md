@@ -6,7 +6,8 @@ serves its acceptance criteria; a Project board is optional.
 
 ## Delivery lane and environment
 
-Choose one lane under the repository's existing authority and protections:
+Default to serial work in the selected checkout and branch. Choose another lane
+only under an explicit user or project choice and the existing protections:
 
 | Lane | Working agreement |
 | --- | --- |
@@ -136,9 +137,18 @@ differences, releases, and isolating public-fork code. Do not spend hosted minut
 merely to repeat local checks without a repository reason. Review runner security
 and access before enabling external code execution.
 
-Human merge is the default. Native auto-merge is an explicit per-project option
-under its branch protections. Record how the builder waits for review/merge and
-resumes after feedback, and how the base is synchronized before next work.
+For selected PR delivery, automatic merge is the default after required checks
+and reviews pass. Preserve reviewable commits; honor explicit manual-merge policy
+and existing protections. Enable the repository's native auto-merge setting when
+authorized, then enable it for each selected PR. Repository support alone does not
+arm every PR. Use the project's merge method; do not squash distinct units merely
+to land the branch.
+
+Native auto-merge waits for GitHub-enforced requirements, not an agent's local
+checklist. Where merge is immediately available, finish required local checks and
+reviews before merging. Record actual landing and synchronize the accepted base.
+Record how the builder resumes after feedback and how review/merge waits are
+delivered; automatic merge does not resume the builder or dispatch another issue.
 Without a qualified dispatcher, the operator advances to the next eligible
 issue. This setup installs no intake or worker service.
 
