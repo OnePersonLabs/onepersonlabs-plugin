@@ -416,7 +416,7 @@ async function runInstalled(entries = selectedPlugins()) {
   const blackboxHome = join(stateRoot(), 'blackbox', entry.name)
   const installed = installCandidate(entry, blackboxHome)
   compareInventory(pluginRoot(entry), installed.installedPath, entry.name)
-  reconcileOnepersonlabsAgents({ name: entry.name, installedPath: installed.installedPath, home: blackboxHome, env: installed.env })
+  reconcileOnepersonlabsAgents({ name: entry.name, pluginRoot: installed.installedPath, home: blackboxHome, env: installed.env })
   const manifest = manifestFor(entry)
   if (typeof manifest.hooks === 'string') {
     try {
