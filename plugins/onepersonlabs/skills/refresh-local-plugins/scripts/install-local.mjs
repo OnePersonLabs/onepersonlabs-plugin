@@ -65,6 +65,35 @@ function installedCopy(home, marketplace, name, source) {
   return join(home, 'plugins', 'cache', marketplace, name, version)
 }
 
+function localPluginSource(root, entry, name, beforePreparation = false) {
+  const path = typeof entry.source === 'string' ? entry.source : entry.source?.source === 'local' ? entry.source.path : undefined
+  if (typeof path !== 'string' || !path || isAbsolute(path)) throw new Error(`${name}: refresh requires a relative local plugin source`)
+  if ((path !== '.' && !path.startsWith('./')) || path.split(/[\\/]/u).includes('..')) {
+    throw new Error(`${name}: local source path must stay beneath the marketplace root and use ./ (optional for the marketplace root): ${path}`)
+  }
+  const source = beforePreparation ? canonicalDestination(resolve(root, path)) : realpathSync(resolve(root, path))
+  if (!within(root, source)) throw new Error(`${name}: plugin source escapes marketplace root: ${source}`)
+  if ((!beforePreparation || existsSync(source)) && !statSync(source).isDirectory()) throw new Error(`${name}: plugin source is not a directory: ${source}`)
+  return source
+}
+
+export function counterpartScriptForRepo(repo) {
+  const root = realpathSync(repo)
+  const manifestPath = marketplaceFiles.map((path) => join(root, path)).find(existsSync)
+  if (!manifestPath) return undefined
+  const marketplace = readJson(manifestPath)
+  const entry = marketplace.plugins?.find((plugin) => plugin?.name === 'onepersonlabs')
+  if (!entry) return undefined
+  const source = localPluginSource(root, entry, 'onepersonlabs')
+  const packageManifest = join(source, '.codex-plugin', 'plugin.json')
+  if (!existsSync(packageManifest) || readJson(packageManifest).name !== 'onepersonlabs') return undefined
+  const script = join(source, 'skills', 'refresh-local-plugins', 'scripts', 'install-local.mjs')
+  if (!existsSync(script) || !statSync(script).isFile()) return undefined
+  const resolved = realpathSync(script)
+  if (!within(source, resolved)) throw new Error(`onepersonlabs: source refresh helper escapes its validated plugin package: ${resolved}`)
+  return resolved
+}
+
 function preparationFor(repo) {
   const manifest = join(realpathSync(repo), 'package.json')
   if (!existsSync(manifest)) return undefined
@@ -108,14 +137,7 @@ function installationPlan({ repo = process.cwd(), plugins, targetHome, beforePre
   const eligible = installedPluginIds ? names.filter((name) => installedPluginIds.has(`${name}@${marketplace.name}`)) : names
   const selected = eligible.map((name) => {
     const entry = entries.get(name)
-    const path = typeof entry.source === 'string' ? entry.source : entry.source?.source === 'local' ? entry.source.path : undefined
-    if (typeof path !== 'string' || !path || isAbsolute(path)) throw new Error(`${name}: refresh requires a relative local plugin source`)
-    if ((path !== '.' && !path.startsWith('./')) || path.split(/[\\/]/u).includes('..')) {
-      throw new Error(`${name}: local source path must stay beneath the marketplace root and use ./ (optional for the marketplace root): ${path}`)
-    }
-    const source = beforePreparation ? canonicalDestination(resolve(root, path)) : realpathSync(resolve(root, path))
-    if (!within(root, source)) throw new Error(`${name}: plugin source escapes marketplace root: ${source}`)
-    if ((!beforePreparation || existsSync(source)) && !statSync(source).isDirectory()) throw new Error(`${name}: plugin source is not a directory: ${source}`)
+    const source = localPluginSource(root, entry, name, beforePreparation)
     if (within(source, home)) throw new Error(`${name}: the Codex home must not be inside the plugin source: ${home}`)
     if (within(cache, source) || within(source, cache)) throw new Error(`${name}: target cache must not overlap the plugin source: ${cache}`)
     return { name, pluginId: `${name}@${marketplace.name}`, source }
@@ -154,11 +176,11 @@ function pythonBin(environment) {
   return environment.PYTHON_BIN || (process.platform === 'win32' ? 'python' : 'python3')
 }
 
-export function reconcileOnepersonlabsAgents({ name, installedPath, home, env = process.env }) {
+export function reconcileOnepersonlabsAgents({ name, pluginRoot, home, env = process.env }) {
   if (name !== 'onepersonlabs') return { reconciled: false }
-  const pluginRoot = realpathSync(installedPath)
+  pluginRoot = realpathSync(pluginRoot)
   const script = join(pluginRoot, 'scripts', 'codex-config-check.py')
-  if (!existsSync(script)) throw new Error(`onepersonlabs: installed configuration reconciler is missing: ${script}`)
+  if (!existsSync(script)) throw new Error(`onepersonlabs: configuration reconciler is missing: ${script}`)
   const result = spawnSync(pythonBin(env), ['-B', '-X', 'utf8', script, 'reconcile', '--home', home, '--plugin-root', pluginRoot], {
     cwd: pluginRoot,
     env,
@@ -215,8 +237,7 @@ function registeredSource(repo, env) {
   return registered?.root ?? root
 }
 
-function runCounterpart({ repo, plugins, dryRun }) {
-  const script = fileURLToPath(import.meta.url)
+function runCounterpart({ repo, plugins, dryRun, script = fileURLToPath(import.meta.url) }) {
   if (process.platform === 'win32') {
     let available
     try { available = command('wsl.exe', ['--exec', 'sh', '-lc', 'test -d "$HOME/.codex"']) }
@@ -254,7 +275,10 @@ export async function refreshUserHomes({ repo = process.cwd(), plugins = [], dry
     }
   } else console.log(`${process.platform === 'win32' ? 'Windows' : 'WSL'}: no user-level .codex directory; skipped.`)
   try {
-    const other = runCounterpart({ repo, plugins, dryRun })
+    // Resolve the source copy after local preparation/install so generated
+    // bundles are available and a replaced cache helper is never reused.
+    const script = counterpartScriptForRepo(repo) ?? fileURLToPath(import.meta.url)
+    const other = runCounterpart({ repo, plugins, dryRun, script })
     if (other.skipped) console.log(`${process.platform === 'win32' ? 'WSL' : 'Windows'}: ${other.skipped}; skipped.`)
     else {
       console.log(`${process.platform === 'win32' ? 'WSL' : 'Windows'}:`)
@@ -326,6 +350,17 @@ export async function installLocal(options) {
   // All modules are already loaded; OnePersonLabs can replace the cache containing this script.
   const trustFailures = []
   for (const plugin of plan.plugins) {
+    if (plugin.name === 'onepersonlabs') {
+      const helper = join(plugin.source, 'skills', 'refresh-local-plugins', 'scripts', 'install-local.mjs')
+      if (!existsSync(helper) || !statSync(helper).isFile() || !within(plugin.source, realpathSync(helper))) {
+        throw new Error(`onepersonlabs: validated source refresh helper is missing or escapes the plugin package: ${helper}`)
+      }
+      // Codex replaces the entire cache directory. Move verified role paths to
+      // the stable source package first so the later installed reconciliation
+      // can still prove ownership after the old manifest and roles are gone.
+      reconcileOnepersonlabsAgents({ name: plugin.name, pluginRoot: plugin.source, home: plan.home, env })
+      console.log('onepersonlabs: prepared agent registrations from the validated source package.')
+    }
     const result = codexJson(['plugin', 'add', plugin.pluginId, '--json'], plan, env)
     if (typeof result?.installedPath !== 'string' || !existsSync(result.installedPath)) {
       throw new Error(`${plugin.name}: Codex install did not return a usable installedPath`)
@@ -333,7 +368,7 @@ export async function installLocal(options) {
     plugin.installedPath = realpathSync(result.installedPath)
     console.log(`${plugin.name}: installed and enabled at ${plugin.installedPath}`)
     const reconciliation = reconcileOnepersonlabsAgents({
-      name: plugin.name, installedPath: plugin.installedPath, home: plan.home, env,
+      name: plugin.name, pluginRoot: plugin.installedPath, home: plan.home, env,
     })
     if (reconciliation.reconciled) console.log('onepersonlabs: reconciled agent registrations from the installed plugin.')
     const manifest = ['.codex-plugin/plugin.json']

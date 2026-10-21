@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import test from 'node:test'
 import { fileURLToPath } from 'node:url'
-import { counterpartInvocation } from '../../../plugins/onepersonlabs/skills/refresh-local-plugins/scripts/install-local.mjs'
+import { counterpartInvocation, counterpartScriptForRepo } from '../../../plugins/onepersonlabs/skills/refresh-local-plugins/scripts/install-local.mjs'
 
 const scripts = fileURLToPath(new URL('../../../plugins/onepersonlabs/skills/refresh-local-plugins/scripts', import.meta.url))
 const onepersonlabsScripts = fileURLToPath(new URL('../../../plugins/onepersonlabs/scripts', import.meta.url))
@@ -153,6 +153,7 @@ function onepersonlabsFixture(t) {
   ].join('\n'))
   writeJson(join(source, '.codex-plugin', 'plugin.json'), { name: 'onepersonlabs', version: '0.2.0' })
   writeJson(join(home, 'plugins/cache/example-market/onepersonlabs/0.1.0/.codex-plugin/plugin.json'), { name: 'onepersonlabs', version: '0.1.0' })
+  writeJson(join(versionOne, '.codex-plugin/plugin.json'), { name: 'onepersonlabs', version: '0.2.0' })
   writeAgentRole(source, 'task')
   writeAgentRole(source, 'scout')
   writeJson(marketplacePath, {
@@ -200,7 +201,8 @@ if (JSON.stringify(args) === JSON.stringify(['app-server', '--stdio'])) {
   const source = join(env.MARKETPLACE_ROOT, 'plugins', 'onepersonlabs')
   const version = JSON.parse(readFileSync(join(source, '.codex-plugin', 'plugin.json'), 'utf8')).version
   const target = join(env.CODEX_HOME, 'plugins', 'cache', 'example-market', 'onepersonlabs', version)
-  if (existsSync(target)) rmSync(target, { recursive: true, force: true })
+  // Native plugin add replaces the whole package cache, including older versions.
+  rmSync(join(env.CODEX_HOME, 'plugins', 'cache', 'example-market', 'onepersonlabs'), { recursive: true, force: true })
   cpSync(source, target, { recursive: true })
   out({ installedPath: target })
 } else {
@@ -214,13 +216,13 @@ if (JSON.stringify(args) === JSON.stringify(['app-server', '--stdio'])) {
     env: { ...process.env, CODEX_BIN: fakeCodex, COMMAND_LOG: log, REGISTRATION: registration, MARKETPLACE_ROOT: repo },
   })
   const rolePath = (version, name) => join(home, 'plugins', 'cache', 'example-market', 'onepersonlabs', version, 'agents', `${name}.toml`)
-  return { source, home, config, helper, invoke, rolePath }
+  return { repo, source, home, config, helper, log, invoke, rolePath }
 }
 
 test('an explicit OnePersonLabs refresh dynamically reconciles added, removed, and rebound installed agent roles', (t) => {
   const f = onepersonlabsFixture(t)
   let result = f.invoke()
-  assert.equal(result.status, 0, result.stderr)
+  assert.equal(result.status, 0, `${result.stderr}\n${result.stdout}\n${readFileSync(f.log, 'utf8')}\n${readFileSync(f.config, 'utf8')}`)
   let contents = readFileSync(f.config, 'utf8')
   assert.match(contents, /model = "keep-me"/u)
   assert.match(contents, /\[agents\.personal\]/u)
@@ -228,9 +230,12 @@ test('an explicit OnePersonLabs refresh dynamically reconciles added, removed, a
   assert.match(contents, configFilePattern(f.rolePath('0.2.0', 'scout')))
   assert.doesNotMatch(contents, /\[agents\.onepersonlabs-retired\]/u)
 
+  // A second old version can remain in a cache; its package manifest is the
+  // evidence the reconciler needs before moving this registration again.
+  writeJson(join(f.home, 'plugins/cache/example-market/onepersonlabs/0.1.0/.codex-plugin/plugin.json'), { name: 'onepersonlabs', version: '0.1.0' })
   writeFileSync(f.config, contents.replace(configFileLine(f.rolePath('0.2.0', 'task')), configFileLine(f.rolePath('0.1.0', 'task'))))
   result = f.invoke()
-  assert.equal(result.status, 0, result.stderr)
+  assert.equal(result.status, 0, `${result.stderr}\n${readFileSync(f.log, 'utf8')}\n${readFileSync(f.config, 'utf8')}`)
   contents = readFileSync(f.config, 'utf8')
   assert.match(contents, configFilePattern(f.rolePath('0.2.0', 'task')))
 
@@ -243,6 +248,38 @@ test('an explicit OnePersonLabs refresh dynamically reconciles added, removed, a
   assert.match(contents, configFilePattern(f.rolePath('0.2.1', 'task')))
   assert.match(contents, configFilePattern(f.rolePath('0.2.1', 'review')))
   assert.doesNotMatch(contents, /\[agents\.onepersonlabs-scout\]/u)
+})
+
+test('a version upgrade preserves owned roles across whole-cache deletion and routes the counterpart through source', (t) => {
+  const f = onepersonlabsFixture(t)
+  writeFileSync(f.config, [
+    'model = "keep-me"',
+    '',
+    '[agents.onepersonlabs-task]',
+    configFileLine(f.rolePath('0.2.0', 'task')),
+    '',
+    '[agents.onepersonlabs-retired]',
+    configFileLine(f.rolePath('0.2.0', 'retired')),
+    '',
+  ].join('\n'))
+  writeJson(join(f.source, '.codex-plugin', 'plugin.json'), { name: 'onepersonlabs', version: '0.3.0' })
+
+  const result = f.invoke()
+  assert.equal(result.status, 0, `${result.stderr}\n${result.stdout}`)
+  assert.equal(existsSync(f.rolePath('0.2.0', 'task')), false)
+  assert.equal(existsSync(f.rolePath('0.3.0', 'task')), true)
+  const contents = readFileSync(f.config, 'utf8')
+  assert.match(contents, configFilePattern(f.rolePath('0.3.0', 'task')))
+  assert.doesNotMatch(contents, /\[agents\.onepersonlabs-retired\]/u)
+
+  const sourceHelper = counterpartScriptForRepo(f.repo)
+  assert.equal(sourceHelper, join(realpathSync(f.source), 'skills', 'refresh-local-plugins', 'scripts', 'install-local.mjs'))
+  assert.equal(existsSync(f.helper), false, 'the previous installed helper was removed with its cache')
+  const invocation = counterpartInvocation({
+    platform: 'win32', script: sourceHelper, repo: f.repo,
+    translate: (path) => path.replace(/^([A-Z]):\\/u, (_, drive) => `/mnt/${drive.toLowerCase()}/`).replaceAll('\\', '/'),
+  })
+  assert.match(invocation.args.at(-1), /\/plugins\/onepersonlabs\/skills\/refresh-local-plugins\/scripts\/install-local\.mjs/u)
 })
 
 test('modified selection prepares source before comparing an unchanged old bundle', (t) => {
@@ -527,6 +564,11 @@ test('one helper invocation routes WSL to Windows with safe quoted paths', () =>
   assert.deepEqual(invocation.args.slice(0, 3), ['-NoProfile', '-NonInteractive', '-EncodedCommand'])
   const decoded = Buffer.from(invocation.args[3], 'base64').toString('utf16le')
   assert.equal(decoded, "& node 'C:\\skill''s helper\\install-local.mjs' '--repo' 'C:\\source' '--plugin' 'alpha' '--local-only' '--registered-source' '--installed-only'; exit $LASTEXITCODE")
+})
+
+test('counterpart helper discovery does not borrow OnePersonLabs from another marketplace', (t) => {
+  const f = fixture(t)
+  assert.equal(counterpartScriptForRepo(f.repo), undefined)
 })
 
 test('all preflights every selected source before installing any plugin', (t) => {
