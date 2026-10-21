@@ -1,17 +1,17 @@
-# Projector compatibility
+# Conceptor compatibility
 
-Use this reference only when the project already uses Projector. Follow the
-installed Projector skill and native root. This capability does not activate
-Projector, schedule work, invent status, or write its cache receipts.
+Use this reference only when the project already uses Conceptor. Follow the
+installed Conceptor skill and native root. This capability does not activate
+Conceptor, schedule work, invent status, or write its cache receipts.
 
 ## Attach evidence to existing ownership
 
 | Design material | Owner and location |
 | --- | --- |
-| Accepted communication meaning, invariants, reasons | Existing Concept under `.projector/meaning/` |
+| Accepted communication meaning, invariants, reasons | Existing Concept under `.conceptor/meaning/` |
 | Participants and repeated technical checks | Existing or root-approved Lens |
 | Proposals, inspected states, images, contact sheets, judgments | Project's normal artifact/design path |
-| Current decision, assignment, unresolved judgment, evidence links | Existing `.projector/work/ID.md` checkpoint body |
+| Current decision, assignment, unresolved judgment, evidence links | Existing `.conceptor/work/ID.md` checkpoint body |
 | Reusable mechanism with alternatives and limits | Root-reviewed Pattern Candidate where useful |
 
 Return proposed changes to the owner unless the exact surface is assigned to you.
@@ -19,7 +19,7 @@ Preserve Concept/Lens identities when their meaning stays the same. Do not creat
 records for a literal label edit whose action, state, ownership, persistence, and
 accessibility meaning are unchanged.
 
-Projector's evidence kinds are `static` and `runtime`. Keep semantic correctness,
+Conceptor's evidence kinds are `static` and `runtime`. Keep semantic correctness,
 comprehension/control, and aesthetic preference as separate claims in the design
 evidence. A receipt from a capture validator establishes only its technical
 condition. It does not establish beauty or user comprehension.
@@ -27,7 +27,7 @@ condition. It does not establish beauty or user comprehension.
 ## Capture, then verify
 
 Capture through the application's native boundary. Put source and artifacts in
-normal project paths. `.projector/cache/**` and `.projector/work/**` are excluded
+normal project paths. `.conceptor/cache/**` and `.conceptor/work/**` are excluded
 from discovery; they are not suitable inputs for reusable visual proof.
 
 For a repeatable technical condition, give its Lens check a real command and
@@ -58,13 +58,13 @@ remain outside its claim. Use the installed helper path when appropriate and bin
 its revision through the project's established input mechanism.
 
 Run capture before the Lens check. A check that rewrites its own declared inputs
-can become unresolved because Projector fingerprints inputs before and after.
+can become unresolved because Conceptor fingerprints inputs before and after.
 The frozen-artifact verifier reads only; it rejects changed source or missing or
 changed artifacts. Separate browser interaction tests establish control behavior.
 Check exit status has no aesthetic interpretation.
 
-Use Projector's normal reconcile operation for receipts. Its runtime writes
-`.projector/cache/checks/<id>/receipt.json`, stdout, and stderr. Do not manufacture
+Use Conceptor's normal reconcile operation for receipts. Its runtime writes
+`.conceptor/cache/checks/<id>/receipt.json`, stdout, and stderr. Do not manufacture
 those files or count a wildcard selector as coverage of all future participants.
 Link one-time native evidence with checked source, target, and limits when a
 permanent check adds no useful protection.

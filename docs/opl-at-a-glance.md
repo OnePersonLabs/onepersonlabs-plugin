@@ -85,6 +85,30 @@ checks, review, and merge protections apply.
 
 </details>
 
+## Stop a repair loop before it becomes the project
+
+At a meaningful boundary, keep a short agreement in the existing issue or checkpoint:
+the outcome, why now, proposed mechanism, acceptance demonstration, aggregate budget,
+and when to reconsider. Keep failed hypotheses and cumulative cost with that problem.
+
+If two repair cycles fail to improve the same observable demonstration, or the agreed
+budget is spent, stop dependent implementation. A structural contradiction can stop
+it earlier. Compare a bounded repair, replacing the affected responsibility, and
+revising an assumption. A new agent or issue does not buy two fresh attempts.
+Conceptor projects reuse their existing assessment and checkpoint mechanism.
+This working rule is not a universal runtime counter.
+
+For example, a musical note arrives on time but never sounds. After two attempted
+fixes fail on that same retained event, inspect whether audio scheduling, history
+processing, or the measurement is responsible before changing another timer.
+Keep the required musical behavior even if its current implementation must change.
+
+The project entrance connects current evidence to the full route: resolve uncertainty,
+prove one integrated experience, repeat it on the next intended case, complete the
+agreed scope, qualify, and release. Historical passes retain their source and limits.
+Use the entrance to **try** the product, **follow** one event through its owners, and
+**change** it only within the selected work agreement and approval boundary.
+
 ## Choose how changes reach the base
 
 The delivery map above shows the **opt-in PR lane**. Serial work is the default;

@@ -150,9 +150,9 @@ or `follow_up` for a remaining question. Both stay in the same conversation.
 Unresolved later responses keep the item With agent. Root handoffs must preserve
 partly applied work in the existing task checkpoint before changing ownership.
 
-For Projector projects, put accepted meaning, reasons, alternatives and evidence
-in Projector's existing documents/checkpoint. Link them from the outcome. OPL and
-the native host own scheduling; Projector does not become a second coordinator.
+For Conceptor projects, put accepted meaning, reasons, alternatives and evidence
+in Conceptor's existing documents/checkpoint. Link them from the outcome. OPL and
+the native host own scheduling; Conceptor does not become a second coordinator.
 
 The human may start a contribution in the phone interface or with `contribute`.
 Establish its context before promoting it to a product decision. A human does not

@@ -65,10 +65,33 @@ actual landing and base synchronization before reporting delivery complete.
 
 ## Verify and hand off
 
+Connect the complete intended experience to the existing roadmap and evidence:
+resolve major uncertainty, prove a representative integrated experience, repeat
+production on the next intended case, complete agreed scope, qualify and release.
+Credit existing evidence, preserve accepted ambition, and distinguish unresolved
+release choices and agent proposals from user commitments.
+
+Reuse one short project entrance. Show what the person can try, the current
+milestone, demonstrated/experimental/unknown behavior and the next decision.
+Provide try, follow and change paths to current owners and revision-bound evidence.
+Label historical receipts instead of repeating their status as current.
+
+Record the bounded work agreement required by the engineering contract in the
+existing issue or checkpoint. Keep the same problem, failed hypotheses and
+cumulative budget through reassignment and resumption. Use the active meaning
+owner's existing reassessment mechanism where available; add no repair counter
+service or second ledger. Make product changes wait for any required understood
+scope decision. Routine setup authority does not authorize product implementation.
+
 Review the resulting repository instructions and settings together. Check that
 status mappings, check commands, worktree environment, review ownership, merge
 conditions, and operator resumption agree. Report actual changes, unchanged
 settings, evidence, permissions still needed, and limitations.
+
+Exercise the agreement through ordinary authorized work: recover the real owner,
+select the next eligible outcome, save its short agreement, and walk through a
+concrete consumer and interruption/resumption case. Distinguish procedural rules
+from mechanically enforced controls. Stop setup when these outcomes are met.
 
 This setup supports authorized agents while they are working. No unattended
 runtime is selected or intake enabled by OPL. Explain how the operator selects

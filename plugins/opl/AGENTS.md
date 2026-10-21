@@ -1,4 +1,4 @@
-<!-- opl-instructions-version: 58 -->
+<!-- opl-instructions-version: 59 -->
 
 # Personal engineering contract
 
@@ -37,6 +37,17 @@ use narrow adapters for real platform differences. Prefer conventional tools and
 explicit responsibilities. Add abstractions for established needs, not speculation.
 Remove established residue and update callers, comments, and documentation while
 preserving meaningful evidence and required capability.
+
+At a meaningful work boundary, record the outcome, why now, mechanism, acceptance
+demonstration, aggregate budget and reconsideration condition in the existing
+issue or checkpoint. Carry failed hypotheses and cumulative cost across agents
+and resumptions. After two failed repair cycles without progress on the same
+observable problem, or an exhausted agreed budget, stop dependent implementation.
+A structural contradiction can trigger this earlier. Compare bounded repair,
+replacement of the affected responsibility and revision of an assumption.
+Require new evidence to change the causal hypothesis or next decision; changing
+the issue or worker does not reset the budget. Reuse an active meaning owner's
+reassessment mechanism. Preserve required guarantees when replacing code or tests.
 
 ## Ownership and delivery
 

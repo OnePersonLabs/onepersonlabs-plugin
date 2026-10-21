@@ -14,6 +14,11 @@ revision, and relevant dirty work. Preserve settled decisions and reasons,
 unresolved questions, checked state and evidence limits, and the next useful action. Preserve uncertain
 external mutations and how to reconcile them before retrying.
 
+Carry the active work agreement, original observable problem, failed hypotheses,
+cumulative budget and reconsideration state from the existing checkpoint. Link
+its current comparison account when the project has one. A new session or issue
+does not reset failed repair cycles or authorize a paused product experiment.
+
 Account for live assignments, writer ownership, processes, and outstanding human
 submissions before handing off. Reconcile already claimed work with the existing
 checkpoint; a duplicate message must not replay external effects. State whether

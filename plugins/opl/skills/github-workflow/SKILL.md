@@ -7,7 +7,7 @@ description: Reconcile GitHub issues, priorities, dependencies, confirmed bugs, 
 
 Use GitHub for actionable work and delivery status when the governing policy
 selects it. Keep product meaning, reasons, and evidence with their existing
-owners. When Projector is active, use its existing records; otherwise use the
+owners. When Conceptor is active, use its existing records; otherwise use the
 repository's specifications and decisions. Keep the local checkpoint limited
 to active work, decisions, and recovery state. Do not create a second backlog.
 

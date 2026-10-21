@@ -2,7 +2,7 @@
 
 Use the application's current capture/test tooling first. The optional helper
 `scripts/design_evidence.py` provides portable artifact operations when needed.
-It creates no service, workflow database, Projector records, or global settings.
+It creates no service, workflow database, Conceptor records, or global settings.
 Use `python` on Windows and `python3` where that is the installed interpreter.
 Run `--help` and the relevant subcommand's help for the current interface.
 
