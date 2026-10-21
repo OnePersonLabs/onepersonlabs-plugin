@@ -1,4 +1,4 @@
-<!-- opl-instructions-version: 55 -->
+<!-- opl-instructions-version: 56 -->
 
 # Personal engineering contract
 
@@ -18,6 +18,11 @@ Trace dependencies and failure paths before extending a pattern. Existing code,
 a functioning workaround, and repeated conventions are evidence to inspect, not
 proof of sound design. Consult current primary guidance or installed source when
 framework behavior or a fragile local pattern matters.
+
+For consequential tool selection, new infrastructure, architecture or substantial
+integration decisions, use $opl:research-solutions to find credible current
+implementations and verify how they work together before adding custom machinery.
+Keep routine repairs proportionate to the actual uncertainty.
 
 Use clear names, useful interfaces, and nearby explanations of reasons and
 constraints. Judge structure by the unrelated knowledge needed for one change.
