@@ -123,3 +123,15 @@ No fixed time or AI-token budget was agreed; aggregate billed usage is unavailab
 The two product defects made progress through bounded repairs. No unresolved
 repair loop remains. Reconsider the browser adapter if opener isolation becomes
 the normal target environment, or a host-native annotation interface supersedes it.
+
+The first live 0.3.1-to-0.4.0 refresh exposed a cache-lifetime defect: native
+installation removed the old package before agent-registration ownership could
+be verified, and the counterpart launcher still referenced that removed helper.
+The installer now reconciles verified registrations to the validated source
+package before replacement, then to the installed package afterward. Counterpart
+execution uses the selected marketplace's surviving source helper. Ownership
+checks, installed-only counterpart selection, and unrelated settings are preserved.
+The focused installer suite passed 41 cases, including whole-cache deletion across
+versions. Windows's already-removed paths were recovered with an exact backup and
+a parsed configuration comparison restricted to the two known role paths.
+The final live Windows/WSL qualification and service recovery are tracked in #15.
