@@ -13,6 +13,10 @@ Before research or a probe, name the decision it could change. Prefer the
 smallest reversible check of the assumption most likely to invalidate useful
 work. Preserve the host's resource, authorization, and review boundaries.
 
+When the system works and the question is which change measurably improves it,
+use $onepersonlabs:optimize. Return here for a feasibility claim or an unresolved
+correctness oracle; return its evidence to the active optimization comparison.
+
 ## Find the decision that matters
 
 Identify the requested behavior and the constraint most likely to invalidate

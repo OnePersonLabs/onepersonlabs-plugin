@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 60 -->
+<!-- onepersonlabs-instructions-version: 61 -->
 
 # Personal engineering contract
 
@@ -22,7 +22,10 @@ framework behavior or a fragile local pattern matters.
 For consequential tool selection, new infrastructure, architecture or substantial
 integration decisions, use $onepersonlabs:research-solutions to find credible current
 implementations and verify how they work together before adding custom machinery.
-Keep routine repairs proportionate to the actual uncertainty.
+Keep routine repairs proportionate to the actual uncertainty. When consequential
+work needs a supported position, use $onepersonlabs:pov. When plausible structural
+alternatives need development before that judgment, use $onepersonlabs:develop-alternatives.
+Apply relevant declared project knowledge and cite the rules that change the result.
 
 Use clear names, useful interfaces, and nearby explanations of reasons and
 constraints. Judge structure by the unrelated knowledge needed for one change.
@@ -92,6 +95,10 @@ required gates and meaningful affected checks; reuse evidence while inputs remai
 valid. Keep successful output quiet; surface failures with useful context. Do not
 add skill invocation tests or AI-consuming tests without explicit permission.
 Batch authorized AI evaluations at integration and stay within their budget.
+
+When improving a working system against measurable objectives and the winning
+change is unknown, use $onepersonlabs:optimize. Compare against current-best
+measurements, account for noise and required trade-offs, and remeasure composed changes.
 
 Separate verifying a change from permanent coverage. Add tests for owned contracts
 when plausible failures matter and existing checks leave a meaningful gap. Avoid

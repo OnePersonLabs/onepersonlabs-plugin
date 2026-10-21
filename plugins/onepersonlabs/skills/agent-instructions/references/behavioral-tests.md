@@ -11,6 +11,15 @@ effort, and evaluator criteria equal. Use disposable repositories and isolated
 Codex homes outside the target checkout, supported authentication, and no unrelated
 plugins or hooks. Do not expose private logs or credentials in the result.
 
+Before attributing a difference to changed instructions, measure repeated runs
+of the same frozen build under the same conditions (A/A). Verify that the runner
+actually loaded the intended source, instructions, and build selector. Record
+that identity with the observations; selecting a label is not proof of loading.
+Choose the success criterion before inspecting candidate results. If identical
+build variation can explain the apparent gain, report the result as inconclusive
+or gather more evidence within the authorized budget. Do not impose a universal
+sample count or buy more model runs to rescue a preferred result.
+
 Use explicit model/effort settings and record the actual context and command.
 Keep observations separate from inference: accepted behavior, missing requirements,
 repairs, elapsed time, model usage, and cache observations. A cache hit requires a

@@ -67,6 +67,12 @@ accepted. Use existing fields and a Project only when useful. Read
 [delivery and native automation](references/delivery.md) when a Project, PR,
 review, or merge affects recorded status.
 
+When resolving PR comments or resuming interrupted review repair, read
+[review-feedback recovery](references/review-feedback.md). Use its prepared batch
+and per-action receipts when several writes or an interruption can separate fixes,
+publication, replies, and resolution. Verify that the remote PR contains the fix
+before claiming it in a reply. Changed source comments require fresh judgment.
+
 ## Reconcile discovered bugs
 
 While the agent is doing authorized work, the root automatically deduplicates

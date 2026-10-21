@@ -18,6 +18,10 @@ through the required parts, owners and relationships. Preserve existing project
 decisions unless the user authorizes a change. Separate missing product choices
 from facts that source inspection can resolve.
 
+Read applicable [project knowledge](../agent-instructions/references/project-knowledge.md)
+when local rules or learned constraints could change qualification. Cite the
+entries that affect candidate selection or integration.
+
 Identify the assumption most likely to invalidate the solution. Use it to direct
 research rather than collecting an impressive list of components.
 
@@ -67,6 +71,11 @@ component/version/evidence table when it helps comparison. Explain rejected stro
 alternatives, exact remaining glue, costs, material unknowns and the reversible
 adoption boundary. Report measured overhead separately from estimates; do not infer
 subscription savings from cache eligibility or shared conversation alone.
+
+If consequential alternatives still lack enough mechanism to compare, use
+$onepersonlabs:develop-alternatives with the research already gathered. Use
+$onepersonlabs:pov to resolve a consequential position whose evidence is ready;
+return its decision to this workflow without repeating the same survey.
 
 Provide an implementable plan for the qualified scope. If no candidate meets a
 required contract, identify that contract and the concrete work or scope decision

@@ -58,6 +58,10 @@ When any skill package is in scope, read
 skill, also read
 [references/scoring-rubric.md](references/scoring-rubric.md).
 
+When consolidating project rules or reusable lessons, read
+[project knowledge](references/project-knowledge.md). Preserve the existing owner,
+situation-based retrieval, evidence limits, and citations that affect decisions.
+
 ## Context Pointers
 
 A **context pointer** is always-loaded wording that names out-of-context
@@ -139,6 +143,11 @@ For an audit or update, report findings ordered by consequence with file
 evidence, then validation, residual risk, and a concise change summary when
 files changed. For authoring work, explain any consequential surface-placement
 decision.
+
+When edited records claim repository paths or commits, use
+[document evidence checks](../handoff/references/evidence-checks.md) before treating
+those citations as verified. Adjudicate reported historical references; the
+checker does not establish the truth of the prose.
 
 Validate syntax and metadata with the repository's current validators, run
 focused tests for affected hooks or scripts, and use behavioral evaluation only

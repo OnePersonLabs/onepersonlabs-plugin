@@ -20,7 +20,8 @@ Check attribution before making speculative edits. For a claimed speedup, first 
 Change one meaningful factor where practical. Run the same correctness oracle and workload against the current best and candidate. Include all required objectives in each comparison. Use the deterministic helper when uncertainty, multiple objectives, paired observations, or confirmation would affect the decision:
 
 ```powershell
-node plugins/onepersonlabs/skills/optimize/scripts/decide.mjs .work/optimize-comparison.json
+$skillDir = "<absolute loaded optimize skill directory>"
+node "$skillDir/scripts/decide.mjs" .work/optimize-comparison.json
 ```
 
 The JSON file follows this compact shape (samples are raw numeric observations):

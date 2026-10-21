@@ -22,7 +22,8 @@ project evidence, and the cost of choosing incorrectly. Read applicable accepted
 Conceptor meaning and project instructions. Use `$onepersonlabs:research-solutions`
 when current implementations, external constraints, or technical integration
 facts could change which approaches are viable. Reuse relevant research instead
-of repeating it. Load applicable project knowledge and preserve citations.
+of repeating it. Load applicable [project knowledge](../agent-instructions/references/project-knowledge.md)
+and preserve citations.
 
 Separate known requirements from assumptions. Define comparison criteria from
 the user's request and verified project constraints before developing candidates.
@@ -83,7 +84,8 @@ model's preference does not prove human preference.
 Return the common brief and criteria, at least two candidate mechanisms, their
 assumptions and tradeoffs, what they share, material exclusions, source evidence,
 open technical or human evidence, whether development was independent, and the
-next owner: `$onepersonlabs:pov`. When one candidate alone is usable, evidence
-cannot distinguish candidates, or generation is interrupted, report incomplete
-instead of naming a winner. The project decides only after its own position and
+next owner: `$onepersonlabs:pov`. When one candidate alone satisfies the verified constraints, pass that result
+and the exclusions to POV. When evidence cannot distinguish candidates or
+generation is interrupted, report the unresolved comparison instead of inventing
+a winner. The project decides only after its own position and
 required human decisions are resolved.

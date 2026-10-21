@@ -24,6 +24,10 @@ submissions before handing off. Reconcile already claimed work with the existing
 checkpoint; a duplicate message must not replay external effects. State whether
 ownership transferred or remains with the current root.
 
+When the continuation document cites repository paths, links, or commit IDs,
+run [document evidence checks](references/evidence-checks.md). Correct false
+citations and adjudicate historical references before handing over the document.
+
 Add suggested skills with conditions for invoking them. Use `$onepersonlabs:session-reader`
 only when a missing historical fact requires bounded transcript lookup; this
 handoff is not a full history reconstruction. Redact secrets and unnecessary

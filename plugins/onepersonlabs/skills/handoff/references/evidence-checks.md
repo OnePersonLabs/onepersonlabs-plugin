@@ -10,7 +10,8 @@ Run it from the project root:
 
 ```powershell
 $handoffPath = "C:\path\to\handoff.md"
-python -B -X utf8 plugins/onepersonlabs/skills/handoff/scripts/validate-doc-claims.py $handoffPath --repo-root .
+$skillDir = "<absolute loaded handoff skill directory>"
+python -B -X utf8 "$skillDir/scripts/validate-doc-claims.py" $handoffPath --repo-root .
 ```
 
 The repository root argument matters when the handoff is in a temporary

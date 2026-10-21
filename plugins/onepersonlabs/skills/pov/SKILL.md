@@ -52,8 +52,8 @@ For current adoption or replacement, route through `$onepersonlabs:research-solu
 for current implementations, integration, maintenance, and recovery evidence. A
 clear, locally answerable question needs no broad survey. If the needed source
 cannot be verified, hold the position and say exactly what evidence would change
-that. Read the project-knowledge reference when a rule or local convention could
-govern the decision; cite any rule that shaped the result.
+that. Read [project knowledge](../agent-instructions/references/project-knowledge.md)
+when a rule or local convention could govern the decision; cite any rule that shaped the result.
 
 ## Choose and explain
 
@@ -82,9 +82,8 @@ or hard-to-reverse commitment.
 ## Independence and completion
 
 First form a position from verified evidence. When the user asks for other views,
-use only a currently available, authorized independent reviewer. Keep the initial
-position and evidence out of that reviewer's first assessment when the route allows
-it. Treat concurrence as a useful cross-check, never a vote or proof. If positions
+use only a currently available, authorized independent reviewer. Give that reviewer the same question, project sources, and constraints without
+your initial verdict. Treat concurrence as a useful cross-check, never a vote or proof. If positions
 differ on a decision-changing fact, verify that fact at its source and share the
 same evidence with each surviving reviewer before reconciling. Report unresolved
 disagreement or unavailable review plainly. Do not install another model route or
