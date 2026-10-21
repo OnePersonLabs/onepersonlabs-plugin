@@ -212,3 +212,41 @@ structural checks. This evidence covers package structure and existing executabl
 contracts; automatic discovery outcomes and runtime behavior were not model-tested.
 Active Windows/WSL refresh follows human merge; isolated installed checks do not
 change active homes or the instructions already loaded by a session.
+
+## Perceptual scaffolding
+
+[Issue #8](https://github.com/OnePersonLabs/opl/issues/8) owns this companion delivery
+against frozen baseline `e14d18d81b1a293a971f59f93afc2ff8bb88cca8`, stacked on PR #7.
+Source revision 57 adds a soft communication preference and routes substantial
+explanation, teaching, exploration and human interaction design to
+`$opl:build-understanding`. The inventory is now 29 skills.
+
+The skill selects representations for accurate understanding and control with
+less unnecessary mental reconstruction. It includes nonvisual input and output,
+keeps simple exchanges simple, and loads its evidence/patterns reference only
+when useful. Existing perceptual-design and human-collaboration packages retain
+visual implementation, submissions and service ownership.
+
+The [OPL at-a-glance guide](opl-at-a-glance.md) is the first application: portable
+Mermaid maps, a worked repair case and expandable details explain roles, delivery
+choices, worker/helper limits, source/install/session boundaries and the absence
+of an installed unattended runtime. Its exact procedures stay with their
+existing owners.
+
+Research sources and their limits are in the skill's conditional reference.
+Rendering and structural checks establish different facts from human comprehension
+or measured learning improvement. No invocation tests, AI evaluations, permanent
+presentation scoring, new service or runtime are part of this delivery.
+
+The official Mermaid CLI 12.0.0 rendered all three maps in light and dark
+themes. Browser inspection at 390-pixel and 1280-pixel widths found no page
+overflow; all four native expandable sections opened and closed from the
+keyboard with focus retained. SVG titles/descriptions, equivalent text routes
+and grayscale presentation were checked. This was a local preview, not a
+qualification of GitHub's hosted renderer or a human learning study.
+
+Skill structure, metadata, relative references and instruction revision checks
+passed. The isolated installed-copy checkpoint passed OPL contract checks,
+all 27 unit test files, source/installed inventory comparison and trust checks
+for 23 hooks. Active Windows/WSL homes and session-loaded instructions remain
+unchanged until the human-merge and refresh boundary.

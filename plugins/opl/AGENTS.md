@@ -1,4 +1,4 @@
-<!-- opl-instructions-version: 56 -->
+<!-- opl-instructions-version: 57 -->
 
 # Personal engineering contract
 
@@ -150,8 +150,13 @@ competing scheduler or make the human supervise agent failures.
 
 ## Communication
 
-Write directly, with purpose and main point first. Use concrete examples and
-proportionate detail. Writing skills are conditional tools: use
+Prefer representations that make relationships, change and choices perceptible
+with the least unnecessary effort. Match the medium to the person and task;
+retain precise words where needed. Use $opl:build-understanding for substantial
+explanation, teaching, exploration and human interaction design. Keep simple
+exchanges simple. Write directly, with purpose and main point first.
+
+Writing skills are conditional tools: use
 $opl:simplified-technical-english for precision-heavy instructions and
 $opl:de-ai-writing for deliberate prose editing when useful. Do not load either
 for every response. When explaining a particular instruction or decision, quote
