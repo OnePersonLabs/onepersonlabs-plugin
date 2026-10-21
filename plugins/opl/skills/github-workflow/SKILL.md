@@ -1,6 +1,6 @@
 ---
 name: github-workflow
-description: Maintain GitHub issue planning and work tracking at substantive planning, work start, resumption, scope changes, completion, and handoff when GitHub is the selected tracker. Reconcile existing issues, priorities, dependencies, and acceptance evidence under the user's workflow policy and repository overrides.
+description: Reconcile GitHub issues, priorities, dependencies, confirmed bugs, and delivery status when GitHub is the selected tracker. Use at work start, resumption, scope changes, and completion under the existing workflow policy.
 ---
 
 # GitHub workflow
@@ -40,32 +40,62 @@ Proceed when the target, audience, allowed operations, and writer are establishe
 
 ## Reconcile actionable work
 
-At substantive planning, work start, or resumption, inspect relevant existing
-issues, roadmap, labels, milestones, and prerequisite relationships. Reconcile
-the local checkpoint and any uncertain prior mutations first. Reuse the issue
-that owns the outcome; avoid duplicate issues and competing status records.
+At substantive planning, work start, and resumption, inspect existing issues,
+roadmap, statuses, labels, milestones, priorities, and dependencies. Reconcile
+the local checkpoint and uncertain mutations before writing. Reuse the issue
+that owns the outcome; keep product meaning with its existing owner.
 
-For each issue, state what must change, why it matters, completion evidence,
-priority, and dependencies. Use applicable existing labels, milestones, and
-project fields. Write issue content with `$opl:simplified-technical-english`.
-Make priority and prerequisite order explicit; issue numbers
-do not define work order. Add a Project only when it serves the work.
+Map ready, in progress, review, rework, blocked, and done onto the repository's
+existing conventions. Ready work needs scope authority, satisfied prerequisites,
+clear acceptance, and priority among eligible work. Issue numbers and queue
+position do not establish work order or authority.
 
-Keep future phases broad. When work starts, decompose only the next connected
-outcome needed to guide execution. Preserve settled requirements and unresolved
-choices. Proposed product commitments remain proposals until accepted.
-Trivial edits do not require a new issue; update an existing issue when the edit
-materially changes its state.
+Use repository-native workflow instructions when present. If the repository
+needs explicit setup, use `$opl:setup-repo-workflow`; do not configure a new
+workflow during routine issue maintenance. Without a project override, keep one
+primary issue through landing with up to two optional bounded helpers. Independent
+projects can proceed concurrently. More primary issues require project opt-in.
+Use native notifications or waits, not model polling of idle work.
 
-During work, update meaningful scope changes, blockers, and dependencies. At
-completion or handoff, record actual evidence, limits, and remaining scope.
-Close an issue only when its complete acceptance scope is satisfied. Child
-completion, a local commit, or a component check alone does not establish that.
-Distinguish local completion from publication or release. Reopen or revise an
-issue when new evidence invalidates its recorded completion.
+For each actionable issue, state the change, impact, acceptance evidence,
+priority, and dependencies. Keep future phases broad; decompose the next connected
+outcome when work starts. Proposed product commitments remain proposals until
+accepted. Use existing fields and a Project only when useful. Read
+[delivery and native automation](references/delivery.md) when a Project, PR,
+review, or merge affects recorded status.
 
-Finish reconciliation when relevant issues describe the actual scope, priority,
-prerequisites, and delivery state without duplicating governing product meaning.
+## Reconcile discovered bugs
+
+While the agent is doing authorized work, the root automatically deduplicates
+confirmed in-scope bugs against existing issues and records actionable work under
+the established publication authority. Include evidence, user impact, a concrete
+reproduction or equivalent decisive observation, and acceptance criteria. Reuse
+an existing matching issue instead of creating another. Workers send proposals
+and evidence to their parent; they do not write issues.
+
+Keep ordinary repairs needed for the active outcome in its current issue. Queue
+a distinct out-of-scope confirmed bug with its own scope and priority; recording
+it does not authorize expanding the active implementation. Mark suspected bugs
+for investigation instead of presenting them as confirmed defects. Preserve
+privacy and audience limits. This reconciliation is active-agent behavior, not
+an always-on intake service.
+
+## Record delivery honestly
+
+Update material scope changes, blockers, dependencies, and review/rework state.
+At completion or handoff, record actual evidence, limits, and remaining scope.
+Close only when complete acceptance is satisfied. Child completion, a local
+commit, component checks, or a closed unmerged PR do not establish delivery.
+
+Use a PR closing keyword such as `Fixes` only when merging it to the default
+branch completes the linked issue's acceptance. If release, human qualification,
+or other scope remains, link the issue without automatic closure and leave it
+open. Reopen or revise work when new evidence invalidates completion.
+
+Stage 2 unattended next-issue dispatch remains open. No dispatcher product is
+selected and no automatic intake is enabled by this skill. At a stopping point,
+record the next eligible issue and operator resumption step without claiming an
+unattended worker is running.
 
 ## Apply and recover mutations
 
@@ -83,8 +113,7 @@ report the uncertainty, and continue independent authorized work.
 
 Record uncertain mutations in the existing task checkpoint with the target,
 intended change, uncertainty, and reconciliation evidence. This is recovery
-state, not another queue. Existing GitHub deferral handlers only verify issue
-references; they neither maintain issues nor prove completion or write authority.
+state, not another queue.
 
 At handoff, report confirmed issue changes and links, failed or uncertain writes,
 acceptance evidence and limits, and remaining decisions. Preserve recovery state

@@ -5,7 +5,6 @@ It was introduced in `9fb7b438ee609aff048c770b27519bec270f9289` and removed in
 `922706e01fe11e77a318b3c7b6cf19020ff86c9f`. The last pre-removal commit is
 `d40bdd675308c9fe9867863d581c84ad72336d63`. The historical method and its channel
 and interpretation references are preserved for inspection and comparison.
-Only the archived method's relative reference links were adjusted for its new location.
 Relative links in the relocated historical method were adjusted; its instructions are unchanged.
 Removal is not evidence of an evaluated failure.
 

@@ -74,8 +74,7 @@ process.stdout.write('queued fixture message')
     runner,
     'start',
     ...(threadArg ? ['--thread', '123e4567-e89b-12d3-a456-426614174000'] : []),
-    '--timeout-seconds',
-    String(timeoutSeconds),
+    ...(timeoutSeconds === null ? [] : ['--timeout-seconds', String(timeoutSeconds)]),
     '--cwd',
     root,
     '--result-root',
@@ -120,6 +119,20 @@ test('detached command records output and queues one bounded completion message'
   assert.match(message, /state=success/u)
   assert.match(message, /Inspect the saved artifacts once/u)
   assert.doesNotMatch(message, new RegExp(secretOutput, 'u'))
+})
+
+test('omitted deadline waits for completion and queues the terminal result', async (t) => {
+  const f = fixture(t)
+  const result = f.invoke([python, '-c', "import time; time.sleep(0.15); print('finished without deadline')"], { timeoutSeconds: null })
+  assert.equal(result.status, 0, result.stderr)
+  const receipt = JSON.parse(result.stdout)
+  assert.equal(receipt.timeoutSeconds, null)
+  const status = await readCompletedStatus(join(receipt.resultDir, 'status.json'))
+  assert.equal(status.state, 'success', JSON.stringify(status))
+  assert.equal(status.exitCode, 0)
+  assert.equal(status.timedOut, false)
+  assert.match(readFileSync(join(receipt.resultDir, 'stdout.log'), 'utf8'), /finished without deadline/u)
+  assert.equal(f.calls().length, 1)
 })
 
 test('nonzero command exit is preserved and still wakes the thread', async (t) => {

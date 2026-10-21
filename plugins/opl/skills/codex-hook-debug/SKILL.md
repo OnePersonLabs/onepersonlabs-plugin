@@ -1,6 +1,6 @@
 ---
 name: codex-hook-debug
-description: Diagnose and fix Codex lifecycle hook errors, missing executions, unexpected blocks, and repeated continuations across any installed plugin, user CODEX_HOME, and repository .codex configuration. Use for hook discovery, trust, matching, runtime, and output-contract failures; not Git hooks or React hooks.
+description: Diagnose Codex lifecycle hook discovery, trust, execution, output, and continuation failures across user, repository, and installed plugin layers. Excludes Git and React hooks.
 ---
 
 # Codex Hook Debug
@@ -11,20 +11,11 @@ Trace the reported behavior to the active hook definition and its execution. Pre
 
 Record the exact error, event, triggering action, timestamp, session working directory, host OS, Codex surface, and executable version. Record launch and config overrides that affect hook execution. Resolve the affected process's `CODEX_HOME`; use its default home only when no override exists. A desktop app, CLI, remote host, and WSL process can use different binaries, homes, paths, and environments.
 
-Inspect each applicable source:
-
-| Source | Inspect |
-| --- | --- |
-| User | `CODEX_HOME/hooks.json` and inline `[hooks]` in `CODEX_HOME/config.toml`. The usual home is `~/.codex`. |
-| Repository | `.codex/hooks.json` and `.codex/config.toml` in active project config layers. Check the actual worktree and session subdirectory. |
-| Installed plugins | Every relevant enabled plugin's installed root, `.codex-plugin/plugin.json`, manifest `hooks` entries, and default `hooks/hooks.json` when no override is present. |
-| Other active layers | Session overrides and managed/system requirements when discovery or effective configuration identifies them. |
-
-Hooks from multiple sources are additive. Higher configuration precedence does not replace lower-layer hook definitions. A layer can merge both JSON and inline TOML with a warning. Do not assume that the first command match is the only handler or that the hook file's directory is the command's working directory.
-
-Use `/hooks` in a supported CLI or the affected runtime's read-only `hooks/list` app-server API to establish loaded definitions. An app-server client must initialize the protocol before listing hooks. Inspect returned errors and warnings, then map the failing handler by event, matcher, command or MCP tool, source path, and plugin identity. Keep its key, current hash, enabled state, managed status, and trust status when available. Preserve multiple candidates until evidence identifies the owner. File inspection alone does not prove that Codex loaded a hook.
-
-Under normal trust enforcement, non-managed hooks with untrusted or modified definitions are listed but skipped until trusted. Check for an existing authorized trust-bypass invocation before concluding that such a handler could not run. Concurrent execution applies to eligible handlers, not every listed definition.
+Read [runtime hook sources](references/runtime-sources.md) to map the active
+handler across user, repository, installed plugin, and managed layers. Establish
+loaded definitions with the runtime's supported read-only interface; a file or
+trust record alone does not prove execution. Preserve additive handlers and
+unrelated trust settings.
 
 Read [references/diagnosis.md](references/diagnosis.md) for the relevant failure class. Read [references/current-codex.md](references/current-codex.md) when event semantics, feature names, platform behavior, or documentation freshness could change the diagnosis.
 

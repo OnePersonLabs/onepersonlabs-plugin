@@ -6,8 +6,8 @@ before generating more candidates.
 
 ## Propose different representations
 
-For substantial direction work, start with a small set, usually three distinct
-directions. Compare differences such as spatial field, instrument, continuous
+For substantial direction work, compare the smallest useful set of structurally
+distinct directions. Compare differences such as spatial field, instrument, continuous
 canvas, or typographic hierarchy. Palette swaps are not independent directions.
 Expand only when the first set leaves a decision unresolved.
 

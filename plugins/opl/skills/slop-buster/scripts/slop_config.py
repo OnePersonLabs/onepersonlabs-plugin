@@ -13,7 +13,7 @@ import tomllib
 DEFAULT_DATA_REPO = r"C:\dev\projects\slop-intelligence"
 DEFAULT_MODELS = {
     "orchestrator": {"name": "gpt-6.1-sol", "effort": "medium"},
-    "reader": {"name": "gpt-5.6-luna", "effort": "medium"},
+    "reader": {"name": "gpt-6-luna", "effort": "medium"},
     "synthesis": {"name": "gpt-6.1-sol", "effort": "high"},
 }
 

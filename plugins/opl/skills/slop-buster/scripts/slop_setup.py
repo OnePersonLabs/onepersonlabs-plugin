@@ -29,7 +29,7 @@ def _write_initial_config(path: Path) -> None:
         'effort = "medium"',
         "",
         "[models.reader]",
-        'name = "gpt-5.6-luna"',
+        'name = "gpt-6-luna"',
         'effort = "medium"',
         "",
         "[models.synthesis]",

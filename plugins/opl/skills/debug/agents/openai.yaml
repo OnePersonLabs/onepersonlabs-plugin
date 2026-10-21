@@ -3,4 +3,4 @@ interface:
   short_description: "Find causal bugs and verify lasting fixes"
   default_prompt: "Use $debug to investigate this failure and, when requested, implement and verify a fix."
 policy:
-  allow_implicit_invocation: true
+  allow_implicit_invocation: false

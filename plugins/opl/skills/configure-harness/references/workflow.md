@@ -41,10 +41,10 @@ Keep candidate files separate from live targets. The `prepare` input is a JSON l
 For `config.toml`, the transaction accepts ordinary enablement changes and the
 narrow OPL startup baseline only. The plugin-root `config.defaults.toml` file
 is the versioned source for that baseline. It contains the required feature and
-agent defaults. The transaction also reconciles `opl-` role registrations that
-point to the discovered OPL role directory. It can add, remove, or rebind those
-registrations while it preserves every non-OPL registration and unrelated
-configuration. Reject any other configuration change.
+agent defaults. The transaction uses the configuration checker's `config_file` provenance
+to identify OPL-owned role registrations. A prefix alone does not establish
+ownership. It can add, remove, or rebind verified OPL registrations while it
+preserves user-authored registrations and unrelated configuration. Reject any other configuration change.
 
 Add an ignore marker only after the user chooses to ignore future checks. It
 must be `# opl:ignore-config-check version=<plugin version>` near the top of

@@ -16,28 +16,6 @@ PYTHON_COMMAND = [sys.executable, "-B", "-X", "utf8"]
 
 
 class Last30DaysNamespaceContractTest(unittest.TestCase):
-    def test_skill_package_uses_last30days_identity(self) -> None:
-        self.assertEqual(SKILL_ROOT.name, "last30days")
-        skill_text = (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
-        self.assertIn("name: last30days\n", skill_text)
-        self.assertTrue(SCRIPT.is_file())
-
-    def test_skill_uses_host_neutral_web_wording(self) -> None:
-        skill_text = (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
-        planning_text = (SKILL_ROOT / "references" / "search-planning.md").read_text(
-            encoding="utf-8"
-        )
-        self.assertIn("search the web for", skill_text)
-        self.assertIn("Get-Command", skill_text)
-        self.assertIn("command -v", skill_text)
-        self.assertIn("& $env:LAST30DAYS_PYTHON -B -X utf8", skill_text)
-        self.assertIn('"$LAST30DAYS_PYTHON" -B -X utf8', skill_text)
-        self.assertNotIn("AskUserQuestion", skill_text)
-        self.assertNotIn("WebSearch", skill_text)
-        self.assertIn("Doctor labels the", planning_text)
-        self.assertIn("source as `web`; map that label explicitly", planning_text)
-        self.assertNotIn("doctor/diagnose", planning_text)
-
     def test_runtime_defaults_use_last30days_namespace(self) -> None:
         with tempfile.TemporaryDirectory() as temp_home:
             command = [

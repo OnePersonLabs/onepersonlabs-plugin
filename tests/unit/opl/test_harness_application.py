@@ -1,5 +1,6 @@
 import importlib.util
 import hashlib
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -21,16 +22,6 @@ class HarnessApplication(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.home = self.root / "home"
         self.home.mkdir()
-        defaults = patch.object(application, "_load_config_defaults", return_value={
-            "features": {"hooks": True, "plugins": True, "multi_agent": True},
-            "agents": {
-                "enabled": True,
-                "default_subagent_model": "gpt-6-luna",
-                "default_subagent_reasoning_effort": "medium",
-            },
-        })
-        defaults.start()
-        self.addCleanup(defaults.stop)
 
     def candidate(self, name, data):
         path = self.root / name
@@ -125,14 +116,33 @@ class HarnessApplication(unittest.TestCase):
 
     def test_config_checker_policy_allows_only_its_features_defaults_and_opl_roles(self):
         config = self.home / "config.toml"
-        config.write_bytes(b'''[features]\nhooks = false\nplugins = false\nmulti_agent = false\nother = true\n\n[agents]\nenabled = false\ndefault_subagent_model = "gpt-5.6-terra"\ndefault_subagent_reasoning_effort = "xhigh"\ninterrupt_message = true\n\n[agents.personal]\nconfig_file = "C:/personal.toml"\n\n[agents.opl-stale]\nconfig_file = "C:/old.toml"\n''')
-        repaired = self.candidate("repaired.toml", b'''[features]\nhooks = true\nplugins = true\nmulti_agent = true\nother = true\n\n[agents]\nenabled = true\ndefault_subagent_model = "gpt-6-luna"\ndefault_subagent_reasoning_effort = "medium"\ninterrupt_message = true\n\n[agents.personal]\nconfig_file = "C:/personal.toml"\n\n[agents.opl-current]\nconfig_file = "C:/plugin/agents/current.toml"\n''')
+        plugin = self.root / "plugin"
+        (plugin / ".codex-plugin").mkdir(parents=True)
+        (plugin / "agents").mkdir()
+        (plugin / ".codex-plugin/plugin.json").write_text('{"name":"opl"}', encoding="utf-8")
+        old_path = (plugin / "agents/stale.toml").as_posix()
+        new_path = (plugin / "agents/current.toml").as_posix()
+        custom = '[agents.opl-personal]\nconfig_file = "C:/personal.toml"\n'
+        baseline = '[features]\nother = true\n\n[agents]\ninterrupt_message = true\n'
+        original = baseline + '\n[agents.opl-stale]\nconfig_file = ' + json.dumps(old_path) + '\n' + custom
+        config.write_text(original, encoding="utf-8")
+        # Read current defaults rather than freezing their owned values here.
+        sections = []
+        for section, values in application._load_config_defaults().items():
+            settings = dict(values)
+            settings.update({"other": True} if section == "features" else {"interrupt_message": True})
+            sections.append(f"[{section}]\n" + "".join(f"{key} = {json.dumps(value)}\n" for key, value in settings.items()))
+        proposed = "\n".join(sections) + '\n[agents.opl-current]\nconfig_file = ' + json.dumps(new_path) + '\n' + custom
+        repaired = self.candidate("repaired.toml", proposed.encode())
         application.prepare(self.home, [{"target": str(config), "candidate": str(repaired)}])
         personal_change = self.candidate("personal-change.toml", repaired.read_bytes().replace(b"C:/personal.toml", b"C:/changed.toml"))
         with self.assertRaisesRegex(ValueError, "outside allowed OPL"):
             application.prepare(self.home, [{"target": str(config), "candidate": str(personal_change)}])
+        personal_removal = self.candidate("personal-removal.toml", proposed.replace(custom, "").encode())
+        with self.assertRaisesRegex(ValueError, "outside allowed OPL"):
+            application.prepare(self.home, [{"target": str(config), "candidate": str(personal_removal)}])
         extra_new_role_setting = self.candidate("extra-role.toml", repaired.read_bytes().replace(
-            b'config_file = "C:/plugin/agents/current.toml"', b'config_file = "C:/plugin/agents/current.toml"\ndescription = "not allowed"'))
+            json.dumps(new_path).encode(), json.dumps(new_path).encode() + b'\ndescription = "not allowed"'))
         with self.assertRaisesRegex(ValueError, "may only set config_file"):
             application.prepare(self.home, [{"target": str(config), "candidate": str(extra_new_role_setting)}])
 

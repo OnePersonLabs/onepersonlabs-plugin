@@ -8,9 +8,9 @@ import { spawnSync } from 'node:child_process'
 import { pythonBin } from '../../../tools/runtime.mjs'
 
 const plugin = fileURLToPath(new URL('../../../plugins/opl/', import.meta.url))
-const text = (n) => `<!-- opl-instructions-version: ${n} -->\n\nKeep café and 🚀.\n`
+const text = (n) => `<!-- opl-instructions-version: ${n} -->\n\nKeep cafÃ© and ðŸš€.\n`
 function fixture(t) {
-  const root = mkdtempSync(join(tmpdir(), 'OPL notice é '))
+  const root = mkdtempSync(join(tmpdir(), 'OPL notice Ã© '))
   t.after(() => rmSync(root, { recursive: true, force: true }))
   const home = join(root, 'home')
   const installed = join(root, 'installed')
@@ -27,13 +27,9 @@ function fixture(t) {
 
 function assertOptInContext(output) {
   const context = output.hookSpecificOutput.additionalContext
-  assert.match(context, /ask once whether to replace.*installed OPL instructions/iu)
-  assert.match(context, /custom rules will be replaced.*dated backup.*will not be merged/iu)
-  assert.match(context, /stop and wait for.*reply/iu)
-  assert.match(context, /if the user agrees.*\$opl:update-instructions.*do not ask for a second approval/iu)
-  assert.match(context, /if the user declines.*do not run/iu)
-  assert.match(context, /resume the user.+pending task/iu)
-  assert.ok(!context.includes('candidate'))
+  assert.match(context, /continue the pending task/iu)
+  assert.match(context, /update is authorized.*dated.*backup.*replaces custom rules/iu)
+  assert.match(context, /Do not mutate.*startup check/iu)
   return context
 }
 
@@ -47,7 +43,7 @@ for (const source of ['startup', 'resume', 'clear', 'compact']) {
     const output = JSON.parse(result.stdout)
     assert.match(output.systemMessage, /version 3.*baseline: 1/u)
     const context = assertOptInContext(output)
-    assert.ok(!context.includes('Keep café'))
+    assert.ok(!context.includes('Keep cafÃ©'))
     assert.equal(readFileSync(f.target, 'utf8'), original)
   })
 }

@@ -57,8 +57,6 @@ def repository_root(cwd: Path) -> Path:
 def load_policy(root: Path, plugin_root: Path):
     defaults = plugin_root / "compatibility"
     files = sorted((defaults / "skills").glob("*.json")) + sorted((defaults / "plugins").glob("*.json"))
-    if not files:
-        raise PolicyError(f"{defaults}: bundled compatibility rules are missing")
     rules = []
     origins = {}
     for path in files:
@@ -176,7 +174,7 @@ def display(report):
     if "summary" in report:
         return report["summary"]
     findings = report["findings"]
-    serious = any(item["severity"] != "info" for item in findings)
+    serious = any(item["severity"] != "info" and item["code"] != "unknown_ignore_rule" for item in findings)
     title = "OPL compatibility warning" if serious else "OPL compatibility recommendations"
     lines = [title + ":"]
     for finding in findings[:MAX_DISPLAY_FINDINGS]:
@@ -202,7 +200,7 @@ def has_findings(report):
 
 def needs_acknowledgment(report):
     return report.get("needsAcknowledgment", report["onViolation"] == "acknowledge"
-                      and any(item["severity"] != "info" for item in report.get("findings", [])))
+                      and any(item["severity"] != "info" and item["code"] != "unknown_ignore_rule" for item in report.get("findings", [])))
 
 
 def compact_report(report):

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -306,8 +307,23 @@ def _validate_policy_section(section: str, old: dict, new: dict, old_rest: dict,
     if section != "agents":
         return
 
-    names = {key for key in original if isinstance(key, str) and key.startswith("opl-")}
-    names.update(key for key in proposed if isinstance(key, str) and key.startswith("opl-"))
+    # Share the checker's provenance rule. A name prefix cannot grant authority
+    # to delete or replace a user-authored profile.
+    checker_path = Path(__file__).resolve().parents[3] / "scripts" / "codex-config-check.py"
+    spec = importlib.util.spec_from_file_location("opl_harness_config_checker", checker_path)
+    checker = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(checker)
+    names = set()
+    for name in original.keys() | proposed.keys():
+        prior = original.get(name)
+        value = proposed.get(name)
+        if not isinstance(name, str) or not name.startswith("opl-"):
+            continue
+        if prior is not None and not checker.opl_owned_role(name, prior):
+            continue
+        if value is not None and not checker.opl_owned_role(name, value):
+            continue
+        names.add(name)
     for name in names:
         prior = original.get(name)
         value = proposed.get(name)

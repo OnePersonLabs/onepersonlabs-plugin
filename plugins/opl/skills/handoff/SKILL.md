@@ -1,14 +1,26 @@
 ---
 name: handoff
-description: Compact the current conversation into a handoff document for another agent to pick up.
+description: Prepare a compact continuation document for a fresh agent, preserving active work, decisions, permissions, and recovery state.
 ---
 
-Write a handoff document summarising the current conversation so a fresh agent can continue the work. Save to the temporary directory of the user's OS - not the current workspace.
+# Handoff
 
-Include a "suggested skills" section in the document, which suggests skills that the agent should invoke.
+Save a continuation document in the operating system's temporary directory.
+Tailor it to the user's next-session focus when supplied. Link existing plans,
+specifications, issues, commits, diffs, and checkpoints instead of copying them.
 
-Do not duplicate content already captured in other artifacts (specs, plans, ADRs, issues, commits, diffs). Reference them by path or URL instead.
+Include the intended outcome, scope and permission boundaries, current branch or
+revision, and relevant dirty work. Preserve settled decisions and reasons,
+unresolved questions, checked state and evidence limits, and the next useful action. Preserve uncertain
+external mutations and how to reconcile them before retrying.
 
-Redact any sensitive information, such as API keys, passwords, or personally identifiable information.
+Account for live assignments, writer ownership, processes, and outstanding human
+submissions before handing off. Reconcile already claimed work with the existing
+checkpoint; a duplicate message must not replay external effects. State whether
+ownership transferred or remains with the current root.
 
-If the user passed arguments, treat them as a description of what the next session will focus on and tailor the doc accordingly.
+Add suggested skills with conditions for invoking them. Use `$opl:session-reader`
+only when a missing historical fact requires bounded transcript lookup; this
+handoff is not a full history reconstruction. Redact secrets and unnecessary
+personal information. Report the document path and any remaining blocker.
+A document does not create or start a new session.

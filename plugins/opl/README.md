@@ -1,10 +1,10 @@
 # OPL
 
-One-Person Labs skills, specialist agents, shared instructions, integrations, and workflow hooks for Codex.
+One-Person Labs focused skills, shared instructions, integrations, and advisory workflow hooks for Codex.
 
 ## Runtime
 
-Hooks use Python 3.11 or later and the standard library. Native Windows uses `python`; POSIX uses `python3`. Research through `$opl:last30days` requires Python 3.12 or later. Provider discovery through an npm Codex launcher also requires Node.js. GitHub issue verification requires `gh`.
+Hooks use Python 3.11 or later and the standard library. Native Windows uses `python`; POSIX uses `python3`. Research through `$opl:last30days` requires Python 3.12 or later. Provider discovery through an npm Codex launcher also requires Node.js. GitHub workflow operations use supported GitHub tools or `gh`.
 
 Install the browser and retrieval tools used by the relevant workflows:
 
@@ -21,10 +21,11 @@ Invoke a skill with `$opl:<skill-name>`. Common starting points:
 
 | Skill | Purpose |
 | --- | --- |
-| [$opl:review-changes](skills/review-changes/SKILL.md) | Review a concrete patch. |
+| [$opl:setup-repo-workflow](skills/setup-repo-workflow/SKILL.md) | Explicitly configure one repository using native tools. |
+| [$opl:github-workflow](skills/github-workflow/SKILL.md) | Maintain authorized issue capture and delivery status. |
 | [$opl:debug](skills/debug/SKILL.md) | Investigate and reproduce a failure. |
 | [$opl:design-perceptual-interfaces](skills/design-perceptual-interfaces/SKILL.md) | Explore consequential design and inspect implemented meaning, motion, and visual craft. |
-| [$opl:test-driven-development](skills/test-driven-development/SKILL.md) | Verify behavior through realistic tests. |
+| [$opl:test-driven-development](skills/test-driven-development/SKILL.md) | Explicitly choose red/green development. |
 | [$opl:adhd](skills/adhd/SKILL.md) | Preserve task state and keep one active path. |
 | [$opl:configure-harness](skills/configure-harness/SKILL.md) | Compare capabilities and review a deliberate setup. |
 | [$opl:update-instructions](skills/update-instructions/SKILL.md) | Replace outdated global instructions after one approval, keeping a dated backup. |
@@ -38,13 +39,13 @@ All shipped skills are in [skills/](skills/).
 
 The instruction context hook compares the installed instruction revision with the user's recorded version. Use `$opl:update-instructions` to replace outdated instructions after one approval. It saves the previous file byte for byte in a dated backup; custom rules are not merged.
 
-OPL ships task worker, grunt worker, reviewer, QA, explorer, and documentation researcher roles in [agents/](agents/). Local installation reconciles their `opl-` role registrations with the installed paths.
+OPL ships two domain-specific Slop Buster profiles in [agents/](agents/). Native delegation and user-authored profiles remain available. Local installation reconciles verified OPL-owned registrations while preserving personal profiles.
 
-## Compatibility and discipline
+## Repository policy and advisories
 
-The [compatibility guide](compatibility/README.md) defines optional repository policy in `.opl/config.json` and shipped conflict rules. Hooks check enabled providers and report policy violations.
+The [compatibility guide](compatibility/README.md) defines optional repository policy in `.opl/config.json` . Hooks check enabled providers and report policy violations.
 
-Deferrals that cite GitHub Issues are verified through `gh`. Every referenced issue must exist and remain open before the deferral is accepted.
+Slop hooks persist evidence and provide advisory steering. They do not require an immediate correction or Boolean rating. Startup configuration and instruction notices are read-only and nonblocking. Explicit update tools retain backups and recovery. No unattended issue dispatcher is installed.
 
 ## Task watchdog
 

@@ -245,6 +245,13 @@ def _same_scalar(left: Any, right: Any) -> bool:
     return type(left) is type(right) and left == right
 
 
+def agent_defaults_for(actual: dict[str, Any], defaults: dict[str, Any]) -> dict[str, Any]:
+    """Fill optional child preferences without replacing explicit user choices."""
+    optional = {"default_subagent_model", "default_subagent_reasoning_effort"}
+    return {key: value for key, value in defaults.items()
+            if key not in optional or not isinstance(actual.get(key), str)}
+
+
 def _value_findings(section: str, expected: dict[str, Any], actual: dict[str, Any],
                     path: tuple[str, ...] = ()) -> list[dict[str, Any]]:
     findings = []
@@ -274,6 +281,31 @@ def _value_findings(section: str, expected: dict[str, Any], actual: dict[str, An
     return findings
 
 
+def opl_owned_role(name: str, value: Any) -> bool:
+    """Identify registrations by their plugin manifest, never by name alone.
+
+    A removed agent file can still be attributed to its surviving OPL package.
+    If that package is gone or unverifiable, preserve the registration.
+    """
+    if not isinstance(value, dict) or not isinstance(value.get("config_file"), str):
+        return False
+    path = Path(value["config_file"])
+    if not path.is_absolute() or path.suffix.casefold() != ".toml" or path.is_symlink():
+        return False
+    expected_name = path.stem if path.stem.startswith("opl-") else f"opl-{path.stem}"
+    if expected_name != name or path.parent.name != "agents" or path.parent.is_symlink():
+        return False
+    manifest = path.parent.parent / ".codex-plugin" / "plugin.json"
+    if not manifest.is_file() or manifest.is_symlink():
+        return False
+    try:
+        data = json.loads(manifest.read_text(encoding="utf-8-sig"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        # Unverified provenance is not authority to remove a user's profile.
+        return False
+    return isinstance(data, dict) and data.get("name") == "opl"
+
+
 def evaluate(config: dict[str, Any], inventory: dict[str, str], defaults: dict[str, dict[str, Any]], *,
              include_policy: bool = True) -> dict[str, Any]:
     features = _table(config.get("features"), "features")
@@ -281,7 +313,7 @@ def evaluate(config: dict[str, Any], inventory: dict[str, str], defaults: dict[s
     findings: list[dict[str, Any]] = []
     if include_policy:
         findings.extend(_value_findings("features", defaults["features"], features))
-        findings.extend(_value_findings("agents", defaults["agents"], agents))
+        findings.extend(_value_findings("agents", agent_defaults_for(agents, defaults["agents"]), agents))
     registered = {name: value for name, value in agents.items()
                   if isinstance(name, str) and name.startswith("opl-")}
     for name, path in inventory.items():
@@ -289,11 +321,12 @@ def evaluate(config: dict[str, Any], inventory: dict[str, str], defaults: dict[s
         if current is None:
             findings.append({"code": "agent_missing", "path": f"agents.{name}", "expected": path, "actual": None})
         elif not isinstance(current, dict) or current.get("config_file") != path:
-            findings.append({"code": "agent_path_mismatch", "path": f"agents.{name}.config_file",
+            code = "agent_path_mismatch" if opl_owned_role(name, current) else "agent_ownership_conflict"
+            findings.append({"code": code, "path": f"agents.{name}.config_file",
                              "expected": path,
                              "actual": current.get("config_file") if isinstance(current, dict) else current})
     for name in registered:
-        if name not in inventory:
+        if name not in inventory and opl_owned_role(name, registered[name]):
             findings.append({"code": "agent_stale", "path": f"agents.{name}", "expected": None,
                              "actual": registered[name].get("config_file") if isinstance(registered[name], dict) else registered[name]})
     findings.sort(key=lambda item: (item["path"], item["code"]))
@@ -464,13 +497,13 @@ def render_config(original: bytes, config: dict[str, Any], inventory: dict[str, 
     if include_policy:
         features = _table(config.get("features"), "features")
         text = _update_default_values(text, ("features",), defaults["features"], features)
-        text = _update_table_values(text, ("agents",), defaults["agents"])
+        text = _update_table_values(text, ("agents",), agent_defaults_for(_table(config.get("agents"), "agents"), defaults["agents"]))
 
     agents = _table(config.get("agents"), "agents")
     current = {name: value for name, value in agents.items()
                if isinstance(name, str) and name.startswith("opl-")}
     for name in sorted(current):
-        if name not in inventory:
+        if name not in inventory and opl_owned_role(name, current[name]):
             text = _remove_table(text, ("agents", name))
     for name, path in sorted(inventory.items()):
         existing = current.get(name)
@@ -479,6 +512,8 @@ def render_config(original: bytes, config: dict[str, Any], inventory: dict[str, 
         elif not isinstance(existing, dict):
             raise ConfigCheckError(f"agents.{name} must be a TOML table before it can be updated")
         elif existing.get("config_file") != path:
+            if not opl_owned_role(name, existing):
+                raise ConfigCheckError(f"agents.{name} points outside a verified OPL package; preserve this user profile and resolve the name conflict explicitly")
             text = _update_table_values(text, ("agents", name), {"config_file": path})
     return text.encode("utf-8-sig") if original.startswith(b"\xef\xbb\xbf") else text.encode("utf-8")
 
@@ -531,26 +566,12 @@ def apply_verified_config(home: Path, plugin_root: Path, original: bytes | None,
     return result
 
 
-def _normalize_stale_markers(home: Path, plugin_root: Path, original: bytes | None, version: str) -> tuple[bytes | None, list[str | None]]:
-    raw = original or b""
-    _matching, stale = marker_state(raw, version)
-    if not stale:
-        return original, []
-    candidate = remove_stale_markers(raw, version)
-    apply_config(home, plugin_root, original, candidate)
-    current = read_config_bytes(home)
-    if current is None:
-        raise ConfigCheckError("config.toml disappeared after stale ignore markers were removed")
-    return current, stale
-
-
 def inspect(home: Path, plugin_root: Path, *, include_policy: bool = True,
             respect_ignore_marker: bool = True) -> tuple[bytes | None, dict[str, Any], dict[str, str], dict[str, dict[str, Any]], dict[str, Any]]:
     version = plugin_version(plugin_root)
     original = read_config_bytes(home)
-    original, removed_markers = _normalize_stale_markers(home, plugin_root, original, version)
     raw = original or b""
-    matching_marker, _stale = marker_state(raw, version)
+    matching_marker, stale = marker_state(raw, version)
     if respect_ignore_marker and matching_marker:
         return original, {}, {}, {}, {"ignored": True, "compliant": True, "findings": [], "agents": {}, "version": version}
     defaults = load_defaults(plugin_root)
@@ -558,8 +579,8 @@ def inspect(home: Path, plugin_root: Path, *, include_policy: bool = True,
     inventory = discover_agents(plugin_root)
     report = evaluate(config, inventory, defaults, include_policy=include_policy)
     report["version"] = version
-    if removed_markers:
-        report["removed_ignore_markers"] = removed_markers
+    if stale:
+        report["stale_ignore_markers"] = stale
     return original, config, inventory, defaults, report
 
 
@@ -570,18 +591,20 @@ def command_check(home: Path, plugin_root: Path) -> tuple[dict[str, Any], int]:
 
 def command_reconcile(home: Path, plugin_root: Path) -> tuple[dict[str, Any], int]:
     original, config, inventory, defaults, report = inspect(home, plugin_root, include_policy=False, respect_ignore_marker=False)
-    if report["compliant"]:
+    if report["compliant"] and not report.get("stale_ignore_markers"):
         return report, 0
-    candidate = render_config(original or b"", config, inventory, defaults, include_policy=False)
+    normalized = remove_stale_markers(original or b"", report["version"])
+    candidate = render_config(normalized, config, inventory, defaults, include_policy=False)
     result = apply_verified_config(home, plugin_root, original, candidate, inventory, defaults, include_policy=False)
     return {**report, "applied": result}, 0
 
 
 def command_fix(home: Path, plugin_root: Path) -> tuple[dict[str, Any], int]:
     original, config, inventory, defaults, report = inspect(home, plugin_root, respect_ignore_marker=False)
-    if report["compliant"]:
+    if report["compliant"] and not report.get("stale_ignore_markers"):
         return report, 0
-    candidate = render_config(original or b"", config, inventory, defaults, include_policy=True)
+    normalized = remove_stale_markers(original or b"", report["version"])
+    candidate = render_config(normalized, config, inventory, defaults, include_policy=True)
     result = apply_verified_config(home, plugin_root, original, candidate, inventory, defaults, include_policy=True)
     return {**report, "applied": result}, 0
 
@@ -589,12 +612,11 @@ def command_fix(home: Path, plugin_root: Path) -> tuple[dict[str, Any], int]:
 def command_ignore(home: Path, plugin_root: Path) -> tuple[dict[str, Any], int]:
     version = plugin_version(plugin_root)
     original = read_config_bytes(home)
-    original, _removed_markers = _normalize_stale_markers(home, plugin_root, original, version)
     raw = original or b""
     matching_marker, _stale = marker_state(raw, version)
     if matching_marker:
         return {"ignored": True, "compliant": True, "findings": [], "version": version}, 0
-    result = apply_config(home, plugin_root, original, insert_ignore_marker(raw, version))
+    result = apply_config(home, plugin_root, original, insert_ignore_marker(remove_stale_markers(raw, version), version))
     return {"ignored": True, "compliant": True, "findings": [], "version": version, "applied": result}, 0
 
 
@@ -624,17 +646,14 @@ def command_hook(home: Path, plugin_root: Path) -> tuple[dict[str, Any], int]:
         report, _status = command_check(home, plugin_root)
     except ConfigCheckError as error:
         message = f"OPL configuration check could not inspect config.toml: {error}"
-        reminder = " If already done, ignore silently and continue."
-        return {"systemMessage": message + reminder, "hookSpecificOutput": {"hookEventName": event,
-                "additionalContext": message + " Tell the user. Do not attempt an automatic repair of invalid TOML. They may repair it manually or choose the versioned OPL configuration-check ignore marker to suppress this check." + reminder}}, 0
+        context = message + " Continue the user's task. Report this diagnostic when relevant; repairs require an explicit configuration operation."
+        return {"systemMessage": message, "hookSpecificOutput": {
+            "hookEventName": event, "additionalContext": context}}, 0
     if report["compliant"]:
         return {}, 0
-    summary = "OPL configuration needs attention: " + "; ".join(_finding_text(finding) for finding in report["findings"])
-    context = (summary + ". Tell the user the proposed OPL configuration changes, ask whether to fix them or add "
-               f"{IGNORE_MARKER} version={report['version']}, and pause before starting their task. Keep the original task in conversation.")
-    reminder = " If already done, ignore silently and continue."
-    context += reminder
-    return {"systemMessage": summary + reminder,
+    summary = "OPL configuration notice: " + "; ".join(_finding_text(finding) for finding in report["findings"])
+    context = summary + ". Continue the user's task. Use an explicit fix, reconcile, or ignore operation when configuration changes are authorized."
+    return {"systemMessage": summary,
             "hookSpecificOutput": {"hookEventName": event, "additionalContext": context}}, 0
 
 

@@ -14,7 +14,7 @@ Use `slop.py catalog validate`, `slop.py catalog promote CANDIDATE_JSON`, and `s
 
 An alert identifies a suspected problem, asks the agent to check its premise against the task and evidence, and permits continuation when the problem does not apply. Do not demand apologies, unrelated approval, or ritual disagreement. Use a general step-back template only when evidence supports a combination without a more specific detector.
 
-The agent responds with `SLOP_CHECK <alert-id> true` or `SLOP_CHECK <alert-id> false` after checking applicability. Store timestamp, detector/version, verdict, and available session/source anchors. Do not copy surrounding response text or launch a model to record the answer. Missing or malformed replies remain unresolved; repeated replies do not duplicate evidence.
+The agent may optionally respond with `SLOP_CHECK <alert-id> true` or `SLOP_CHECK <alert-id> false` after checking applicability. Store timestamp, detector/version, verdict, and available session/source anchors. Do not copy surrounding response text or launch a model to record the answer. Missing or malformed replies remain NULL (unrated), not false; repeated replies do not duplicate evidence.
 
 The Boolean is an agent self-assessment. Later corrections or full review can overturn it. Reopen bounded source evidence only when it changes the detector decision. Preserve those links: timestamp-and-Boolean data alone cannot attribute a false alarm or distinguish denial from a faulty detector.
 
@@ -24,4 +24,4 @@ Compare true, false, and unresolved counts by detector and catalog version. Trea
 
 Store general families and subclasses in `dossiers/` in the configured repository. Each update names the evidence IDs, observable prose signals, benign uses, and the next falsifiable question. Save benign source snapshots with `capture --category benign-counterexample --severity none` when they are needed for validation; do not count them as agent failures in the dossier or report.
 
-Limit Stop intervention to one continuation per turn and deduplicate lifecycle events. Do not learn ordinary failure patterns from generated alert instructions or marker-only replies.
+Hooks are advisory. Stop records findings without blocking completion or requesting another response. This removes forced immediate correction; later audit must distinguish unrated findings from false self-reports. Deduplicate lifecycle events. Do not learn ordinary failure patterns from generated alert instructions or marker-only replies.

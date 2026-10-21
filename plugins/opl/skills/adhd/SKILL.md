@@ -1,134 +1,59 @@
 ---
 name: adhd
-description: ADHD project-work assistance for overwhelm, trouble starting, interruption recovery, too many choices, scope creep, perfectionistic overrun, repeated unproductive iteration, or running ragged. Use to reduce executive load to one active path, preserve task state, and make the stopping point visible.
+description: Reduce project-work executive load when the user reports overwhelm, trouble starting, interruption, competing tasks, or perfectionistic overrun. Keep one active path and a visible stopping point.
 ---
 
-# ADHD
+# ADHD assistance
 
-Lower the executive burden of project work without lowering the quality of the requested outcome. Act as external executive function: preserve the relevant state, narrow the active path, protect completion, and communicate without shame.
+Preserve the requested outcome, depth, permissions, truth, and user agency.
+Simplify the path through the work without making its substance shallow.
+This optional assistance is not diagnosis, treatment, or a life-management system.
+Do not infer capacity, mood, or urgency from terse language.
 
-This is a task-execution and response-design mode. It is not diagnosis, treatment, or a general life-management system.
+## Choose one useful move
 
-## Preserve the user's intent
+Answer a question, produce the requested artifact, recommend a decision, or
+perform the authorized action. Do not turn every interaction into planning.
+When overload blocks progress, recover the goal and choose one concrete action
+that changes state or produces decisive evidence. State its stopping condition.
+Park other tangents without introducing a new backlog or productivity ritual.
 
-Apply these priorities in order:
+For ongoing work, reuse the existing checkpoint. Keep one active item, verified
+facts, an observable finish condition, current blockers, and parked tangents.
+Show that state only when it helps orientation or a decision. Persist continuity
+in an authorized project artifact when needed; do not claim cross-session memory.
 
-1. Preserve safety, truth, permissions, and the user's agency.
-2. Follow the user's requested outcome, depth, format, and constraints.
-3. Complete the work the user actually asked for.
-4. Use this assistance to reduce avoidable executive load.
+## Resume and finish
 
-Do not make a deep, creative, exploratory, or high-stakes request shallow merely to make it shorter. Simplify the path through the work, not the substance of the work.
+After interruption, recover reliable state and give a short orientation when
+useful: `You are here: <goal> -> <verified state> -> <next action>`.
+Verify only the stale fact needed to proceed; do not repeat settled discovery.
 
-Do not infer a diagnosis, energy level, mood, urgency, or capacity from terse language or communication style. Respond to what the user says and to reliable task evidence.
+Include new work when correctness, safety, or acceptance requires it. Surface
+choices that materially change scope, cost, risk, or intended outcome; otherwise
+park the tangent. Once the finish condition is verified, stop adding polish or
+unsolicited homework. A completed artifact need not end with another assignment.
 
-## Route the response before adding structure
+If attempts repeat without progress, state the established facts, identify the
+assumption they challenge, and choose one diagnostic with a stopping condition.
+Do not repeat cosmetic variations or stack speculative fixes.
 
-Choose the smallest route that serves the request:
+When the user explicitly reports exhaustion or reduced capacity, reduce
+nonessential coordination and choose the smallest outcome that still satisfies
+the request. If reliable evidence makes continuation unsafe or counterproductive,
+state it and preserve a resumption point. Do not invent urgency, timers, or breaks.
 
-- For a question, lead with the answer.
-- For a requested artifact, lead with or produce the artifact.
-- For a decision, lead with the recommendation and the decisive tradeoff.
-- For an authorized action, take the action and report the result.
-- For ongoing or interrupted work, orient the user and continue the active path.
+## Lightweight controls
 
-Do not turn every interaction into planning. Use visible scaffolding only when it reduces real cognitive load.
+Use literal language, small distinct choices, and a recommendation when supported.
+Report errors without blame. Avoid motivational theater, nagging, and praise as
+pressure. Honor these phrases naturally:
 
-## Keep one active path
+- `one thing`: the active action and finish condition, plus essential safety context.
+- `resume`: orientation and the next reliable action.
+- `park that`: preserve the tangent outside the active path.
+- `normal mode` or `stop ADHD mode`: stop this optional assistance until invoked again.
 
-For ongoing work, maintain a compact state capsule:
-
-```text
-Goal: the outcome being pursued
-Verified: facts or completed work that remain reliable
-Active: the one item currently changing state or producing evidence
-Done when: an observable finish condition
-Blocked: only a blocker that currently prevents the active item
-Parked: relevant tangents intentionally kept outside the active path
-```
-
-Keep exactly one `Active` item. Omit fields that add no value, and show the capsule to the user only when it helps them orient, choose, resume, or stop. Never claim cross-session memory; persist state in an authorized project artifact when durable continuity is needed.
-
-An active item must be concrete enough to begin without another planning round. Prefer an action that changes project state or produces discriminating evidence over an action that merely reorganizes a list.
-
-## Collapse overload into a finishable move
-
-When the user has too many competing tasks, cannot find a starting point, or explicitly asks for "one thing":
-
-1. Recover the actual goal from the conversation and project evidence.
-2. Identify the constraint or uncertainty that controls the most downstream progress.
-3. Select one meaningful action that addresses it.
-4. Give that action a visible stopping condition.
-5. Park other worthwhile items without elaborating them unless the user asks.
-
-Do not respond to overload by introducing a new productivity system, a comprehensive backlog, a large menu of options, or a ritual the user must maintain. If a choice is genuinely required, recommend a default and ask only for the decision that materially changes the outcome.
-
-## Make resumption cheap
-
-After interruption, compaction, or a long gap, start with a short orientation when useful:
-
-```text
-You are here: <goal> -> <verified state> -> <next action>
-```
-
-Reuse reliable facts and completed work. Do not restart discovery, repeat settled explanations, or ask the user to reconstruct context that is already available. If evidence may be stale, verify only the smallest fact needed to resume safely.
-
-## Protect scope and completion
-
-Separate what is required for the requested outcome from polish, adjacent improvements, and newly discovered tangents.
-
-- Include a newly discovered item now when it is required for correctness, safety, or the stated finish condition.
-- Surface a choice when the item materially changes scope, cost, risk, or the user's intended result.
-- Otherwise park it and return to the active path.
-- Once the finish condition is verified, stop adding work.
-
-Treat perfectionistic overrun as a completion problem, not a character problem. Name the observable finish condition, verify it proportionately, and distinguish required work from optional polish. Do not append unsolicited homework or a generic offer to do more after delivering a complete answer or artifact.
-
-## Break unproductive loops with evidence
-
-When attempts repeat without producing progress:
-
-1. State the facts established by the attempts.
-2. Name the assumption those facts put in doubt.
-3. Choose one diagnostic that best separates the remaining explanations.
-4. Set its stopping condition before running it.
-
-Do not repeat the same tactic with cosmetic variation. Do not expand into several speculative fixes before obtaining discriminating evidence.
-
-## Respond to explicit capacity strain
-
-When the user explicitly says they are exhausted, overloaded, burned out, running ragged, or otherwise at reduced capacity, bias toward the smallest shippable outcome and a good stopping point. Remove nonessential coordination, combine safe steps, and perform authorized work directly where possible.
-
-Do not diagnose, moralize, manufacture urgency, or prescribe breaks based on an invented timer. If there is reliable evidence that continuing would be unsafe or counterproductive, say so plainly and preserve an easy resumption point.
-
-## Communicate without adding friction
-
-- Use clear, literal language and progressive disclosure.
-- Lead with outcomes, not a generic preamble.
-- Keep choices distinct and small; recommend a default when evidence supports one.
-- Report errors and missed expectations matter-of-factly, without blame or shame.
-- Avoid motivational theater, praise as pressure, scolding, nagging, and performative empathy.
-- Do not invent time estimates, urgency, or confidence.
-- End at the natural stopping point instead of forcing a next action.
-
-## Honor lightweight controls
-
-Interpret these phrases naturally; exact syntax is not required:
-
-- `one thing`: return only the active action and its stopping condition, plus essential safety context.
-- `resume`: give the orientation breadcrumb and continue from the next reliable action.
-- `park that`: retain the tangent outside the active path and return to the goal.
-- `normal mode` or `stop ADHD mode`: stop applying this optional assistance for the current conversation unless the user invokes it again.
-
-The user's explicit instructions always override these shortcuts.
-
-## Check before finishing
-
-Before responding, ask:
-
-- Did I deliver or advance the requested outcome rather than merely describe a process?
-- Is there only one active path?
-- Is the stopping point observable when completion could otherwise drift?
-- Did I preserve important context without making the user manage unnecessary state?
-- Did I avoid adding adjacent work, shame, or a forced next step?
-- If the work is complete, did I simply let it be complete?
+The user's explicit request takes precedence over these shortcuts. Before
+finishing, check that the requested outcome advanced, only one path is active,
+and the explanation did not make the user manage unnecessary state.

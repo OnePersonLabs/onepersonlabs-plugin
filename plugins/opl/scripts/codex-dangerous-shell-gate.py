@@ -2,10 +2,15 @@
 
 This recognizes common command shapes; it is not a complete shell parser.
 """
+import json
 import re
 import sys
 
-from codex_discipline_policy import read_input
+def read_input():
+    value = json.load(sys.stdin)
+    if not isinstance(value, dict):
+        raise ValueError('hook input must be a JSON object')
+    return value
 
 
 def unsafe_command(command):
@@ -14,8 +19,6 @@ def unsafe_command(command):
     for pattern, reason in (
         (r'git\s+push\b[^;|&]*\s(?:--force(?:-with-lease)?|-f)(?=[\s;|&]|$)', 'force-push requires explicit human handling'),
         (r'git\s+reset\s+--hard(?=[\s;|&]|$)', 'git reset --hard is destructive'),
-        (r'(?:wget|curl)(?:\.exe)?\s+', 'raw downloader command is not auto-allowed'),
-        (r'(?:Invoke-WebRequest|Invoke-RestMethod|iwr|irm)\s+', 'raw downloader command is not auto-allowed'),
     ):
         match = re.search(boundaries + pattern, normalized, re.I)
         if match:

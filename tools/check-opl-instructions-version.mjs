@@ -1,9 +1,6 @@
 #!/usr/bin/env node
 
 import { execFileSync, spawnSync } from 'node:child_process'
-import { readFileSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
-import { syncOplAgentProfiles } from './sync-opl-agent-profiles.mjs'
 
 const path = 'plugins/opl/AGENTS.md'
 
@@ -30,10 +27,6 @@ function version(text, { allowMissing = false } = {}) {
 }
 
 try {
-  const root = git('rev-parse', '--show-toplevel').trim()
-  const sync = syncOplAgentProfiles(root, { stage: true, requireStagedAgents: true })
-  if (sync.changed) process.stdout.write(`Synchronized agent profiles and staged ${path}.\n`)
-
   const stagedChanges = git('diff', '--cached', '--name-only', '--', path).trim()
   if (stagedChanges) {
     if (!git('ls-files', '--stage', '--', path).trim()) {
@@ -51,15 +44,7 @@ try {
       if (stagedVersion.value < previousVersion.value) throw new Error('OPL instruction revision must not decrease. Restore or increment the revision, stage the file, and retry.')
       const changedContent = staged.replace(stagedVersion.marker, '') !== previous.replace(previousVersion.marker, '')
       if (changedContent && stagedVersion.value <= previousVersion.value) {
-        const requiredVersion = previousVersion.value + 1n
-        const workingPath = join(root, path)
-        const working = normalize(readFileSync(workingPath, 'utf8'))
-        const workingVersion = version(working)
-        const nextVersion = workingVersion.value > requiredVersion ? workingVersion.value : requiredVersion
-        const bumped = working.replace(workingVersion.marker, `<!-- opl-instructions-version: ${nextVersion} -->`)
-        writeFileSync(workingPath, bumped, 'utf8')
-        git('add', '--', path)
-        process.stdout.write(`Bumped the OPL instruction revision to ${nextVersion} and staged ${path}.\n`)
+        throw new Error(`Instruction content changed without a staged revision bump. Increment to at least ${previousVersion.value + 1n}, stage only the intended changes, and retry.`)
       }
     }
   }

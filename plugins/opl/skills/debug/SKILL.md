@@ -1,6 +1,6 @@
 ---
 name: debug
-description: Diagnose bugs, failing tests, build failures, performance regressions, and unexpected behavior; implement and verify a causal fix when requested. Use for concrete failures that need investigation, not general code review or speculative optimization.
+description: Diagnose a concrete failure, establish its cause, and verify a causal fix when requested.
 ---
 
 # Debug
@@ -59,11 +59,10 @@ existing environment-based credentials and capture only the needed signal.
 
 ## Fix and verify when requested
 
-- Put regression coverage at the narrowest boundary that reproduces the real
-  failure pattern, including multiple callers, ordering, or state when those
-  are causal. A shallow test that cannot expose the defect is not coverage.
-  Use the recipient's `$test-driven-development` for the executable
-  change: observe the defect fail, make the smallest coherent fix, and rerun.
+- Choose evidence that can expose the real failure, including multiple callers,
+  ordering, or state when those are causal. Reuse existing checks or a one-time
+  reproduction. Add permanent coverage only when the governing test policy and
+  a meaningful remaining gap justify it. Test-first development is optional.
 - Change the layer that owns the violated contract. Do not accumulate
   downstream compensation unless recovery is that boundary's responsibility.
 - If a test seam is missing, examine a realistic outer boundary or a small

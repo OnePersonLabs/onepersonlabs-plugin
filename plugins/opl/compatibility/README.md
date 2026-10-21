@@ -1,6 +1,6 @@
 # Codex compatibility checks
 
-OPL checks local Codex metadata against shipped defaults and repository policy
+OPL checks local Codex metadata against repository policy
 for plugins, skills, and MCP servers. It reports missing requirements, conflicts,
 recommendations, and discovery failures.
 
@@ -12,48 +12,19 @@ before expecting automatic checks.
 ## Repository policy
 
 Add `codex.compatibility` to `.opl/config.json` at the repository root. The file
-is optional: shipped OPL rules still apply when no repository policy is present.
+is optional. An empty policy is valid and does not require capability discovery.
 
-This example requires OPL and its Context7 MCP server, recommends OPL's `$debug`
-with a conditional TDD companion, and adds a repository-wide conflict rule.
+This example requires the project's documentation server and warns about missing
+local tooling. Use constraints established by the repository, not provider loyalty.
 
 ```json
 {
   "codex": {
     "compatibility": {
       "version": 1,
-      "onViolation": "acknowledge",
-      "required": [
-        { "kind": "plugin", "id": "opl@opl" },
-        {
-          "kind": "mcp",
-          "name": "context7",
-          "plugin": "opl@opl"
-        }
-      ],
-      "recommended": [
-        {
-          "kind": "skill",
-          "name": "debug",
-          "plugin": "opl@opl",
-          "whenEnabled": {
-            "required": [
-              {
-                "kind": "skill",
-                "name": "test-driven-development",
-                "plugin": "opl@opl",
-                "reason": "Use OPL TDD when debugging leads to implementation."
-              }
-            ]
-          }
-        }
-      ],
-      "disallowed": [
-        {
-          "kind": "skill",
-          "name": "systematic-debugging"
-        }
-      ]
+      "onViolation": "warn",
+      "required": [{ "kind": "mcp", "name": "project-docs" }],
+      "recommended": [{ "kind": "skill", "name": "project-build" }]
     }
   }
 }
@@ -70,7 +41,7 @@ default) or `warn`.
 | `disallowed` | Any matching enabled component is a violation. |
 | `whenEnabled` inside a required or recommended entry | Apply its nested declarations only when that entry has an enabled match. |
 | A top-level `rules` entry | Apply its declarations only when its `whenEnabled` selector has an enabled match. |
-| `ignoreRules` | Suppress an exact shipped rule ID, with a required explanation. |
+| `ignoreRules` | Suppress an exact rule ID, with a required explanation. |
 
 An enabled plugin does not imply that every bundled skill or MCP server is
 enabled. Use component selectors for the capabilities the repository needs.
@@ -93,54 +64,20 @@ standalone skills, add the absolute skill path reported by discovery. JSON
 names omit the `$` invocation sigil. Entries can include a human-readable
 `reason`; a top-level rule can also supply a shared `reason`.
 
-Keep a useful plugin enabled and disable only its conflicting skills through
-Codex's skill controls. For example, keep Matt Pocock Skills for its other
-workflows while disabling `$diagnosing-bugs` wherever it remains installed.
-The checker evaluates effective component enablement, so this satisfies a
-skill prohibition without requiring removal of the whole plugin.
-
 Codex's `skills.config` entries are enablement overrides, not a complete
 inventory. Use the diagnostic's discovered identity and path when resolving a
 duplicate; a missing override does not mean a skill is absent. See the
 [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference).
 
-## Shipped defaults
+## Conditional rules and exceptions
 
-These rules ship in OPL and activate only while their owner skill is enabled:
+A top-level rule has an `id`, an owner selector in `whenEnabled`, and optional
+constraints. Bundled rules can bind an owner path with `${PLUGIN_ROOT}/`; the
+loader rejects paths escaping the plugin. Repository paths remain absolute.
 
-| Policy file | Rule ID |
-| --- | --- |
-| [`skills/debug.json`](skills/debug.json) | `opl.debug.alternatives` |
-| [`skills/last30days.json`](skills/last30days.json) | `opl.last30days.alternatives` |
-| [`skills/test-driven-development.json`](skills/test-driven-development.json) | `opl.test-driven-development.alternatives` |
-
-OPL `$debug` flags `$systematic-debugging`, `$diagnosing-bugs`, and other `$debug`
-copies. OPL `$last30days` flags every other enabled skill named `$last30days`,
-including standalone skills, other providers, and other OPL copies. Its owner
-is bound to the skill file in the OPL copy running the checker. Disabled copies
-do not conflict, and a missing or disabled owner does not activate the rule.
-OPL `$test-driven-development` flags alternative
-`$test-driven-development` and `$test-driven-development-curated` copies.
-OPL centralizes these checks in its own skills.
-
-Bundled rules can bind a top-level `whenEnabled.path` to the current plugin
-using `${PLUGIN_ROOT}/`, as in `${PLUGIN_ROOT}/skills/last30days/SKILL.md`.
-The loader resolves that path inside the current plugin root before normal
-selector validation and rejects paths that escape the plugin. Expansion applies
-only to bundled rule owners; repository policy still requires absolute paths.
-
-Repository policy adds to these defaults. To accept a shipped conflict, merge
-this object into `codex.compatibility`, using the exact reported ID:
-
-```json
-{
-  "ignoreRules": [
-    { "id": "opl.debug.alternatives", "reason": "This repository compares both debugging workflows." }
-  ]
-}
-```
-
-Each exception requires a nonblank reason. An unknown ID is a policy error.
+`ignoreRules` suppresses a matching rule ID with a nonblank reason. An unavailable
+ID produces a nonblocking warning and has no effect; it does not disable other
+constraints. OPL adds no preference for its own skill providers.
 
 ## Acknowledgment and session behavior
 

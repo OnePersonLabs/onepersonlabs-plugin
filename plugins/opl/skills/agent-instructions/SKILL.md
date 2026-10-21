@@ -1,6 +1,6 @@
 ---
 name: agent-instructions
-description: Author, update, or review AGENTS.md and SKILL.md; audit, score, or restructure hooks and other agent instructions.
+description: Author, consolidate, audit, or score agent instructions and skill packages.
 ---
 
 # Agent Instructions
@@ -17,10 +17,6 @@ take a predictable process without forcing identical output.
 - **Score** when the user asks for a score, grade, comparison, or quantitative
   readiness assessment. For a combined update and score request, update first
   and score the final state.
-- **Optimize AGENTS.md** when the user explicitly invokes
-  `$optimize-agent-instructions` for whole-file optimization. For other
-  instruction requests, use the applicable mode above.
-
 ## Establish the Instruction System
 
 Before editing, identify the requested behavior, its intended scope, and the
@@ -116,22 +112,21 @@ than adding a counterweight. Delete tutorials, motivational prose, history,
 restated environment facts, and sentences that do not change model behavior.
 Treat size as an attention cost, not a quality signal.
 
-## Optimize Proposed Changes
+## Optional phrase scrutiny and comparison
 
-Whenever authoring or changing AGENTS files or a skill package's instruction
-text, read
-[$optimize-agent-instructions](../optimize-agent-instructions/SKILL.md) and
-apply its **Proposed changes** mode before delivery. This is a required workflow
-dependency, not implicit discovery of the optimizer's standalone mode.
+When an instruction is costly, ambiguous, or unreliable, inspect its clauses:
+what outcome does each preserve, what changes if it is removed, and where should
+it load? Replace a faulty instruction instead of adding a counterweight.
+Use the smallest wording that preserves the required outcome and permission
+boundary. Do not turn judgment into an exhaustive mechanical checklist.
 
-Check the whole affected instruction system for coherence. Before optimization,
-include companion edits needed to resolve conflicting meanings, broken routing,
-or affected dependencies. Supply the pre-edit baseline and complete proposed
-diff, including new files. Revise each added or changed phrase through that mode.
-Leave unrelated text and user changes intact. Check the final system's coherence
-and the diff's scope and meaning, then run the applicable checks.
-If behavioral checks are needed, plan the fewest compatible shot groups and
-follow the host's permission and end-of-turn batching rules.
+When wording uncertainty could change the decision, read
+[bounded comparisons](references/behavioral-tests.md). Compare the baseline and
+proposal under equivalent conditions with an independent observable criterion.
+Use deterministic evidence for syntax and facts. Follow host permission rules
+for AI usage; this optional method does not authorize model evaluations.
+Report untested behavior honestly. Authoring a skill does not require invoking
+another optimizer or comparing every phrase experimentally.
 
 ## Complete the Work
 
