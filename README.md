@@ -64,13 +64,16 @@ routine repairs do not require a solution survey.
 
 Use `$opl:setup-repo-workflow` explicitly to configure one repository through its
 existing instructions, GitHub conventions, local checks, review lane, and merge
-policy. Choose trusted serial commits, parallel worktree integration or PR
-delivery under project authority. Setup explains independent workers, optional
+policy. Default to serial work in the selected checkout and branch; new delivery
+branches and PRs are opt-in. Setup explains independent workers, optional
 helpers and their aggregate budget without adding another configuration schema.
 Ordinary authorized work uses `$opl:github-workflow` for issue capture
 and state maintenance. Projects remain independent. The builder owns PR repairs;
 small checked commits make the series reviewable. Local verification is primary.
-Human merge is the default. Setup does not install unattended dispatch.
+For selected PR delivery, automatic merge follows required checks and reviews,
+with existing protections and explicit manual-merge overrides preserved. Native
+auto-merge does not wake the builder for repairs or start the next issue. Setup
+does not install unattended dispatch.
 
 The [overhaul audit](docs/opl-overhaul.md) records package dispositions, sources
 and verification. The [runtime comparison](docs/runtime-research.md) and

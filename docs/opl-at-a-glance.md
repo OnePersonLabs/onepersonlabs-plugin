@@ -2,12 +2,14 @@
 
 **OPL helps you direct Codex from a defined problem to a checked, delivered change.**
 You choose the work and its limits. A **builder** is the Codex conversation
-responsible for implementing and repairing the change. You normally decide when
-to merge.
+responsible for implementing and repairing the change. Default work stays in
+your selected checkout and branch, with small checked commits. New delivery
+branches and PRs are opt-in. When you choose PR delivery, merge is automatic
+after required checks and reviews, unless the project requires manual merge.
 
 | Who | Responsibility |
 | --- | --- |
-| **You** | Set the goal, authorize actions, resolve choices, merge. |
+| **You** | Set the goal, authorize actions, resolve choices and overrides. |
 | **OPL** | Supply reusable skills, instructions, and workflow guidance. |
 | **Codex** | Run the builder, tools, optional helpers, and review. |
 | **GitHub** | Record issues, proposed changes, discussion, and delivery status. |
@@ -20,7 +22,7 @@ of commits with the project's accepted code, called its **base**.
 
 This map follows the **PR lane**, using the project's required checks and review.
 Read downward. The return arrow means **the same builder repairs the work**.
-Blue rectangles are work; amber shapes are review or human decisions. Labels
+Blue rectangles are work; amber shapes are review or delivery gates. Labels
 and shapes carry the meaning even without color.
 
 ```mermaid
@@ -32,12 +34,12 @@ config:
 ---
 flowchart TB
     accTitle: One issue, one responsible builder
-    accDescr: In the PR lane, select an authorized ready issue. Its builder implements, checks and commits. The project's selected review can return work to that builder for repair and renewed checks. Once required review is resolved, a human normally merges. Synchronize the accepted base before the operator chooses the next eligible issue.
+    accDescr: In the opt-in PR lane, select an authorized ready issue. Its builder implements, checks and commits. The project's selected review can return work to that builder for repair and renewed checks. Merge automatically once required checks and reviews pass, unless manual merge is required. Synchronize the accepted base before the operator chooses the next eligible issue.
     I["☐ Ready issue<br/>Goal + proof"] --> B["⚙ Same builder<br/>Build / repair"]
     B --> C["✓ Local checks<br/>Small commits"]
     C --> R{{"◇ Required review<br/>Full series"}}
     R -->|"Repair needed"| B
-    R -->|"Review resolved"| M(["Human merges"])
+    R -->|"Review resolved"| M(["Auto-merge<br/>Requirements met"])
     M --> S["↻ Sync accepted base"]
     S --> N(["Operator picks<br/>next ready issue"])
     classDef work fill:#e7f0fa,stroke:#42648a,color:#172b4d;
@@ -47,12 +49,13 @@ flowchart TB
 ```
 
 **Text route:** issue → builder → local checks and commits → review → same-builder
-repair if needed → human merge → base sync → operator chooses next issue.
+repair if needed → automatic merge → base sync → operator chooses next issue.
 
 **Worked case:** an issue asks for a reliable file export. The builder implements
 it, checks it locally, and opens a PR. Review finds that a failed write shows
 “success.” The original builder repairs and checks that failure path; review
-checks the repair. You merge once the required checks and review are resolved.
+checks the repair. Merge follows automatically once required checks and review
+are resolved, unless the project requires manual merge.
 After base sync, the operator can select the next ready issue.
 
 <details>
@@ -84,8 +87,8 @@ checks, review, and merge protections apply.
 
 ## Choose how changes reach the base
 
-The delivery map above shows the **PR lane**. OPL also supports two local lanes
-when the project's policy authorizes them:
+The delivery map above shows the **opt-in PR lane**. Serial work is the default;
+the project's policy can select another lane:
 
 - **Serial direct commits:** one builder works in one conversation and makes
   checked commits directly to the agreed branch. No per-issue PR is required.
@@ -93,11 +96,16 @@ when the project's policy authorizes them:
   (working folders with their own checked-out branches). One integration owner
   combines their changes, checks the combined result, and lands them in order.
 - **PR delivery:** a branch is published for review; the original builder owns
-  repairs through merge and base sync. Human merge is the default.
+  repairs through merge and base sync. Automatic merge is the default after
+  required checks and reviews; explicit manual-merge policy still applies.
 
 **A worktree separates working copies. It does not require a PR.** Local lanes
 still retain required checks, review, acceptance, and an explicit landing step.
 Existing branch protections remain in force.
+
+Native auto-merge waits for GitHub-required checks and reviews. The builder must
+finish local requirements before an immediately available merge. Enabling
+auto-merge does not wake the builder for review repairs or select the next issue.
 
 ## Count owners separately from helpers
 

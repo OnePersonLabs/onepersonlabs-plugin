@@ -250,3 +250,27 @@ passed. The isolated installed-copy checkpoint passed OPL contract checks,
 all 27 unit test files, source/installed inventory comparison and trust checks
 for 23 hooks. Active Windows/WSL homes and session-loaded instructions remain
 unchanged until the human-merge and refresh boundary.
+
+## Automatic landing and opt-in PR delivery
+
+The user authorized landing the accumulated stack and revised the default on
+2026-10-21. PRs #5, #7, #9 and #11 are merged into `main`; all 15 original commits
+remain in history. The four completed local and remote branches were removed
+after ancestry and remote-head checks. The checkout returned to `main`.
+
+Instruction revision 58 makes serial work in the selected checkout and branch
+the default. New delivery branches and PRs require an explicit user or project
+choice; parallel independent writers still need isolation. Commits remain
+coherent units that can be understood and reviewed on their own.
+
+For selected PR delivery, the builder completes required checks and reviews and
+merges automatically, preserving commit units and existing protections. Explicit
+manual-merge requirements still apply. OPL's native GitHub auto-merge setting is
+enabled; individual PRs still need to be armed. Native auto-merge waits only on
+GitHub-enforced requirements, so local checks and reviews must finish before an
+immediately available merge. Verify actual landing and accepted-base sync.
+
+This supersedes the earlier human-merge default recorded above. It adds neither
+review-feedback delivery nor unattended next-issue dispatch; those remain owned
+by issue #4. Sources: [GitHub auto-merge](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/automatically-merging-a-pull-request)
+and [native CLI merge options](https://cli.github.com/manual/gh_pr_merge).
