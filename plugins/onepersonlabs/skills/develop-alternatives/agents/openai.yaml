@@ -1,0 +1,7 @@
+interface:
+  display_name: "Develop alternatives"
+  short_description: "Build real options for a consequential design choice"
+  default_prompt: "Use $onepersonlabs:develop-alternatives when a defined consequential problem still needs distinct, concrete approaches before judgment."
+
+policy:
+  allow_implicit_invocation: true

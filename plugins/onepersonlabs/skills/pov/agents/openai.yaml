@@ -1,0 +1,7 @@
+interface:
+  display_name: "Grounded point of view"
+  short_description: "Decide what fits this project and why"
+  default_prompt: "Use $onepersonlabs:pov when a consequential decision, supplied approach, or document direction needs a source-grounded position."
+
+policy:
+  allow_implicit_invocation: true
