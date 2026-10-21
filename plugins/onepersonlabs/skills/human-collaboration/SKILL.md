@@ -1,6 +1,6 @@
 ---
 name: human-collaboration
-description: Open the shared human inbox for this chat and collaborate through technical reviews, optional questions, and submitted feedback.
+description: Prepare and integrate requested human collaboration through the shared inbox, technical reviews, questions, and feedback pinned to a running page.
 ---
 
 # Human collaboration
@@ -23,8 +23,9 @@ Use the known root thread ID or `CODEX_THREAD_ID`; never guess it. If an inbox
 exists, read `INBOX.md` and use `pending` and `list` before creating more work.
 Inspect only the relevant full items with `show H006`.
 
-When the user explicitly invokes `$onepersonlabs:human-collaboration`, the interactive
-root opens the inbox before preparing contributions:
+When the user requests substantive human collaboration, including feedback on a
+running product, or explicitly invokes `$onepersonlabs:human-collaboration`, the
+interactive root opens the inbox before preparing contributions:
 
 1. Run `init --title <readable-title>` for this root. It creates or reuses the
    project inbox, enrolls the session, and registers the project in the local
@@ -54,7 +55,8 @@ pending input after startup, resumption or compaction, before related commitment
 and before completion. These checks do not enroll a session or start a server.
 Do not run `init`, `connect`, or `serve` because a hook requests recovery or during
 ordinary chat activity. If the current root is not enrolled, continue independent
-work and tell the user to invoke this skill before publishing contributions.
+work. Enroll only when the user has requested substantive collaboration as above;
+a recovery hook alone does not authorize enrollment.
 Workers route enrollment requests and contribution proposals to their parent.
 
 Each contribution belongs to one root session. Independent roots can register
@@ -97,6 +99,11 @@ Read [brief preparation](references/briefs.md) before publishing or revising a
 technical review. Keep the decision, source snapshot, worked case, alternatives,
 and return path together. Use the existing `publish`/`revise` protocol; preserve
 published revisions and human drafts.
+
+For feedback that needs a person to point at a running page, select
+[page feedback](references/page-feedback.md), prepare the adapter, and verify its
+controls before inviting the human. Keep its notes in the existing contribution
+protocol and its accepted decisions with the current project owner.
 
 ## Respond and integrate
 

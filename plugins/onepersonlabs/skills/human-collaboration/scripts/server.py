@@ -24,6 +24,7 @@ WEB = Path(__file__).resolve().parent.parent / "web"
 ACTIVITY = logging.getLogger("onepersonlabs.human")
 STATIC = {"/": ("index.html", "text/html; charset=utf-8"),
           "/app.js": ("app.js", "text/javascript; charset=utf-8"),
+          "/page-review.js": ("page-review.js", "text/javascript; charset=utf-8"),
           "/style.css": ("style.css", "text/css; charset=utf-8")}
 ROUTES = set(STATIC) | {"/favicon.ico", "/api/inbox", "/api/service", "/api/item", "/api/source",
                         "/api/draft", "/api/submit", "/api/contribute", "/api/action"}

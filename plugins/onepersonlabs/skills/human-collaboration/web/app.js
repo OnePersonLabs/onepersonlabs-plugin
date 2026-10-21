@@ -514,7 +514,7 @@ async function openItem(id, revision, workspace = snapshot.workspace_id) {
     detail.append(el('p', `Published filesystem mtime_ns: ${item.published_mtime_ns} · observed: ${item.observed_mtime_ns}`, 'stamp'))
   } catch (error) { notice(error.message) }
 }
-async function newContribution() {
+async function newContribution(seed = null) {
   clearTimeout(saveTimer)
   if (saving) await saving
   const sessions = snapshot.sessions
@@ -525,11 +525,16 @@ async function newContribution() {
     const option = el('option', `${session.title} · ${session.workspace}`)
     option.value = session.id; target.append(option)
   }
-  target.value = sessionFilter || (sessions.length === 1 ? sessions[0].id : '')
+  target.value = seed?.session || sessionFilter || (sessions.length === 1 ? sessions[0].id : '')
   let key, local
+  const persistContribution = () => {
+    try { localStorage.setItem(key, JSON.stringify(local)) }
+    catch { notice('Device storage is unavailable. Keep this page open until submitted.') }
+  }
   const loadDraft = () => {
-    key = `onepersonlabs-human:new:${target.value || 'unassigned'}`
-    local = cached(key) || (sessions.length === 1 ? cached(`onepersonlabs-human:${sessions[0].workspace_id}:new`) : null) || {title: '', body: '', request_id: requestId()}
+    key = seed?.capture ? `onepersonlabs-human:page-draft:${seed.request_id}:${target.value}` : `onepersonlabs-human:new:${target.value || 'unassigned'}`
+    local = cached(key) || (!seed && sessions.length === 1 ? cached(`onepersonlabs-human:${sessions[0].workspace_id}:new`) : null) || {title: seed?.title || '', body: seed?.body || '', request_id: seed?.request_id || requestId()}
+    if (seed) persistContribution()
   }
   loadDraft()
   const detail = $('#detail'); detail.replaceChildren(); detail.hidden = false
@@ -542,6 +547,7 @@ async function newContribution() {
     local = {title: title.value, body: body.value, request_id: requestId()}
     try { localStorage.setItem(key, JSON.stringify(local)) } catch { notice('Device storage is unavailable. Keep this page open until submitted.') }
   }
+  title.disabled = body.disabled = target.disabled = Boolean(local.pendingSend)
   title.addEventListener('input', store); body.addEventListener('input', store)
   target.addEventListener('change', () => { loadDraft(); title.value = local.title; body.value = local.body })
   const send = button('Send contribution', async () => {
@@ -550,9 +556,17 @@ async function newContribution() {
     send.disabled = true
     try {
       const session = sessions.find((candidate) => candidate.id === target.value)
-      const receipt = await api('/api/contribute', {...local, session: session.id, workspace: session.workspace_id})
-      localStorage.removeItem(key); snapshot = await api('/api/inbox'); renderQueue()
-      if (sessions.length === 1) localStorage.removeItem(`onepersonlabs-human:${session.workspace_id}:new`)
+      const payload = local.pendingSend || {title: local.title, body: local.body, request_id: local.request_id, session: session.id, workspace: session.workspace_id}
+      local.pendingSend = payload
+      persistContribution()
+      title.disabled = body.disabled = target.disabled = true
+      const receipt = await api('/api/contribute', payload)
+      seed?.onSubmitted?.(receipt)
+      try { localStorage.removeItem(key) } catch { /* The server receipt is durable. */ }
+      snapshot = await api('/api/inbox'); renderQueue()
+      if (sessions.length === 1 && !seed) {
+        try { localStorage.removeItem(`onepersonlabs-human:${session.workspace_id}:new`) } catch { /* Already submitted. */ }
+      }
       await openItem(`H${String(receipt.item).padStart(3, '0')}`, undefined, session.workspace_id)
       notice('Your contribution is saved. The root owes you an outcome.')
     } catch (error) { notice(`Contribution retained for retry. ${error.message}`) }
@@ -563,7 +577,9 @@ async function newContribution() {
     el('label', 'Send to session'), target, titleLabel, title, bodyLabel, body, send)
   detail.querySelector('label').htmlFor = target.id
 }
-$('#contribute').addEventListener('click', newContribution)
+$('#contribute').addEventListener('click', () => newContribution())
+const {pageReview} = await import(`/page-review.js?guid=${encodeURIComponent(guid)}`)
+window.onepersonlabsPageReview = pageReview({button: $('#review-page'), sessions: () => snapshot?.sessions || [], contribute: newContribution, notice})
 $('#refresh').addEventListener('click', () => refresh())
 $('#pair-form').addEventListener('submit', async (event) => {
   event.preventDefault(); token = $('#token').value.trim(); sessionStorage.setItem('onepersonlabs-human-token', token); await refresh()

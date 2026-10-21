@@ -52,6 +52,11 @@ scheduler, task registry, approval gate, or acceptance authority.
    from observed choices and corrections. A model's selection is provisional;
    never attribute it to the user or convert it into proven comprehension.
 
+When requested human feedback depends on a visible element or variant, use
+$onepersonlabs:human-collaboration and its [page adapter](../human-collaboration/references/page-feedback.md).
+Prepare capture on the actual page and reconcile submitted notes against current
+source before changing the design. Model preference remains separate from human evidence.
+
 Deliver the implemented result, its design rationale, inspected states and
 interactions, evidence pointers, and remaining limits. Keep important corrections
 with their context for future retrieval. Stop when the scoped obligation is met;

@@ -5,6 +5,7 @@ Set ONEPERSONLABS_CHROMIUM_BIN when Chromium is not discoverable on PATH.
 """
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import sys
@@ -86,6 +87,67 @@ class HumanUiTests(unittest.TestCase):
 
     def assert_no_overflow(self):
         self.assertTrue(self.page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"))
+
+    def test_page_feedback_survives_reload_lost_response_and_reaches_outcome(self):
+        from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+        class Product(BaseHTTPRequestHandler):
+            def do_GET(self):
+                self.send_response(200); self.send_header("Content-Type", "text/html"); self.end_headers()
+                self.wfile.write(b'<html><body><h1>Checkout</h1><button id="buy" onclick="window.purchased=true">Buy now</button></body></html>')
+            def log_message(self, *args):
+                pass
+        product = ThreadingHTTPServer(("127.0.0.1", 0), Product)
+        thread = threading.Thread(target=product.serve_forever, daemon=True); thread.start()
+        self.addCleanup(lambda: (product.shutdown(), product.server_close(), thread.join()))
+        target = f"http://127.0.0.1:{product.server_port}/checkout?private=omit-me"
+        session = self.inbox.snapshot()["sessions"][0]["id"]
+        options = self.page.evaluate("input => onepersonlabsPageReview.prepare(input)",
+            {"url": target, "session": session, "sourceState": "fixture-v1", "variant": "A"})
+        with self.page.expect_popup() as popup:
+            self.page.get_by_role("button", name="Review a page", exact=True).click()
+        review = popup.value; review.wait_for_load_state()
+        script = ROOT / "plugins/onepersonlabs/skills/human-collaboration/web/annotate.js"
+        review.add_script_tag(path=str(script)); review.evaluate("options => onepersonlabsAnnotate(options)", options)
+        review.get_by_role("button", name="Pin an element").click()
+        review.locator("#buy").click()
+        self.assertFalse(review.evaluate("Boolean(window.purchased)"))
+        review.get_by_role("textbox", name="Feedback note").fill("Show the total before purchase.")
+        review.reload(); review.add_script_tag(path=str(script)); review.evaluate("options => onepersonlabsAnnotate(options)", options)
+        expect(review.get_by_role("textbox", name="Feedback note")).to_have_value("Show the total before purchase.")
+        review.get_by_role("button", name="Save note", exact=True).click()
+        # An unrelated window with the correct channel still cannot propose a draft.
+        with self.page.expect_popup() as untrusted:
+            self.page.evaluate("url => window.open(url, 'untrusted')", target)
+        intruder = untrusted.value; intruder.wait_for_load_state()
+        intruder.evaluate("o => window.opener?.postMessage({type:'onepersonlabs:page-notes',channel:o.channel,batch:{id:'fake',body:'fake'}},o.inboxOrigin)", options)
+        self.assertEqual(self.inbox.snapshot()["pending"], [])
+        review.get_by_role("button", name="Review in inbox").click()
+        expect(self.page.locator("#new-body")).to_have_value(re.compile("Show the total before purchase"))
+        body = self.page.locator("#new-body").input_value()
+        self.assertIn('"selector": "#buy"', body); self.assertIn('"sourceState": "fixture-v1"', body)
+        self.assertNotIn("omit-me", body)
+        self.assertEqual(self.inbox.snapshot()["pending"], [])
+        def commit_then_disconnect(route):
+            route.fetch(); route.abort()
+        self.page.route("**/api/contribute?*", commit_then_disconnect, times=1)
+        self.page.get_by_role("button", name="Send contribution", exact=True).click()
+        expect(self.page.locator("#notice")).to_contain_text("retained for retry")
+        self.page.reload()
+        self.page.get_by_role("button", name="Review a page", exact=True).click()
+        # Reopening the named page reattaches its source window after an inbox reload.
+        review.wait_for_load_state(); review.add_script_tag(path=str(script))
+        review.evaluate("options => onepersonlabsAnnotate(options)", options)
+        review.get_by_role("button", name="Review in inbox").click()
+        expect(self.page.locator("#new-body")).to_have_value(body)
+        self.page.get_by_role("button", name="Send contribution", exact=True).click()
+        expect(review.locator("#status")).to_contain_text("Submitted")
+        pending = self.inbox.snapshot()["pending"]
+        self.assertEqual(len(pending), 1)
+        self.inbox.claim(pending[0]["id"], "root-test")
+        self.inbox.outcome(pending[0]["id"], {"text": "Total now precedes purchase.", "disposition": "adopted",
+            "source_review": "Compared fixture-v1 and the current checkout; the selected button still matches."}, "root-test")
+        expect(self.page.locator(".conversation")).to_contain_text("Total now precedes purchase.", timeout=8000)
+        self.assert_no_overflow()
 
     def test_mobile_draft_refresh_submit_and_root_outcome(self):
         self.open_item()
