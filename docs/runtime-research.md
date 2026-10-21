@@ -6,7 +6,7 @@ qualification report. No candidate is selected for unattended deployment.
 Itervox v0.2.1 is the strongest inspected local candidate. It supplies much of
 the scheduling and Codex continuity path, but it does not supply the complete
 feedback-delivery and landing contract. The next useful step is the
-[local upstream proposal](itervox-upstream-proposal.md), not an OPL adapter or a
+[local upstream proposal](itervox-upstream-proposal.md), not an OnePersonLabs adapter or a
 pilot of a source-proven gap. That proposal has not been submitted upstream.
 
 ## Intended outcome
@@ -67,7 +67,7 @@ The decision follows capability and integration evidence, not popularity or an
 age cutoff. The shortlist includes small specialist projects. Additional search
 leads did not resolve the decisive continuity and ownership gaps.
 
-## Why the proposed OPL watcher was rejected
+## Why the proposed OnePersonLabs watcher was rejected
 
 In Itervox v0.2.1, the
 [worker](https://github.com/vnovick/itervox/blob/v0.2.1/internal/orchestrator/worker.go)
@@ -98,13 +98,13 @@ The presence of a trigger name does not establish human-merge reconciliation.
 
 ## Concern-to-change coverage
 
-The independently shippable OPL research/setup guidance preserves these
+The independently shippable OnePersonLabs research/setup guidance preserves these
 requirements. It does not implement the missing runtime behavior.
 
 | Concern | Existing owner or proposed change | Acceptance boundary |
 | --- | --- | --- |
-| Current evidence and honest selection | OPL research guidance; dated comparison here | Pin versions, distinguish main/open fixes, disclose unsupported paths. Itervox remains a candidate. |
-| Independent project root cap versus helpers | Native Itervox dispatch/config and native Codex helper settings | Set `agent.max_concurrent_agents` explicitly: proposed setup default 1, optional 2. Its release default is 10. Helper limits exclude the root; disclose aggregate model threads. No OPL aliases/schema. |
+| Current evidence and honest selection | OnePersonLabs research guidance; dated comparison here | Pin versions, distinguish main/open fixes, disclose unsupported paths. Itervox remains a candidate. |
+| Independent project root cap versus helpers | Native Itervox dispatch/config and native Codex helper settings | Set `agent.max_concurrent_agents` explicitly: proposed setup default 1, optional 2. Its release default is 10. Helper limits exclude the root; disclose aggregate model threads. No OnePersonLabs aliases/schema. |
 | One issue through landing; useful parallelism | Native admission plus proposed lifecycle reconciliation | Retain issue ownership while parked; reserve delivery capacity. Recheck dependencies, settled contracts and contention. Prove independent projects do not share an accidental pool. |
 | GitHub defects, deduplication and accurate state | Project issue policy and runtime tracker adapter | Helpers propose; authorized owning workers capture distinct defects. Capture does not authorize execution. Closed-unmerged PRs do not complete unresolved issues. |
 | Local checks and original-builder repair | Project checks/review policy; native saved Codex session plus proposed conditional delivery | Repair in the creator conversation. Do not substitute an existing workspace or PR link for session identity. |
@@ -135,7 +135,7 @@ upstream design agreement. Prefer a maintained release; a pinned fork requires
 an explicit maintenance decision. Do not install a personal patch and call the
 runtime qualified.
 
-Keep the full unattended scope in [issue #4](https://github.com/OnePersonLabs/opl/issues/4)
+Keep the full unattended scope in [issue #4](https://github.com/OnePersonLabs/onepersonlabs-plugin/issues/4)
 open: independent projects, supported admission, useful bounded parallelism,
 same-builder repair, feedback recovery, accurate state, waiting without inference,
 landing, base synchronization and next-issue dispatch must work together.

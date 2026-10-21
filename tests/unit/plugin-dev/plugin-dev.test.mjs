@@ -9,11 +9,11 @@ import { codexCommand, pythonBin } from '../../../tools/runtime.mjs'
 
 const repositoryRoot = fileURLToPath(new URL('../../..', import.meta.url))
 const driver = join(repositoryRoot, 'tools', 'plugin-dev.mjs')
-const sourcePlugin = join(repositoryRoot, 'plugins', 'opl')
-const pluginId = 'opl@opl'
+const sourcePlugin = join(repositoryRoot, 'plugins', 'onepersonlabs')
+const pluginId = 'onepersonlabs@onepersonlabs'
 
 function withFakeCodex(run) {
-  const root = mkdtempSync(join(tmpdir(), "opl plugin-dev's test-"))
+  const root = mkdtempSync(join(tmpdir(), "onepersonlabs plugin-dev's test-"))
   const fakeCodex = join(root, 'codex.mjs')
   const log = join(root, 'codex-commands.jsonl')
   writeFileSync(fakeCodex, `#!/usr/bin/env node
@@ -44,11 +44,11 @@ if (args[0] === 'app-server') {
 } else if (args[0] !== 'plugin') process.exit(91)
 else if (args[1] === 'list') {
   const installed = process.env.FAKE_INSTALLED_ID
-    ? [{ pluginId: process.env.FAKE_INSTALLED_ID, marketplaceName: 'opl' }]
+    ? [{ pluginId: process.env.FAKE_INSTALLED_ID, marketplaceName: 'onepersonlabs' }]
     : []
   process.stdout.write(JSON.stringify({ installed }))
 } else if (args[1] === 'marketplace' && args[2] === 'list') {
-  process.stdout.write(JSON.stringify({ marketplaces: [{ name: 'opl', root: ${JSON.stringify(repositoryRoot)} }] }))
+  process.stdout.write(JSON.stringify({ marketplaces: [{ name: 'onepersonlabs', root: ${JSON.stringify(repositoryRoot)} }] }))
 } else if (args[1] === 'add') {
   process.stdout.write(JSON.stringify({ installedPath: process.env.FAKE_INSTALLED_PATH }))
 } else {
@@ -78,7 +78,7 @@ function fixtureRepository(root) {
   }
   copyFileSync(driver, join(root, 'tools', 'plugin-dev.mjs'))
   copyFileSync(join(repositoryRoot, 'tools', 'runtime.mjs'), join(root, 'tools', 'runtime.mjs'))
-  const helpers = 'plugins/opl/skills/refresh-local-plugins/scripts'
+  const helpers = 'plugins/onepersonlabs/skills/refresh-local-plugins/scripts'
   cpSync(join(repositoryRoot, helpers), join(root, helpers), { recursive: true })
   return join(root, 'tools', 'plugin-dev.mjs')
 }
@@ -89,7 +89,7 @@ test('install-local installs only the selected plugin and runs no verification l
       driver,
       'install-local',
       '--plugin',
-      'opl',
+      'onepersonlabs',
       '--target-home',
       join(root, 'consumer'),
     ], {
@@ -225,7 +225,7 @@ test('contract accepts Codex skill metadata without a second invocation frontmat
 
 test('installed package discovery launches the Codex app-server without a shell', () => {
   withFakeCodex(({ root, fakeCodex, log }) => {
-    const name = 'opl'
+    const name = 'onepersonlabs'
     const result = spawnSync(process.execPath, [driver, 'installed', '--plugin', name, '--package-only'], {
       cwd: repositoryRoot,
       encoding: 'utf8',
@@ -234,8 +234,8 @@ test('installed package discovery launches the Codex app-server without a shell'
         CODEX_BIN: fakeCodex,
         FAKE_CODEX_LOG: log,
         FAKE_INSTALLED_PATH: join(repositoryRoot, 'plugins', name),
-        FAKE_HOOK_PLUGIN_ID: `${name}@opl`,
-        OPL_PLUGIN_DEV_STATE: join(root, 'state'),
+        FAKE_HOOK_PLUGIN_ID: `${name}@onepersonlabs`,
+        ONEPERSONLABS_PLUGIN_DEV_STATE: join(root, 'state'),
       },
     })
     assert.equal(result.status, 0, result.stderr)
@@ -271,7 +271,7 @@ test('the default installed checkpoint tests and trusts selected hooks without i
         FAKE_CODEX_LOG: log,
         FAKE_INSTALLED_PATH: plugin,
         FAKE_HOOK_PLUGIN_ID: 'fixture@fixture-marketplace',
-        OPL_PLUGIN_DEV_STATE: join(root, 'fresh-state'),
+        ONEPERSONLABS_PLUGIN_DEV_STATE: join(root, 'fresh-state'),
         UNIT_MARKER: marker,
       },
     })

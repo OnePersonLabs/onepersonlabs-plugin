@@ -1,14 +1,14 @@
 {
-  "name": "opl",
+  "name": "onepersonlabs",
   "interface": {
-    "displayName": "OPL"
+    "displayName": "OnePersonLabs"
   },
   "plugins": [
     {
-      "name": "opl",
+      "name": "onepersonlabs",
       "source": {
         "source": "local",
-        "path": "./plugins/opl"
+        "path": "./plugins/onepersonlabs"
       },
       "policy": {
         "installation": "AVAILABLE",

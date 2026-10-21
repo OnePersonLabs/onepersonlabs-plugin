@@ -1,0 +1,30 @@
+{
+  "name": "onepersonlabs",
+  "version": "0.3.1",
+  "description": "One-Person Labs shared developer tooling.",
+  "license": "MIT",
+  "repository": "https://github.com/OnePersonLabs/onepersonlabs-plugin",
+  "keywords": [
+    "skills",
+    "mcp",
+    "subagents",
+    "hooks",
+    "engineering",
+    "workflow",
+    "tdd",
+    "code-review",
+    "sdd",
+    "intent-driven-development",
+    "agent-utils",
+    "miscellaneous",
+    "human-collaboration"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "hooks": "./hooks/hooks.json",
+  "interface": {
+    "displayName": "OnePersonLabs",
+    "shortDescription": "One-Person Labs shared developer tooling",
+    "longDescription": "One-Person Labs skills, agents, integrations, and repository-independent guard hooks, including verified GitHub Issues deferrals and last-resort rejection of unhandled deferrals. Includes a durable human-contribution inbox, grounded review briefs, and a local phone reader/reply interface."
+  }
+}

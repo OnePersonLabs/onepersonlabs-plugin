@@ -1,10 +1,10 @@
 {
-  "name": "opl",
-  "version": "0.3.0",
+  "name": "onepersonlabs-plugin",
+  "version": "0.3.1",
   "private": true,
   "type": "module",
   "license": "MIT",
-  "repository": "https://github.com/OnePersonLabs/opl",
+  "repository": "https://github.com/OnePersonLabs/onepersonlabs-plugin",
   "engines": {
     "node": ">=24"
   },

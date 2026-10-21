@@ -4,16 +4,16 @@
     "tests/unit/plugin-dev"
   ],
   "plugins": {
-    "opl": {
+    "onepersonlabs": {
       "unitRoots": [
-        "tests/unit/opl"
+        "tests/unit/onepersonlabs"
       ],
       "commands": [],
       "mcpMode": "launcher-contract",
       "uiMode": "python",
       "uiTests": [
-        "tests/ui/opl/test_human_collaboration_ui.py",
-        "tests/ui/opl/test_design_specimens.py"
+        "tests/ui/onepersonlabs/test_human_collaboration_ui.py",
+        "tests/ui/onepersonlabs/test_design_specimens.py"
       ]
     }
   }

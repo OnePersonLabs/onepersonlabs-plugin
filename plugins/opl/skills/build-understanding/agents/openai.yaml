@@ -1,6 +1,0 @@
-interface:
-  display_name: "Build understanding"
-  short_description: "Make complex ideas easier to grasp and use"
-  default_prompt: "Use $opl:build-understanding to make the important relationships, changes and choices easy to understand, with the least unnecessary effort."
-policy:
-  allow_implicit_invocation: true

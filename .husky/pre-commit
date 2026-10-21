@@ -1,1 +1,1 @@
-node tools/check-opl-instructions-version.mjs
+node tools/check-onepersonlabs-instructions-version.mjs

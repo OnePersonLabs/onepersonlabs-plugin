@@ -37,7 +37,7 @@ does not establish observation of external human merges.
 Itervox must own the observation job, durable identities, input admission,
 capacity, recovery and GitHub lifecycle. Its existing event loop remains the
 state-mutation owner. Its workspace owner remains responsible for Git operations.
-OPL supplies project setup and policy guidance only. There is no OPL watcher,
+OnePersonLabs supplies project setup and policy guidance only. There is no OnePersonLabs watcher,
 callback service, session ledger or scheduler.
 
 ```mermaid
@@ -238,10 +238,10 @@ permission mode, credentials, PATH, workspaces, cancellation and actual project
 checks before deployment. Native Windows support is not established by the
 Linux/macOS release assets.
 
-The full [Stage 2 issue #4](https://github.com/OnePersonLabs/opl/issues/4)
+The full [Stage 2 issue #4](https://github.com/OnePersonLabs/onepersonlabs-plugin/issues/4)
 acceptance remains open until the integrated path works. Trusted direct commits
 and local branch integration remain separate native Codex delivery choices;
-unattended no-PR delivery is not supplied here. OPL research/setup improvements
+unattended no-PR delivery is not supplied here. OnePersonLabs research/setup improvements
 can ship independently, while service packaging and runtime deployment wait for
 qualification. Preparing this local proposal does not authorize contacting
 maintainers, opening an upstream issue/PR, creating a fork, implementing these

@@ -1,14 +1,25 @@
 # Repository Instructions
 
+## Issue and recovery ownership
+
+Use `$onepersonlabs:github-workflow` for actionable work and delivery status in
+OnePersonLabs/onepersonlabs-plugin. Use `$onepersonlabs:setup-repo-workflow` only
+for explicit setup or migration. Existing specifications own meaning and
+evidence; keep current work, decisions and recovery in `.work/current-work.md`.
+Keep one primary issue through landing and up to two useful bounded helpers.
+Do not create another task ledger. New product or runtime scope needs its own
+authorization; the repository's publication default below covers finished
+authorized tooling units only.
+
 ## Local plugin development
 
 This repository uses the source-first workflow in `README.md`. The plugin root
-under `plugins/opl/` contains only shipping files. Tests live under `tests/`.
+under `plugins/onepersonlabs/` contains only shipping files. Tests live under `tests/`.
 Repository drivers live under `tools/`.
 
-Create and update skills under `plugins/opl/skills/` unless the user explicitly
+Create and update skills under `plugins/onepersonlabs/skills/` unless the user explicitly
 specifies another location.
-Interpret an unqualified reference to `AGENTS.md` as `plugins/opl/AGENTS.md`
+Interpret an unqualified reference to `AGENTS.md` as `plugins/onepersonlabs/AGENTS.md`
 unless the user explicitly specifies another file.
 
 During authorized implementation, make small, coherent, verified task-owned
@@ -28,12 +39,12 @@ unrelated units together. Use native auto-merge for outstanding GitHub requireme
 complete required local checks and reviews before an immediately available merge.
 Keep branch protections and explicit manual-merge requirements in force.
 
-After landing, synchronize the accepted base and run `$opl:refresh-local-plugins`
+After landing, synchronize the accepted base and run `$onepersonlabs:refresh-local-plugins`
 with the service recovery and post-refresh checks below. A task-specific delivery
 boundary can override this default.
 
-OPL's `plugins/opl/AGENTS.md` has an independent positive integer instruction
-revision in its `opl-instructions-version` marker. Increment and stage that
+OnePersonLabs's `plugins/onepersonlabs/AGENTS.md` has an independent positive integer instruction
+revision in its `onepersonlabs-instructions-version` marker. Increment and stage that
 revision whenever changing instruction content. The pre-commit hook compares
 the staged file with `HEAD` and rejects changed content without a staged bump;
 an unstaged bump does not satisfy the check. Initial version adoption uses 1
@@ -42,7 +53,7 @@ revision 10.
 
 ## Human-collaboration service during a local plugin refresh
 
-Before refreshing a local plugin, use `$opl:human-collaboration`'s
+Before refreshing a local plugin, use `$onepersonlabs:human-collaboration`'s
 `pause-for-refresh` operation from the workspace being refreshed. It checks
 authenticated readiness, records whether the service was running and its bind
 settings, and stops it gracefully only when it was running. The operation must
@@ -50,7 +61,7 @@ confirm both listener shutdown and process exit; an unresponsive live service
 blocks refresh. Do not run separate repeated service checks. Continue only when
 the operation reports the service stopped or not running.
 
-After the refresh attempt, use the installed `$opl:human-collaboration` skill's
+After the refresh attempt, use the installed `$onepersonlabs:human-collaboration` skill's
 `resume-after-refresh` operation from the same workspace, even if the installer
 failed. It starts the service only when the pause record says it was running.
 If the installed helper is unavailable because refresh failed, use the source
@@ -60,18 +71,18 @@ pairing URL returned by the operation.
 
 ## After a local plugin refresh
 
-After a successful `$opl:refresh-local-plugins` refresh, run the OPL checks used
+After a successful `$onepersonlabs:refresh-local-plugins` refresh, run the OnePersonLabs checks used
 at session startup. Check configuration and global instructions in each refreshed
 user-level Codex home. The user has approved the update question: apply required
-OPL agent TOML configuration and documented defaults with the installed
+OnePersonLabs agent TOML configuration and documented defaults with the installed
 `scripts/codex-config-check.py fix`, and update outdated global instructions with
-`$opl:update-instructions`. Do not ask for that approval again.
+`$onepersonlabs:update-instructions`. Do not ask for that approval again.
 
 Keep the safety checks and dated backups from the update helpers. Do not downgrade.
 If homes share an instruction file, update its resolved target once. After a
 global-instruction replacement, restore this user-requested post-refresh rule in
 the user-level file. Keep the rule in this repository's `AGENTS.md` and the
-user-level file; do not add it to `plugins/opl/AGENTS.md`.
+user-level file; do not add it to `plugins/onepersonlabs/AGENTS.md`.
 
 ## Tests
 
@@ -120,7 +131,7 @@ checks, installed checks, or skill evaluations. An authorized local refresh
 also trusts the selected installed plugins' current hooks through the shared
 installer; leave unrelated hooks and sandbox settings unchanged. Use
 `--plugin all` only when the user explicitly asks to install every marketplace
-plugin. For a normal `$opl:refresh-local-plugins` invocation, use the current
+plugin. For a normal `$onepersonlabs:refresh-local-plugins` invocation, use the current
 user's existing default Codex home or homes without asking for a path. Use an
 explicit `--target-home` when the user names a home or the task clearly targets
 one, including isolated tests.

@@ -1,6 +1,0 @@
-interface:
-  display_name: "Research current solutions"
-  short_description: "Select and assemble current reference implementations"
-  default_prompt: "Use $opl:research-solutions to find current, credible implementations, verify their integration and recovery contracts, and recommend an adoptable solution for this project."
-policy:
-  allow_implicit_invocation: true

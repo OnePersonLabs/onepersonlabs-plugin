@@ -1,5 +1,5 @@
 import process from 'node:process'
-import { codexCommand } from '../plugins/opl/skills/refresh-local-plugins/scripts/codex-command.mjs'
+import { codexCommand } from '../plugins/onepersonlabs/skills/refresh-local-plugins/scripts/codex-command.mjs'
 
 export { codexCommand }
 

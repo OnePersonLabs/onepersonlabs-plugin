@@ -1,0 +1,400 @@
+import importlib.util
+import io
+import json
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import tempfile
+import tomllib
+import unittest
+
+
+ROOT = Path(__file__).resolve().parents[3]
+SCRIPT = ROOT / "plugins" / "onepersonlabs" / "scripts" / "codex-config-check.py"
+SPEC = importlib.util.spec_from_file_location("codex_config_check", SCRIPT)
+checker = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(checker)
+
+
+class ConfigCheckTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.home = self.root / "home"
+        self.home.mkdir()
+        self.plugin = self.root / "onepersonlabs"
+        (self.plugin / "agents").mkdir(parents=True)
+        manifest = self.plugin / ".codex-plugin"
+        manifest.mkdir()
+        (manifest / "plugin.json").write_text('{"name": "onepersonlabs", "version": "0.2.0"}\n', encoding="utf-8")
+        (self.plugin / "config.defaults.toml").write_text(
+            '[features]\nmulti_agent = true\n\n[agents]\n'
+            'default_subagent_model = "gpt-6-luna"\n'
+            'default_subagent_reasoning_effort = "medium"\n',
+            encoding="utf-8",
+        )
+        helper = self.plugin / "skills" / "configure-harness" / "scripts"
+        helper.mkdir(parents=True)
+        shutil.copy2(ROOT / "plugins" / "onepersonlabs" / "skills" / "configure-harness" / "scripts" / "application.py",
+                     helper / "application.py")
+        (self.plugin / "scripts").mkdir()
+        shutil.copy2(SCRIPT, self.plugin / "scripts" / SCRIPT.name)
+
+    @property
+    def config(self):
+        return self.home / "config.toml"
+
+    def agent(self, filename, *, name=None, body=""):
+        stem = Path(filename).stem
+        expected = stem if stem.startswith("onepersonlabs-") else f"onepersonlabs-{stem}"
+        (self.plugin / "agents" / filename).write_text(
+            f'name = {json.dumps(name or expected)}\n'
+            'description = "A test role."\n'
+            'model = "gpt-6-luna"\n'
+            'model_reasoning_effort = "high"\n'
+            'developer_instructions = "Do the assigned work."\n'
+            + body,
+            encoding="utf-8",
+        )
+
+    def parsed(self):
+        return tomllib.loads(self.config.read_text(encoding="utf-8-sig"))
+
+    def test_reconcile_discovers_new_files_and_preserves_personal_agents(self):
+        self.agent("existing.toml")
+        self.agent("future-role.toml")
+        old_plugin = self.root / "previous-onepersonlabs"
+        (old_plugin / ".codex-plugin").mkdir(parents=True)
+        (old_plugin / ".codex-plugin/plugin.json").write_text('{"name":"onepersonlabs"}', encoding="utf-8")
+        self.config.write_text(
+            "# keep this comment\n"
+            "[agents]\n"
+            "enabled = false\n"
+            "default_subagent_model = \"gpt-5.6-terra\"\n"
+            "default_subagent_reasoning_effort = \"xhigh\"\n"
+            "interrupt_message = true\n\n"
+            "[agents.personal]\n"
+            "config_file = \"C:/personal.toml\"\n\n"
+            "[agents.onepersonlabs-existing]\n"
+            f"config_file = {json.dumps(str(old_plugin / 'agents/existing.toml'))} # path moves\n\n"
+            "[agents.onepersonlabs-stale]\n"
+            f"config_file = {json.dumps(str(self.plugin / 'agents' / 'stale.toml'))}\n\n"
+            "[agents.onepersonlabs-custom]\n"
+            "config_file = \"C:/personal/custom.toml\"\n"
+            "description = \"User-authored role\"\n\n"
+            "[features]\n"
+            "hooks = false\nplugins = false\n",
+            encoding="utf-8",
+        )
+        report, status = checker.command_reconcile(self.home, self.plugin)
+        self.assertEqual(status, 0)
+        self.assertTrue(report["applied"]["changed"])
+        result = self.parsed()
+        self.assertEqual(result["agents"]["personal"]["config_file"], "C:/personal.toml")
+        self.assertTrue(result["agents"]["interrupt_message"])
+        self.assertNotIn("onepersonlabs-stale", result["agents"])
+        self.assertEqual(set(name for name in result["agents"] if name.startswith("onepersonlabs-")),
+                         {"onepersonlabs-existing", "onepersonlabs-future-role", "onepersonlabs-custom"})
+        self.assertEqual(result["agents"]["onepersonlabs-existing"]["config_file"],
+                         str((self.plugin / "agents" / "existing.toml").resolve()))
+        self.assertEqual(result["agents"]["onepersonlabs-future-role"]["config_file"],
+                         str((self.plugin / "agents" / "future-role.toml").resolve()))
+        self.assertFalse(result["features"]["hooks"])
+        self.assertEqual(result["agents"]["onepersonlabs-custom"], {
+            "config_file": "C:/personal/custom.toml", "description": "User-authored role"})
+        self.assertIn("# keep this comment", self.config.read_text(encoding="utf-8"))
+        before_repeat = self.config.read_bytes()
+        repeat, status = checker.command_reconcile(self.home, self.plugin)
+        self.assertEqual(status, 0)
+        self.assertTrue(repeat["compliant"])
+        self.assertEqual(self.config.read_bytes(), before_repeat)
+
+    def test_fix_sets_full_policy_and_accepts_effective_defaults(self):
+        self.agent("role.toml")
+        self.config.write_text(
+            "[features]\nhooks = false\nplugins = false\n\n"
+            "[agents]\n",
+            encoding="utf-8",
+        )
+        report, status = checker.command_check(self.home, self.plugin)
+        self.assertEqual(status, 1)
+        self.assertNotIn("agents.enabled", [item["path"] for item in report["findings"]])
+        self.assertNotIn("features.multi_agent", [item["path"] for item in report["findings"]])
+        fixed, status = checker.command_fix(self.home, self.plugin)
+        self.assertEqual(status, 0)
+        self.assertIn("applied", fixed)
+        result = self.parsed()
+        defaults = checker.load_defaults(self.plugin)
+        self.assertEqual({key: result["features"][key] for key in defaults["features"]}, defaults["features"])
+        self.assertEqual({key: result["agents"][key] for key in defaults["agents"]}, defaults["agents"])
+        self.assertIn("onepersonlabs-role", result["agents"])
+
+    def test_fix_preserves_unchanged_name_only_skill_preference_and_exact_backup(self):
+        preference = ('[[skills.config]]\n'
+                      'name = "example:skill"\n'
+                      'enabled = false\n\n')
+        original = (preference + '[agents.onepersonlabs-stale]\nconfig_file = '
+                    + json.dumps(str(self.plugin / 'agents/stale.toml')) + '\n').encode()
+        self.config.write_bytes(original)
+        fixed, status = checker.command_fix(self.home, self.plugin)
+        self.assertEqual(status, 0)
+        self.assertIn(preference, self.config.read_text(encoding="utf-8"))
+        self.assertEqual(self.parsed()["skills"]["config"],
+                         [{"name": "example:skill", "enabled": False}])
+        self.assertNotIn("onepersonlabs-stale", self.parsed()["agents"])
+        receipt = Path(fixed["applied"]["receipt"])
+        self.assertEqual((receipt.parent / "0.backup").read_bytes(), original)
+
+        # Unrelated repairs may preserve an existing preference, not edit it.
+        application = checker.load_application(self.plugin)
+        changed = self.root / "changed.toml"
+        changed.write_bytes(self.config.read_bytes().replace(b'enabled = false', b'enabled = true'))
+        with self.assertRaises(ValueError):
+            application.prepare(self.home, [{"target": str(self.config), "candidate": str(changed)}])
+
+    def test_shipped_defaults_load_and_repair(self):
+        plugin = ROOT / "plugins" / "onepersonlabs"
+        expected = tomllib.loads((plugin / "config.defaults.toml").read_text(encoding="utf-8"))
+        self.assertEqual(checker.load_defaults(plugin), expected)
+        application_spec = importlib.util.spec_from_file_location(
+            "shipped_harness_application", plugin / "skills/configure-harness/scripts/application.py"
+        )
+        application = importlib.util.module_from_spec(application_spec)
+        application_spec.loader.exec_module(application)
+        self.assertEqual(application._load_config_defaults(), expected)
+        self.config.write_text(
+            'sandbox_mode = "workspace-write"\n'
+            '[features]\nmulti_agent = false\nhooks = false\ncode_mode = false\n'
+            '[features.current_time_reminder]\nenabled = false\nreminder_interval_seconds = 60\n'
+            '[agents]\ndefault_subagent_model = "gpt-6-luna"\n'
+            'default_subagent_reasoning_effort = "high"\n',
+            encoding="utf-8",
+        )
+        report, status = checker.command_check(self.home, plugin)
+        self.assertEqual(status, 1)
+        self.assertNotIn("features.current_time_reminder.enabled", {item["path"] for item in report["findings"]})
+        _, status = checker.command_fix(self.home, plugin)
+        self.assertEqual(status, 0)
+        result = self.parsed()
+        for key, value in expected["features"].items():
+            self.assertEqual(result["features"][key], value)
+        self.assertFalse(result["features"]["current_time_reminder"]["enabled"])
+        self.assertFalse(result["features"]["multi_agent"])
+        self.assertFalse(result["features"]["hooks"])
+        self.assertEqual(result["sandbox_mode"], "workspace-write")
+        for key, value in expected["agents"].items():
+            self.assertEqual(result["agents"][key], value)
+        _, status = checker.command_check(self.home, plugin)
+        self.assertEqual(status, 0)
+
+    def test_invalid_complete_inventory_does_not_remove_registered_roles(self):
+        self.config.write_text("[agents.onepersonlabs-stale]\nconfig_file = \"C:/stale.toml\"\n", encoding="utf-8")
+        (self.plugin / "agents" / "broken.toml").write_text(
+            'name = "onepersonlabs-other"\ndescription = "A test role."\ndeveloper_instructions = "Do work."\n', encoding="utf-8"
+        )
+        original = self.config.read_bytes()
+        with self.assertRaisesRegex(checker.ConfigCheckError, "name must equal"):
+            checker.command_reconcile(self.home, self.plugin)
+        self.assertEqual(self.config.read_bytes(), original)
+
+    def test_role_without_name_uses_its_filename_derived_registration(self):
+        (self.plugin / "agents" / "unnamed.toml").write_text(
+            'description = "A test role."\ndeveloper_instructions = "Do work."\n', encoding="utf-8"
+        )
+        self.assertEqual(checker.discover_agents(self.plugin), {
+            "onepersonlabs-unnamed": str((self.plugin / "agents" / "unnamed.toml").resolve()),
+        })
+
+    def test_versioned_ignore_marker_short_circuits_malformed_config_but_explicit_reconcile_does_not(self):
+        self.agent("role.toml")
+        self.config.write_text("# onepersonlabs:ignore-config-check version=0.2.0\n[broken", encoding="utf-8")
+        report, status = checker.command_check(self.home, self.plugin)
+        self.assertEqual(status, 0)
+        self.assertTrue(report["ignored"])
+        with self.assertRaisesRegex(checker.ConfigCheckError, "not valid TOML"):
+            checker.command_reconcile(self.home, self.plugin)
+
+    def test_ignore_marker_uses_bom_crlf_and_schema_position(self):
+        self.config.write_bytes(
+            b"\xef\xbb\xbf#:schema https://developers.openai.com/codex/config-schema.json\r\n\r\n"
+            b"# General documentation\r\nmodel = \"gpt-6.1-sol\"\r\n"
+        )
+        report, status = checker.command_ignore(self.home, self.plugin)
+        self.assertEqual(status, 0)
+        self.assertTrue(report["ignored"])
+        self.assertEqual(
+            self.config.read_bytes(),
+            b"\xef\xbb\xbf#:schema https://developers.openai.com/codex/config-schema.json\r\n"
+            b"# onepersonlabs:ignore-config-check version=0.2.0\r\n\r\n"
+            b"# General documentation\r\nmodel = \"gpt-6.1-sol\"\r\n",
+        )
+
+    def test_stale_marker_is_observed_read_only_then_removed_by_explicit_fix(self):
+        self.agent("role.toml")
+        role_path = json.dumps(str((self.plugin / "agents" / "role.toml").resolve()))
+        self.config.write_text(
+            "# onepersonlabs:ignore-config-check version=0.1.0\n"
+            "[features]\nhooks = true\nplugins = true\nmulti_agent = true\n"
+            "[agents]\nenabled = true\ndefault_subagent_model = \"gpt-6-luna\"\n"
+            "default_subagent_reasoning_effort = \"medium\"\n"
+            f"[agents.onepersonlabs-role]\nconfig_file = {role_path}\n",
+            encoding="utf-8",
+        )
+        original = self.config.read_bytes()
+        before = {str(path.relative_to(self.home)): path.read_bytes()
+                  for path in self.home.rglob("*") if path.is_file()}
+        inspected = checker.inspect(self.home, self.plugin)
+        self.assertEqual(inspected[0], original)
+        report, status = checker.command_check(self.home, self.plugin)
+        self.assertEqual(status, 0)
+        self.assertTrue(report["compliant"])
+        self.assertEqual(report["stale_ignore_markers"], ["0.1.0"])
+        previous = sys.stdin
+        try:
+            sys.stdin = io.StringIO('{"hook_event_name":"SessionStart"}')
+            _output, status = checker.command_hook(self.home, self.plugin)
+            self.assertEqual(status, 0)
+        finally:
+            sys.stdin = previous
+        self.assertEqual({str(path.relative_to(self.home)): path.read_bytes()
+                          for path in self.home.rglob("*") if path.is_file()}, before)
+        fixed, status = checker.command_fix(self.home, self.plugin)
+        self.assertEqual(status, 0)
+        self.assertTrue(fixed["applied"]["changed"])
+        self.assertEqual(self.config.read_bytes(), checker.remove_stale_markers(original, "0.2.0"))
+        after_fix = {str(path.relative_to(self.home)): path.read_bytes()
+                     for path in self.home.rglob("*") if path.is_file()}
+        checker.command_fix(self.home, self.plugin)
+        self.assertEqual({str(path.relative_to(self.home)): path.read_bytes()
+                          for path in self.home.rglob("*") if path.is_file()}, after_fix)
+
+    def test_explicit_reconcile_and_ignore_replace_stale_markers_transactionally(self):
+        for command in (checker.command_reconcile, checker.command_ignore):
+            with self.subTest(command=command.__name__):
+                original = b"# onepersonlabs:ignore-config-check version=0.1.0\nmodel = \"gpt-6.1-sol\"\n"
+                self.config.write_bytes(original)
+                report, status = command(self.home, self.plugin)
+                self.assertEqual(status, 0)
+                self.assertTrue(report["applied"]["changed"])
+                receipt = json.loads(Path(report["applied"]["receipt"]).read_text(encoding="utf-8"))
+                self.assertEqual(Path(receipt["files"][0]["backup"]).read_bytes(), original)
+                self.assertEqual(self.parsed()["model"], "gpt-6.1-sol")
+                matching, stale = checker.marker_state(self.config.read_bytes(), "0.2.0")
+                self.assertEqual(stale, [])
+                self.assertEqual(matching, command == checker.command_ignore)
+                snapshot = {str(path.relative_to(self.home)): path.read_bytes()
+                            for path in self.home.rglob("*") if path.is_file()}
+                command(self.home, self.plugin)
+                self.assertEqual({str(path.relative_to(self.home)): path.read_bytes()
+                                  for path in self.home.rglob("*") if path.is_file()}, snapshot)
+
+    def test_hook_notice_continues_task_without_mutation(self):
+        self.agent("role.toml")
+        self.config.write_text("# onepersonlabs:ignore-config-check version=0.1.0\n", encoding="utf-8")
+        before = self.config.read_bytes()
+        previous = sys.stdin
+        try:
+            sys.stdin = io.StringIO('{"hook_event_name":"SessionStart"}')
+            output, status = checker.command_hook(self.home, self.plugin)
+        finally:
+            sys.stdin = previous
+        self.assertEqual(status, 0)
+        self.assertIn("Continue the user's task", output["hookSpecificOutput"]["additionalContext"])
+        self.assertEqual(self.config.read_bytes(), before)
+        self.assertEqual(list(self.home.iterdir()), [self.config])
+
+    def test_defaults_file_drives_repair_and_preserves_explicit_child_preferences(self):
+        self.agent("role.toml")
+        (self.plugin / "config.defaults.toml").write_text(
+            "[features]\nhooks = false\n\n[agents]\ndefault_subagent_model = \"gpt-6.1-sol\"\nmax_depth = 3\n",
+            encoding="utf-8",
+        )
+        self.config.write_text("[features]\nhooks = true\n\n[agents]\ndefault_subagent_model = \"gpt-6-luna\"\nmax_depth = 1\n", encoding="utf-8")
+        report, status = checker.command_check(self.home, self.plugin)
+        self.assertEqual(status, 1)
+        self.assertEqual({item["path"] for item in report["findings"] if item["code"] == "setting_mismatch"},
+                         {"features.hooks", "agents.max_depth"})
+        fixed, status = checker.command_fix(self.home, self.plugin)
+        self.assertEqual(status, 0)
+        self.assertIn("applied", fixed)
+        result = self.parsed()
+        self.assertFalse(result["features"]["hooks"])
+        self.assertEqual(result["agents"]["default_subagent_model"], "gpt-6-luna")
+        self.assertEqual(result["agents"]["max_depth"], 3)
+
+    def test_policy_settings_require_exact_scalar_types(self):
+        self.agent("role.toml")
+        (self.plugin / "config.defaults.toml").write_text(
+            "[agents]\nenabled = true\nmax_depth = 0\n",
+            encoding="utf-8",
+        )
+        self.config.write_text("[agents]\nenabled = 1\nmax_depth = false\n", encoding="utf-8")
+        report, status = checker.command_check(self.home, self.plugin)
+        self.assertEqual(status, 1)
+        self.assertEqual(
+            {item["path"] for item in report["findings"] if item["code"] == "setting_mismatch"},
+            {"agents.enabled", "agents.max_depth"},
+        )
+        _fixed, status = checker.command_fix(self.home, self.plugin)
+        self.assertEqual(status, 0)
+        result = self.parsed()["agents"]
+        self.assertIs(result["enabled"], True)
+        self.assertIs(type(result["max_depth"]), int)
+        self.assertEqual(result["max_depth"], 0)
+
+    def test_marker_text_inside_a_toml_string_is_never_removed(self):
+        self.config.write_text(
+            "[agents]\nnotes = \"\"\"\n# onepersonlabs:ignore-config-check version=0.1.0\n\"\"\"\n",
+            encoding="utf-8",
+        )
+        original = self.config.read_bytes()
+        _report, status = checker.command_check(self.home, self.plugin)
+        self.assertEqual(status, 1)
+        self.assertEqual(self.config.read_bytes(), original)
+
+    def test_removing_stale_role_keeps_comments_for_next_table(self):
+        text = (
+            "[agents.onepersonlabs-stale]\nconfig_file = \"C:/stale.toml\"\n\n"
+            "# Personal configuration remains below.\n\n"
+            "[agents.personal]\nconfig_file = \"C:/personal.toml\"\n"
+        )
+        rendered = checker._remove_table(text, ("agents", "onepersonlabs-stale"))
+        self.assertEqual(rendered, "\n# Personal configuration remains below.\n\n[agents.personal]\nconfig_file = \"C:/personal.toml\"\n")
+
+    def test_hook_is_silent_when_compliant_and_suppresses_subagents(self):
+        self.agent("role.toml")
+        self.config.write_text(
+            "[features]\nhooks = true\nplugins = true\nmulti_agent = true\n"
+            "[agents]\nenabled = true\ndefault_subagent_model = \"gpt-6-luna\"\n"
+            "default_subagent_reasoning_effort = \"medium\"\n"
+            f"[agents.onepersonlabs-role]\nconfig_file = {json.dumps(str((self.plugin / 'agents' / 'role.toml').resolve()))}\n",
+            encoding="utf-8",
+        )
+        previous = __import__("sys").stdin
+        self.addCleanup(setattr, __import__("sys"), "stdin", previous)
+        __import__("sys").stdin = io.StringIO(json.dumps({"hook_event_name": "SessionStart"}))
+        output, status = checker.command_hook(self.home, self.plugin)
+        self.assertEqual(status, 0)
+        self.assertEqual(output, {})
+        __import__("sys").stdin = io.StringIO(json.dumps({"hook_event_name": "SessionStart", "agent_id": "child"}))
+        output, status = checker.command_hook(self.home, self.plugin)
+        self.assertEqual(status, 0)
+        self.assertEqual(output, {"suppressed": True})
+
+    def test_main_returns_nonzero_for_reconcile_failure(self):
+        self.config.write_text("[agents.onepersonlabs-stale]\nconfig_file = \"C:/stale.toml\"\n", encoding="utf-8")
+        (self.plugin / "agents" / "bad.toml").write_text("description = []\n", encoding="utf-8")
+        result = subprocess.run(
+            [sys.executable, "-B", str(SCRIPT), "reconcile", "--home", str(self.home), "--plugin-root", str(self.plugin)],
+            capture_output=True,
+            encoding="utf-8",
+            check=False,
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("codex-config-check:", result.stderr)
+
+
+if __name__ == "__main__":
+    unittest.main()

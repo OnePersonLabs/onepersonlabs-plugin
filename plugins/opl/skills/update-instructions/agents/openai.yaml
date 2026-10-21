@@ -1,6 +1,0 @@
-interface:
-  display_name: "Update OPL Instructions"
-  short_description: "Update global instructions with a dated backup"
-  default_prompt: "Use $opl:update-instructions to check whether my global instructions need an update and ask once before replacing them."
-policy:
-  allow_implicit_invocation: false

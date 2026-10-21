@@ -16,8 +16,8 @@ import { basename, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { codexCommand, pythonBin } from './runtime.mjs'
-import { reconcileOplAgents, runInstallLocal } from '../plugins/opl/skills/refresh-local-plugins/scripts/install-local.mjs'
-import { ensurePluginHookTrust } from '../plugins/opl/skills/refresh-local-plugins/scripts/codex-hooks.mjs'
+import { reconcileOnepersonlabsAgents, runInstallLocal } from '../plugins/onepersonlabs/skills/refresh-local-plugins/scripts/install-local.mjs'
+import { ensurePluginHookTrust } from '../plugins/onepersonlabs/skills/refresh-local-plugins/scripts/codex-hooks.mjs'
 
 const repoRoot = fileURLToPath(new URL('..', import.meta.url))
 const marketplacePath = join(repoRoot, '.agents', 'plugins', 'marketplace.json')
@@ -336,7 +336,7 @@ function runUi(entries = selectedPlugins()) {
 }
 
 function stateRoot() {
-  return resolve(process.env.OPL_PLUGIN_DEV_STATE ?? join(homedir(), '.local', 'state', 'opl', 'codex'))
+  return resolve(process.env.ONEPERSONLABS_PLUGIN_DEV_STATE ?? join(homedir(), '.local', 'state', 'onepersonlabs', 'codex'))
 }
 
 function jsonCommand(arguments_, env) {
@@ -416,7 +416,7 @@ async function runInstalled(entries = selectedPlugins()) {
   const blackboxHome = join(stateRoot(), 'blackbox', entry.name)
   const installed = installCandidate(entry, blackboxHome)
   compareInventory(pluginRoot(entry), installed.installedPath, entry.name)
-  reconcileOplAgents({ name: entry.name, installedPath: installed.installedPath, home: blackboxHome, env: installed.env })
+  reconcileOnepersonlabsAgents({ name: entry.name, installedPath: installed.installedPath, home: blackboxHome, env: installed.env })
   const manifest = manifestFor(entry)
   if (typeof manifest.hooks === 'string') {
     try {
