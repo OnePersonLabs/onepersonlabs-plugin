@@ -66,6 +66,15 @@ For consequential tool, architecture, infrastructure or integration choices,
 release, integration and recovery contracts. It is automatically discoverable;
 routine repairs do not require a solution survey.
 
+For consequential judgments, `$onepersonlabs:pov` grounds a position in project
+and external evidence. `$onepersonlabs:develop-alternatives` develops concrete
+competing mechanisms when needed. `$onepersonlabs:optimize` measures candidate
+improvements against correctness, noise, and required trade-offs. Agents select
+these routes when their conditions apply. Requested human page feedback uses the
+existing inbox with element context, retained drafts, and explicit submission.
+The [Compound assimilation account](docs/compound-assimilation.md) records the
+mechanisms, native owners, provenance, and validation limits.
+
 Use `$onepersonlabs:setup-repo-workflow` explicitly to configure one repository through its
 existing instructions, GitHub conventions, local checks, review lane, and merge
 policy. Default to serial work in the selected checkout and branch; new delivery

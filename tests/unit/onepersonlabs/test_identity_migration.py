@@ -102,7 +102,8 @@ class IdentityMigration(unittest.TestCase):
         self.assertIn(f"[agents.opl-personal]\nconfig_file = {json.dumps(str(custom_profile))}", migrated)
         self.assertIn("{ name = 'opl:adhd', enabled = false }", migrated)
         skill_path = Path(tomllib.loads(migrated)["skills"]["config"][1]["path"])
-        self.assertEqual(skill_path, self.home / "plugins" / "cache" / "onepersonlabs" / "onepersonlabs" / "0.3.1" / "skills" / "adhd")
+        version = json.loads((ROOT / "plugins/onepersonlabs/.codex-plugin/plugin.json").read_text(encoding="utf-8"))["version"]
+        self.assertEqual(skill_path, self.home / "plugins" / "cache" / "onepersonlabs" / "onepersonlabs" / version / "skills" / "adhd")
         self.assertTrue((self.home / "plugins" / "cache" / "opl" / "opl" / "0.3.0" / "agents" / "opl-reviewer.toml").is_file())
 
     def test_harness_receipt_and_exact_backup_remain_usable_after_move(self):
