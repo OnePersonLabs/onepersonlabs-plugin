@@ -2,10 +2,9 @@
 
 ## Issue and recovery ownership
 
-Use `$onepersonlabs:github-workflow` for actionable work and delivery status in
-OnePersonLabs/onepersonlabs-plugin. Use `$onepersonlabs:setup-repo-workflow` only
-for explicit setup or migration. Existing specifications own meaning and
-evidence; keep current work, decisions and recovery in `.work/current-work.md`.
+Use `$onepersonlabs:github-workflow` to keep actionable work, decisions, recovery
+and delivery status in the owning GitHub issue in OnePersonLabs/onepersonlabs-plugin.
+Use `$onepersonlabs:setup-repo-workflow` only for explicit setup or migration.
 Keep one primary issue through landing and up to two useful bounded helpers.
 Do not create another task ledger. New product or runtime scope needs its own
 authorization; the repository's publication default below covers finished

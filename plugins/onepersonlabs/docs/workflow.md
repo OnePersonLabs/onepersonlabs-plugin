@@ -25,14 +25,14 @@ result. It does not configure Codex's own capabilities -- use
 Setup also does not take over day-to-day issue reconciliation.
 
 For ordinary authorized work, `$onepersonlabs:github-workflow` keeps the selected
-GitHub issue, local checkpoint, and delivery status aligned. The OnePersonLabs
+GitHub issue and delivery status aligned. The OnePersonLabs
 source repository selects GitHub issues; your project's tracker and publication
 policy take precedence in your repository. A concise starting prompt is:
 
 > Use `$onepersonlabs:github-workflow` to find or reconcile the existing issue
 > for `<outcome>`, check its priority, dependencies, and acceptance evidence,
 > then continue only within the authorized scope. Keep active decisions and
-> recovery in the existing checkpoint.
+> recovery in the project's existing work record.
 
 The skill reads the effective workflow policy, confirms the exact repository,
 and checks current issues and project records before any authorized writes.
@@ -131,7 +131,11 @@ Keep each kind of information with its existing owner:
 | --- | --- |
 | GitHub issue | Actionable goal, priority, dependencies, owner, acceptance, blockers, review and delivery status. |
 | Existing specification or Conceptor record | Product meaning, reasons, alternatives, and the evidence that supports them. |
-| `.work/current-work.md` or the project's existing checkpoint | Active work, decisions, budget and reassessment point, failed hypotheses, and interruption recovery. |
+| Owning issue or existing checkpoint, as selected by the project | Active work, decisions, budget and reassessment point, failed hypotheses, and interruption recovery. |
+
+Use the work record selected by repository policy. The OnePersonLabs source
+repository keeps work and recovery state in the owning GitHub issue; it does
+not require a separate local checkpoint file.
 
 Map the project's existing states to ready, in progress, review, rework, blocked,
 and done. A ready issue has authorized scope, satisfied prerequisites, clear
@@ -187,7 +191,7 @@ finds that failed writes still look successful, the original builder repairs
 and rechecks that case before review resumes. If two repair cycles have not
 changed the observed result, stop dependent implementation and reassess the
 write boundary, alternatives, acceptance demonstration, and accumulated cost in
-the same issue and checkpoint.
+the same work record.
 
 If deciding what users should see on a failed export is consequential and
 current evidence cannot settle it, explicitly request
@@ -198,7 +202,7 @@ recovery instructions, use [$onepersonlabs:write-docs](../skills/write-docs/SKIL
 to update the affected guide against the actual behavior.
 
 At an interruption, use the specific recovery prompt below and preserve the
-original trigger, completed attempts, issue/checkpoint state, and next action.
+original trigger, completed attempts, work state, and next action.
 Use [$onepersonlabs:handoff](../skills/handoff/SKILL.md) only if a fresh
 conversation needs a continuation file. Use
 [$onepersonlabs:refresh-local-plugins](../skills/refresh-local-plugins/SKILL.md)
@@ -222,7 +226,7 @@ installed by this workflow.
 **Start or resume:**
 
 > Use `$onepersonlabs:github-workflow` to reconcile `<issue or outcome>` against
-> current remote state and the existing checkpoint. Identify its owner,
+> current remote state and the existing work record. Identify its owner,
 > prerequisites, acceptance, and remaining scope. Continue within the existing
 > authorization and preserve decisions, failed hypotheses, and budget.
 
@@ -230,20 +234,20 @@ For the export example, make the recovery request specific to the failure that
 remains observable:
 
 > Resume the reliable export work on issue `<number>`. Reconcile its current
-> GitHub state, the existing checkpoint, and this checkout. Preserve the
+> GitHub state, existing work records, and this checkout. Preserve the
 > writable-destination success and failed-write false-success cases, prior
 > repair attempts, and remaining budget. Reproduce the original failure before
 > choosing the next repair; inspect any uncertain GitHub write before retrying.
 
 **Record a blocker:**
 
-> Update the owning issue and existing checkpoint with this blocker, the
+> Update the owning work record with this blocker, the
 > observation that supports it, work that can continue independently, and the
 > next safe action. Keep the issue open while acceptance remains incomplete.
 
 **Deliver or hand off:**
 
-> Reconcile the issue and checkpoint with what was actually checked and
+> Reconcile the owning work record with what was actually checked and
 > delivered. Include evidence limits, open acceptance, uncertain external writes,
 > and the exact next action. Close only if complete acceptance is demonstrated.
 
@@ -254,7 +258,7 @@ Before each GitHub write, read current remote state and preserve unrelated
 authors' edits and metadata. If a write's outcome is unknown, inspect the issue
 or PR before retrying. If the outcome remains ambiguous, withhold the duplicate
 write, record the uncertainty and reconciliation evidence in the existing
-checkpoint, and continue independent authorized work.
+work record, and continue independent authorized work.
 
 ## Related guides and skills
 

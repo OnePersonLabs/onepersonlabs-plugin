@@ -14,7 +14,6 @@ Donor: EveryInc/compound-engineering-plugin, MIT, revision
 `plugins/onepersonlabs/THIRD_PARTY_NOTICES.md`.
 
 Issue: https://github.com/OnePersonLabs/onepersonlabs-plugin/issues/15.
-The existing `.work/current-work.md` owns active recovery and assignments.
 
 ## Capability decisions and survival cases
 

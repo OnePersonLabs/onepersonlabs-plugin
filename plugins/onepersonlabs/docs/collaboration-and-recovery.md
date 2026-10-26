@@ -8,24 +8,25 @@ ownership and delivery choices, see the [workflow guide](workflow.md).
 ## Resume an interrupted task
 
 Start with the existing work records and the conversation that owns the task.
-Reconcile the owning issue, the repository's current-work checkpoint, current
+Reconcile the owning issue, any existing repository checkpoint, current
 checkout and dirty files, and any unfinished external action before repeating
 it. If a project uses Conceptor or another meaning owner, recover accepted
-decisions and evidence there too. The current checkpoint records active
+decisions and evidence there too. The project's chosen work record holds active
 decisions, failed hypotheses, budgets, permissions, and the next safe action;
-do not create a second task ledger.
+do not create a second task ledger. That record can be the owning issue;
+a local checkpoint file is not required when the project uses its issue for recovery.
 
 Ask Codex to resume with the existing issue and evidence:
 
 > Resume the existing work on `<issue or outcome>`. Reconcile the owning issue,
-> checkpoint, and current checkout first. Preserve the original problem,
+> work records, and current checkout first. Preserve the original problem,
 > ownership, authorization, failed hypotheses, budget, and incomplete actions;
 > inspect uncertain external writes before retrying them.
 
 If the original conversation cannot continue, use
 [$onepersonlabs:handoff](../skills/handoff/SKILL.md) to prepare a compact
 continuation file in the operating system's temporary directory. It links to
-the issue, specification, commits, diff, checkpoint, and unresolved work rather
+the issue, specification, commits, diff, existing work records, and unresolved work rather
 than copying them. Include the permission boundary, branch/revision, relevant
 dirty work, verified evidence and its limits, outstanding assignments and human
 submissions, and one next action. The skill checks cited repository paths,
@@ -33,7 +34,7 @@ links, and commit IDs. A handoff file helps a new conversation continue; it does
 not start that conversation, transfer ownership by itself, or authorize paused
 work.
 
-### Recover earlier context when the checkpoint is incomplete
+### Recover earlier context when the work record is incomplete
 
 If one prior decision or exchange is missing, use
 [$onepersonlabs:session-reader](../skills/session-reader/SKILL.md) for a focused
@@ -43,7 +44,7 @@ example:
 > Use `$onepersonlabs:session-reader` to search my Codex history for the
 > decision about `<specific question>`, then show the messages around the best
 > match. Return the session and message references so I can add verified context
-> to the existing checkpoint.
+> to the existing work record.
 
 The reader uses its canonical index, returns bounded excerpts, and refreshes
 the index as needed. Do not read raw rollout JSONL directly or treat a search
@@ -118,7 +119,7 @@ question channel for a real blocker or required permission.
 
 When handing off work with an outstanding response, preserve its brief revision,
 submission ID, claim and outcome state, partly applied changes, and current
-owner in the existing checkpoint. Inspect before applying a repeated response;
+owner in the existing work record. Inspect before applying a repeated response;
 an inbox receipt cannot guarantee exactly-once effects in code. If ownership
 needs to move to another root, use the explicit session handoff procedure in the
 human-collaboration skill.

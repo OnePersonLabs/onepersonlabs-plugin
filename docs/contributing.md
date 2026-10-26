@@ -33,7 +33,6 @@ prerequisites rather than installing them.
 | `tools/` | Repository check and installation drivers. |
 | `.agents/plugins/marketplace.json` | Marketplace identity and shipping source path. |
 | `docs/` | Contributor instructions and retained design/evidence records. |
-| `.work/current-work.md` | Ignored local active-work, decision, and recovery checkpoint. |
 
 Edit source, never the installed cache. Shared user guides belong inside the
 plugin so their relative links work after installation. Link from both READMEs
@@ -43,8 +42,8 @@ to the owning guide; avoid maintaining copies of the same procedure.
 
 Inspect current branch, dirty work, instructions, and the owning issue. Follow
 the [workflow guide](../plugins/onepersonlabs/docs/workflow.md); this repository
-uses GitHub for actionable work, existing specifications for meaning/evidence,
-and the local checkpoint for recovery. Keep one primary issue through delivery.
+keeps actionable work, decisions, and recovery in the owning GitHub issue.
+Link relevant design and evidence records. Keep one primary issue through delivery.
 
 For a skill change, edit `plugins/onepersonlabs/skills/<name>/SKILL.md` and review
 its `agents/openai.yaml` activation metadata. Keep examples and references
