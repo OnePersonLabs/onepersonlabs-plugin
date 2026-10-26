@@ -48,7 +48,7 @@ instruction revision. Start a new task after an update.
 ## Compatibility asks for acknowledgment or cannot verify a capability
 
 Read the reported policy source and diagnostic first. The
-[compatibility reference](../compatibility/README.md#run-a-diagnostic) gives the
+[compatibility reference](compatibility.md#run-a-diagnostic) gives the
 read-only command and exit statuses. `cannot_verify` means discovery lacks
 decisive evidence; it does not establish that a component is absent.
 

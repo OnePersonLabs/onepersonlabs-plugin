@@ -120,7 +120,7 @@ skill names omit the `$` invocation prefix. Add provider qualification when a
 specific plugin or duplicate skill matters. A missing enabled-skill override
 does not prove that the skill is absent; use discovered identity and path.
 The full selector, conditional-rule, and exception behavior is in the
-[compatibility reference](../compatibility/README.md).
+[compatibility reference](compatibility.md).
 
 From the marketplace checkout on Windows, inspect the current repository with:
 
@@ -145,7 +145,7 @@ With `onViolation: "warn"`, findings are reported without that pause. This is
 a cooperative instruction to the agent; it is not an execution or security
 gate. Unknown ownership or enablement is reported as unverifiable, not absent
 or safe. The diagnostic `--check` always reads fresh local metadata. See the
-[compatibility guide](../compatibility/README.md) for discovery details and
+[compatibility guide](compatibility.md) for discovery details and
 failure recovery.
 
 ## Know what the installed hooks do

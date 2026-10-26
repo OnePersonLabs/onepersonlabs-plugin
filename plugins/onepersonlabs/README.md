@@ -38,7 +38,7 @@ trust. Installation does not itself select a repository workflow or dispatch wor
 | Diagnose failures or migrate from OPL | [Troubleshooting](docs/troubleshooting.md) |
 | Extend, verify, and publish the plugin | [Contributor guide on GitHub](https://github.com/OnePersonLabs/onepersonlabs-plugin/blob/main/docs/contributing.md) |
 
-The [compatibility reference](compatibility/README.md) owns repository capability
+The [compatibility reference](docs/compatibility.md) owns repository capability
 policy. Individual [skill instructions](skills/) own detailed procedures and
 conditional dependencies. Availability and automatic discovery do not guarantee
 that a skill will be selected or complete a particular task.
