@@ -21,7 +21,7 @@ Change one meaningful factor where practical. Run the same correctness oracle an
 
 ```powershell
 $skillDir = "<absolute loaded optimize skill directory>"
-node "$skillDir/scripts/decide.mjs" .work/optimize-comparison.json
+node "$skillDir/scripts/decide.mjs" "<path to comparison JSON file>"
 ```
 
 The JSON file follows this compact shape (samples are raw numeric observations):

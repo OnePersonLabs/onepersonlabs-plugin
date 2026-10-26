@@ -36,12 +36,10 @@ reasoning after that pushback. More forceful disagreement alone would not fix it
 
 ## Evidence and limits
 
-Local raw results are under `.work/slop/steering/` and
-`.work/slop/steering-reader/`. The blinded packet is
-`.work/slop/steering-blind.json`; verdicts are
-`.work/slop/steering-verdicts.json`. These fixtures contain synthetic tasks, not
-private historical conversations. Raw logs also retain an early cleanup error;
-the driver now waits for process exit before removing its temporary directory.
+Raw trial files, the blinded packet and grader verdicts are not included in
+this repository. The fixtures contain synthetic tasks, not private historical
+conversations. The run also exposed an early cleanup error; the driver now
+waits for process exit before removing its temporary directory.
 
 The fourteen retained trials report 601,509 total tokens, including 353,024 cached
 input tokens. Transport and tool context made this more expensive than the short
