@@ -1,58 +1,28 @@
 # OnePersonLabs
 
-OnePersonLabs gives Codex reusable skills for investigating problems, making
-engineering decisions, collaborating with people, and delivering checked changes.
-It also supplies shared instructions and hooks for configuration, task continuity,
-and advisory feedback.
+OnePersonLabs gives Codex reusable skills, shared instructions, and hooks for
+investigating problems, making engineering decisions, collaborating with people,
+and delivering checked changes.
 
-## Install and try it
+**To use the plugin, start with the [plugin README](plugins/onepersonlabs/README.md)**
+for installation, a first useful request, and the user guides. Those guides ship
+with the plugin and cover everyday work, configuration, and recovery.
 
-Use a Codex CLI with plugin support and Python 3.11 or later for the hooks.
-Run these commands in PowerShell or a POSIX shell:
+## Develop the plugin
 
-```sh
-codex plugin marketplace add https://github.com/OnePersonLabs/onepersonlabs-plugin
-codex plugin add onepersonlabs@onepersonlabs
-```
+This repository owns the source, development tools, and verification. Read
+[AGENTS.md](AGENTS.md), then follow [Contributing](docs/contributing.md) to set up
+the checkout, change source, and verify the installed package. Publishing and
+refreshing active installations are separate delivery steps.
 
-Start a fresh Codex task in a repository you want to understand, then ask:
-
-```text
-Use $onepersonlabs:build-understanding to explain how this repository works.
-Follow one concrete user action from its entrypoint to its result, using the
-current source. Keep this read-only and identify anything you cannot verify.
-```
-
-Expect an explanation tied to the repository, a worked case, and explicit gaps.
-The [getting-started guide](plugins/onepersonlabs/docs/getting-started.md) covers
-installation checks, hook trust, and the next useful task. Installing the plugin
-does not configure your repository workflow or start an unattended worker.
-
-## Find your path
-
-| You want to… | Start here |
+| Location | Owns |
 | --- | --- |
-| Install and complete a first task | [Getting started](plugins/onepersonlabs/docs/getting-started.md) |
-| Find the right skill | [All 32 skills by task](plugins/onepersonlabs/docs/skills.md) |
-| Set up a repository or follow an issue through delivery | [Workflow and worked session](plugins/onepersonlabs/docs/workflow.md) |
-| Understand settings, global instructions, and hooks | [Configuration and hooks](plugins/onepersonlabs/docs/configuration-and-hooks.md) |
-| Request human input, resume work, or recover a session | [Collaboration and recovery](plugins/onepersonlabs/docs/collaboration-and-recovery.md) |
-| Diagnose a missing skill, failed hook, or refresh | [Troubleshooting](plugins/onepersonlabs/docs/troubleshooting.md) |
-| Change, test, and publish the plugin | [Contributing](docs/contributing.md) |
+| [`plugins/onepersonlabs/`](plugins/onepersonlabs/) | Shipping skills, instructions, hooks, scripts, profiles, and user documentation. |
+| [`docs/`](docs/contributing.md) | Contributor guidance and evidence for open research. |
+| [`tools/`](tools/) and [`tests/`](tests/) | Repository drivers, checks, and fixtures; these do not ship. |
 
-The guides ship with the plugin. Each links to the skill or implementation that
-owns the detailed behavior. Skills can use tools already available to Codex;
-external accounts, browser runtimes, and optional services have their own prerequisites.
-
-Assimilation is maintained by the independent
-[All Your Base plugin](https://github.com/OnePersonLabs/all-your-base-are-belong-to-us-plugin),
-invoked as `$all-your-base:assimilate` after installing it. Conceptor is optional;
-OnePersonLabs also works with a repository's existing specifications and decisions.
-
-## Project records and license
-
-[Design and evidence records](docs/contributing.md#design-and-evidence-records)
-retain dated audits, experiments, and proposals. They distinguish historical
-results from current user instructions.
+[GitHub issues](https://github.com/OnePersonLabs/onepersonlabs-plugin/issues)
+track open work. [Open runtime research](docs/contributing.md#open-runtime-research)
+records the limits of candidates for unattended work; no runtime is selected.
 
 OnePersonLabs is [MIT licensed](LICENSE). Bundled third-party code retains its own notices.

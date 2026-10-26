@@ -3,6 +3,11 @@
 Evidence date: 2026-10-20. This is a source-based comparison, not a runtime
 qualification report. No candidate is selected for unattended deployment.
 
+Retained for [open issue #4](https://github.com/OnePersonLabs/onepersonlabs-plugin/issues/4).
+Requirements and candidate observations below reflect that dated baseline;
+recheck them before selecting a runtime. Current delivery policy belongs to
+the repository instructions and [workflow guide](../plugins/onepersonlabs/docs/workflow.md).
+
 Itervox v0.2.1 is the strongest inspected local candidate. It supplies much of
 the scheduling and Codex continuity path, but it does not supply the complete
 feedback-delivery and landing contract. The next useful step is the

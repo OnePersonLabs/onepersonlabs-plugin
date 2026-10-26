@@ -34,16 +34,11 @@ trust. Installation does not itself select a repository workflow or dispatch wor
 | Choose among all 32 shipped skills | [Skills by task](docs/skills.md) |
 | Set up a repo, manage issues, deliver, and resume | [Workflow](docs/workflow.md) |
 | Inspect settings, instructions, policies, and notifications | [Configuration and hooks](docs/configuration-and-hooks.md) |
+| Declare repository capability requirements and diagnose conflicts | [Compatibility](docs/compatibility.md) |
 | Work with people, recover history, and hand off | [Collaboration and recovery](docs/collaboration-and-recovery.md) |
 | Diagnose failures or migrate from OPL | [Troubleshooting](docs/troubleshooting.md) |
 | Extend, verify, and publish the plugin | [Contributor guide on GitHub](https://github.com/OnePersonLabs/onepersonlabs-plugin/blob/main/docs/contributing.md) |
 
-The [compatibility reference](docs/compatibility.md) owns repository capability
-policy. Individual [skill instructions](skills/) own detailed procedures and
+Individual [skill instructions](skills/) own detailed procedures and
 conditional dependencies. Availability and automatic discovery do not guarantee
 that a skill will be selected or complete a particular task.
-
-OnePersonLabs supplies two domain-specific [Slop Buster agent profiles](agents/).
-Native delegation and personal profiles remain available. The package's MCP
-configuration is currently empty; connected tools and external runtimes are
-separate from the plugin.

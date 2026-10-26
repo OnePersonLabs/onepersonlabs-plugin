@@ -39,6 +39,14 @@ OnePersonLabs hooks through Codex's `/hooks` before expecting hook behavior.
 The source-refresh helper can establish selected hook trust automatically;
 the plain marketplace commands above do not provide that helper's verification.
 
+### Find the installed plugin directory
+
+For commands that use `<installed OnePersonLabs plugin directory>`, run
+`codex plugin list --json` in the affected environment. Use `source.path` from
+the installed `onepersonlabs@onepersonlabs` entry. This is the installed package
+directory; `marketplaceSource.source`, when present, identifies the marketplace
+source instead. Use the path for that environment's Codex home.
+
 ## Try a read-only first task
 
 Open a repository and paste this into Codex, not your terminal:

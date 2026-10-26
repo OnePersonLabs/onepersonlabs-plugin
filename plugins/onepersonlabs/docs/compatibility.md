@@ -4,8 +4,9 @@ OnePersonLabs checks local Codex metadata against repository policy
 for plugins, skills, and MCP servers. It reports missing requirements, conflicts,
 recommendations, and discovery failures.
 
-The checker needs Python 3.11+ and Codex CLI; discovery is tested with Codex
-`0.151.0` and `0.153.4`. Windows uses `python`; POSIX uses `python3`. npm Codex
+The checker needs Python 3.11+ and a Codex CLI that supplies the metadata
+described under [discovery](#discovery-and-troubleshooting). Windows uses
+`python`; POSIX uses `python3`. npm Codex
 launchers also need Node.js. Review and trust OnePersonLabs hooks in Codex's `/hooks`
 before expecting automatic checks.
 
@@ -106,15 +107,17 @@ The checker does not persist user prompts.
 
 ## Run a diagnostic
 
-From this marketplace checkout on Windows:
+Use the [installed plugin directory](getting-started.md#find-the-installed-plugin-directory).
+In PowerShell:
 
 ```powershell
-python plugins/onepersonlabs/scripts/codex-compatibility-check.py --check --cwd C:/dev/my-project
-python plugins/onepersonlabs/scripts/codex-compatibility-check.py --check --cwd C:/dev/my-project --json
+$pluginRoot = "<installed OnePersonLabs plugin directory>"
+python "$pluginRoot/scripts/codex-compatibility-check.py" --check --cwd C:/dev/my-project
+python "$pluginRoot/scripts/codex-compatibility-check.py" --check --cwd C:/dev/my-project --json
 ```
 
-On POSIX, use `python3` and a native repository path. For an installed copy,
-run its `scripts/codex-compatibility-check.py`. If discovery cannot resolve the
+Replace the example project path with your repository. On POSIX, use `python3`
+and native plugin and repository paths. If discovery cannot resolve the
 launcher, set `CODEX_BIN` to the native executable or JavaScript entrypoint.
 
 | Exit status | Meaning |

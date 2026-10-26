@@ -19,8 +19,9 @@ host, or unusable for a particular task.
 ## Inspect or repair OnePersonLabs' managed Codex defaults
 
 The installed plugin provides a read-only check and an explicit repair command.
-Run them with Python 3.11 or newer and the `scripts` directory from the
-installed plugin copy. In PowerShell:
+Run them with Python 3.11 or newer and the
+[installed plugin directory](getting-started.md#find-the-installed-plugin-directory).
+In PowerShell:
 
 ```powershell
 $pluginRoot = "<installed OnePersonLabs plugin directory>"
@@ -99,54 +100,13 @@ task to load changed global instructions.
 
 The optional repository policy lives in `.onepersonlabs/config.json`. It checks
 Codex plugins, skills, and MCP servers against declared repository needs; it
-does not install or enable them. For example:
+does not install or enable them. Lifecycle hooks report findings and can ask
+the agent to wait for acknowledgment. This remains cooperative guidance, not
+an execution or security gate.
 
-```json
-{
-  "codex": {
-    "compatibility": {
-      "version": 1,
-      "onViolation": "warn",
-      "required": [{ "kind": "mcp", "name": "project-docs" }],
-      "recommended": [{ "kind": "skill", "name": "project-build" }]
-    }
-  }
-}
-```
-
-The policy can declare `required`, `recommended`, `disallowed`, conditional
-`rules`, and documented `ignoreRules`. Plugin IDs use `name@marketplace`;
-skill names omit the `$` invocation prefix. Add provider qualification when a
-specific plugin or duplicate skill matters. A missing enabled-skill override
-does not prove that the skill is absent; use discovered identity and path.
-The full selector, conditional-rule, and exception behavior is in the
-[compatibility reference](compatibility.md).
-
-From the marketplace checkout on Windows, inspect the current repository with:
-
-```powershell
-python plugins/onepersonlabs/scripts/codex-compatibility-check.py --check --cwd C:/dev/my-project
-python plugins/onepersonlabs/scripts/codex-compatibility-check.py --check --cwd C:/dev/my-project --json
-```
-
-On POSIX, use `python3` and the repository's native path. For an installed
-copy, use its `scripts/codex-compatibility-check.py`. The checker requires
-Python 3.11+ and the Codex CLI; npm-based Codex launchers also need Node.js.
-If Codex discovery cannot resolve the launcher, set `CODEX_BIN` to its native
-executable or JavaScript entrypoint. Exit code `0` means no required policy
-violation, `1` means a violation, and `2` means invalid policy or incomplete
-discovery. Missing recommendations may still be reported with exit code `0`.
-
-The plugin runs the compatibility check at session start and again when a user
-prompt is submitted. With the default `onViolation: "acknowledge"`, the hook
-asks the agent to present policy or discovery findings. The user can continue
-that task by replying exactly `continue`, `ok`, `okay`, or `continue anyway`.
-With `onViolation: "warn"`, findings are reported without that pause. This is
-a cooperative instruction to the agent; it is not an execution or security
-gate. Unknown ownership or enablement is reported as unverifiable, not absent
-or safe. The diagnostic `--check` always reads fresh local metadata. See the
-[compatibility guide](compatibility.md) for discovery details and
-failure recovery.
+Use the [compatibility guide](compatibility.md) to write a policy, select
+capabilities, interpret acknowledgments, or run a diagnostic. That guide owns
+the policy examples, discovery limits, exit statuses, and recovery steps.
 
 ## Know what the installed hooks do
 
@@ -184,26 +144,24 @@ events locally under
 when `CODEX_HOME` is unset. Notifications are optional and require a separate
 foreground process. The default idle threshold is 25 minutes. To send a message,
 configure an HTTPS ntfy topic URL in `CODEX_WATCH_NTFY_URL` and, if
-the topic requires it, `CODEX_WATCH_NTFY_TOKEN`. From this repository checkout,
-for example, use PowerShell:
+the topic requires it, `CODEX_WATCH_NTFY_TOKEN`. Run the installed script with
+Python 3.11 or later and the
+[installed plugin directory](getting-started.md#find-the-installed-plugin-directory).
+In PowerShell:
 
 ```powershell
+$pluginRoot = "<installed OnePersonLabs plugin directory>"
 $env:CODEX_WATCH_NTFY_URL = "https://ntfy.example.com/<private-topic>"
-$env:CODEX_WATCH_NTFY_TOKEN = "<optional-token>"
-npm run codex-watch -- run
+python "$pluginRoot/scripts/codex-task-watch.py" run
 ```
 
-From an installed plugin, use Python 3.11+ with its script. On Windows, use
-`python`; on POSIX, use `python3`.
-
-```text
-python <plugin-root>/scripts/codex-task-watch.py run
-```
+On POSIX, export the environment variables and use `python3` with the installed
+script's native path. Set any required token through your environment's secret
+handling; do not put it in shared shell history or reports.
 
 The process stays in the foreground; press Ctrl+C to stop it. The notification
 includes the last completed assistant response. Use an access-controlled topic
 and treat its contents as private.
-Do not put the topic token in shared shell history or reports.
 
 Use `status` or `status --json` to inspect recorded sessions. Use
 `test-notification` to send a real message to the configured topic, and

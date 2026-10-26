@@ -32,18 +32,20 @@ prerequisites rather than installing them.
 | `tests/` | Tests and fixtures, outside the installed package. |
 | `tools/` | Repository check and installation drivers. |
 | `.agents/plugins/marketplace.json` | Marketplace identity and shipping source path. |
-| `docs/` | Contributor instructions and retained design/evidence records. |
+| `docs/` | Contributor instructions and evidence for open research. |
 
 Edit source, never the installed cache. Shared user guides belong inside the
-plugin so their relative links work after installation. Link from both READMEs
-to the owning guide; avoid maintaining copies of the same procedure.
+plugin so their relative links work after installation. The root README routes
+users to the plugin README and contributors here. Keep installation and usage
+procedures in the plugin guides; keep checkout, verification, and publication
+procedures here.
 
 ## Make one connected change
 
-Inspect current branch, dirty work, instructions, and the owning issue. Follow
-the [workflow guide](../plugins/onepersonlabs/docs/workflow.md); this repository
-keeps actionable work, decisions, and recovery in the owning GitHub issue.
-Link relevant design and evidence records. Keep one primary issue through delivery.
+Inspect current branch, dirty work, instructions, and the task's authorization.
+The [workflow guide](../plugins/onepersonlabs/docs/workflow.md) covers issue
+ownership and recovery. Link relevant design and evidence when it explains
+the change.
 
 For a skill change, edit `plugins/onepersonlabs/skills/<name>/SKILL.md` and review
 its `agents/openai.yaml` activation metadata. Keep examples and references
@@ -63,18 +65,11 @@ work, and checkpoint coherent verified units before moving to another concern.
 
 ## Verify the affected behavior
 
-Run commands from the repository root. Keep successful output quiet and retain
-useful diagnostics when something fails.
-
-| Change or checkpoint | Existing command |
-| --- | --- |
-| Focused reproduced behavior | `npm run test:focus -- --file tests/unit/onepersonlabs/codex-hooks.test.mjs` (replace with the relevant supported test file) |
-| Executable integration | `npm run test:contract -- --plugin onepersonlabs` and `npm run test:unit -- --plugin onepersonlabs` |
-| MCP launcher/server metadata | `npm run test:mcp -- --plugin onepersonlabs` |
-| UI code/resources | `npm run test:ui -- --plugin onepersonlabs` |
-| Package-visible files | `npm run test:installed -- --plugin onepersonlabs` |
-| Complete deterministic repository gate | `npm run verify` |
-| Explicit release gate | `npm run release:verify` |
+The repository's [test instructions](../AGENTS.md#tests) own check selection,
+required gates, and test policy. Run the selected commands from the repository
+root. For a focused failure, `npm run test:focus -- --file <test-file>` runs an
+existing supported test file. Keep successful output quiet and retain useful
+diagnostics when something fails.
 
 Review skill instructions and activation metadata against their sources and
 validate package structure. For documentation, check command syntax, links,
@@ -82,34 +77,32 @@ anchors, expected results, and consequential recovery paths. Render changed
 diagrams. Source inspection supports implemented intent; it does not prove the
 documented runtime journey or a reader's understanding.
 
-The installed checkpoint includes contract and unit checks. When it is required
-at the same checkpoint, use it instead of first running those suites separately.
-It installs into a separate persistent black-box Codex home, compares all package
-files, and verifies selected
-hook trust through the app-server API. It does not require interactive sign-in
-or manual `/hooks` confirmation. Surface discovery or trust failures.
+For package-visible changes, the installed checkpoint is:
 
-The pre-push hook runs `npm run verify` and
-`npm run test:installed -- --plugin all --package-only`. The latter validates
-package/discovery/trust for every marketplace plugin without another unit run;
-it still runs contract checks.
-This is test isolation, not installation into your active homes. Reuse valid
-evidence between checkpoints; preserve these required hooks.
+```sh
+npm run test:installed -- --plugin onepersonlabs
+```
 
-Do not add skill invocation tests. Model-consuming evaluations require explicit
-permission and a finite budget; deterministic or release checks do not grant it.
-Add permanent tests only for meaningful owned contracts, not as mirrors of an edit.
+It includes contract and unit checks, installs into a separate persistent
+black-box Codex home, compares package files, and verifies discovery and selected
+hook trust through the app-server API. A pass establishes that these checks
+succeeded for this source snapshot; it does not refresh your active homes or
+prove that a running task loaded the new package. Discovery and trust failures
+need resolution, not interactive sign-in or manual `/hooks` confirmation.
+
+The pre-push and release gates also use isolated homes. Their commands and
+required scope are listed in the test instructions above.
 
 ## Publish and refresh
 
-This repository defaults to checked commits on the selected branch. After a
-standalone unit passes required checks, push its commits. New delivery branches
-and PRs are opt-in. For selected PR delivery, review the full series against
-its starting baseline, keep the builder responsible for repairs, and merge
-after required checks/reviews under the existing protections. Verify landing
-and synchronize the accepted base before refreshing.
+Use the delivery boundary authorized for the task. A verified local commit does
+not authorize a push or refresh. When publication is authorized, preserve the
+required pre-push checks and any selected PR review and merge requirements.
+Verify remote landing before reporting publication complete. The
+[workflow guide](../plugins/onepersonlabs/docs/workflow.md#follow-one-issue-through-delivery)
+explains branch and PR choices.
 
-Use the installed `$onepersonlabs:refresh-local-plugins` skill for the refresh:
+For an authorized refresh, use the installed `$onepersonlabs:refresh-local-plugins` skill:
 
 ```text
 Use $onepersonlabs:refresh-local-plugins to refresh onepersonlabs from this
@@ -127,39 +120,27 @@ The direct repository command is `npm run install:local -- --plugin onepersonlab
 It only installs and establishes selected hook trust; it does not run tests or
 perform the surrounding service and post-refresh procedure for you.
 
-Follow the [service lifecycle](../plugins/onepersonlabs/docs/collaboration-and-recovery.md):
-pause before replacement and resume after the attempt, even on failure. Restore
-only a previously running service and report its new pairing URL when restarted.
-After a successful refresh, run installed configuration and instruction checks
-in each refreshed home. This repository's standing authorization covers required
-configuration fixes and outdated global-instruction updates, with backups and
-no downgrade. Preserve the user-requested post-refresh rule as specified in
-the repository instructions. Do not generalize this authorization to other users.
+Follow the repository's
+[service recovery](../AGENTS.md#human-collaboration-service-during-a-local-plugin-refresh)
+and [post-refresh checks](../AGENTS.md#after-a-local-plugin-refresh). These own the
+required pause/resume operations and configuration/instruction updates for this
+checkout. The installed helpers retain backups and enforce their recovery and
+no-downgrade checks. Report Windows and WSL outcomes separately.
 
 Report checked source, published commits, installed files, and fresh-session
 loading separately. A refresh does not change components already loaded in the
 current task. Close the issue only when its complete acceptance scope is met.
 
-## Design and evidence records
+## Open runtime research
 
-These retain decisions and observations from their recorded baselines. Use the
-current user guides for procedures; consult the records for reasons and limits.
+[Issue #4](https://github.com/OnePersonLabs/onepersonlabs-plugin/issues/4) owns
+the unresolved unattended issue-to-merge lifecycle. Two dated records support
+that work. They do not set current repository workflow policy or authorize
+implementation or deployment:
 
-- [Overhaul audit](onepersonlabs-overhaul.md): skill dispositions, verification,
-  and delivery changes, including the 2026-10-21 follow-up.
 - [Runtime research](runtime-research.md): 2026-10-20 comparison and unresolved
   unattended lifecycle requirements.
 - [Local Itervox proposal](itervox-upstream-proposal.md): 2026-10-20 draft, not an
   installed runtime or an upstream submission.
-- [Compound assimilation](compound-assimilation.md): 2026-10-21 capability choices
-  and evidence limits.
-- [WTFM assimilation](wtfm-assimilation.md): 2026-10-21 documentation discipline
-  and deliberately excluded machinery.
-- [Confidence steering experiment](confidence-steering-experiment.md): retained
-  experimental evidence and its recorded disposition, not a current capability promise.
-
-Instruction baseline recovery uses local history first. Remote recovery uses
-the original plugin repository for revisions below 10 and this repository for
-revisions 10 and later, as implemented by the existing recovery helpers.
 
 [Back to the repository](../README.md)

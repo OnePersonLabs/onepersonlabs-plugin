@@ -8,6 +8,10 @@ submitted upstream. No fork, runtime implementation, deployment or pilot is
 authorized by this document. Itervox remains a candidate, not a qualified or
 selected runtime. See the [comparison](runtime-research.md).
 
+Retained as evidence for [open issue #4](https://github.com/OnePersonLabs/onepersonlabs-plugin/issues/4).
+This draft's human-merge scenario reflects its dated research baseline, not
+current repository delivery policy.
+
 ## Problem and worked case
 
 A builder opens a PR, completes local checks and parks for review. A human or CI
@@ -16,7 +20,7 @@ builder, preserve the issue claim, and let the builder repair the PR. It must wa
 without model inference. After human merge, the runtime must reconcile the issue
 and refresh the base before admitting the next serial issue.
 
-Today, a callback sent from `after_run` can precede parking. A 202 response from
+In this baseline, a callback sent from `after_run` can precede parking. A 202 response from
 `provide_input` proves enqueue only. The event loop can drop an early message or
 apply it to a later question for the same issue. A lost HTTP response can also
 leave the sender unable to distinguish rejection from consumption. These are

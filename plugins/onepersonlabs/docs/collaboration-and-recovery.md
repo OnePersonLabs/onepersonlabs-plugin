@@ -53,16 +53,11 @@ current project evidence before carrying a past statement forward.
 
 Use [$onepersonlabs:session-history-rebuild](../skills/session-history-rebuild/SKILL.md)
 only when a complete, auditable repository conversation and design history is
-explicitly requested. That larger reconstruction requires a fresh
-`$onepersonlabs:session-reader` index, a status check with no relevant stale
-sources, and a frozen SQLite index snapshot plus explicit UTC cutoff. Inventory
-every indexed session and give each candidate an inclusion or exclusion reason;
-the indexed working directory is only a routing hint, and mixed sessions need
-message-level inspection. Export and verify the canonical user/assistant
-sequence against the frozen index and routing, retain source hashes, and cite
-messages and code in the resulting baseline and history. Keep assistant
-proposals separate from user decisions. This is a deliberate history project,
-not the ordinary way to resume a task.
+explicitly requested. It needs a current session-reader index and an explicit
+history cutoff. Expect a source-cited baseline and history that distinguish
+user decisions from assistant proposals and disclose coverage gaps. The skill
+owns the inventory, snapshot, and export procedure. Routine resumption needs
+only the context missing from the existing work record.
 
 ## Request a useful human contribution
 
@@ -143,34 +138,27 @@ inspect the artifacts only when the user later resumes the work. A timed-out
 command may still be running if cleanup failed; inspect the reported process
 before starting conflicting work.
 
-The command helper requires Python 3.11 or newer and the installed skill's
-`scripts/run_and_wake.py`. On Windows use `python`; on POSIX use `python3`; honor
-`PYTHON_BIN` when set. Keep the existing command timeout contract: do not invent
-a deadline from the runtime estimate. The skill's platform-specific invocation
-is:
+The helper requires Python 3.11 or newer. Invoke the skill with the exact
+command, working directory, and known timeout contract:
 
 ```text
-<python> -B -X utf8 <skill>/scripts/run_and_wake.py start --cwd <working-directory> -- <program> <arguments...>
+Use $onepersonlabs:long-command-wakeup for <command> in <working-directory>.
+Prior runs took <observed duration>. Preserve its existing timeout contract
+and report the launch receipt and recovery path.
 ```
 
-Use the actual loaded skill directory and pass program arguments separately.
-`CODEX_THREAD_ID` must identify the current thread; pass `--thread <known-id>`
-only when that ID is already known. The result artifacts remain in the reported
-directory for recovery if queue submission fails.
+The skill owns platform-specific launch and thread routing. Result artifacts
+remain at the reported path if queue submission fails.
 
 ## Restore the inbox service around a local refresh
 
 This procedure applies only when an authorized local plugin refresh is actually
 being performed. From the workspace being refreshed, use the
 human-collaboration skill's `pause-for-refresh` before the installer and
-`resume-after-refresh` after the attempt, even if installation fails. The pause
-records whether the service was running and its bind settings, stops a running
-service gracefully, and confirms both listener shutdown and process exit. If it
-cannot confirm shutdown, do not refresh. Resume starts it only when it was
-running before; a failed restart preserves the record for retry. A successful
-restart returns a new pairing URL -- open and report it because the prior link
-expires. Use the source skill to resume if the installed helper is unavailable
-after a failed refresh. See the exact
+`resume-after-refresh` after the attempt, even if installation fails. Continue
+only after the pause confirms shutdown or reports no running service. Resume
+restores a previously running service and returns a replacement pairing URL.
+Keep a failed restart's recovery record for retry. Follow the exact
 [refresh procedure](../skills/human-collaboration/SKILL.md#local-plugin-refresh).
 
 This service recovery does not change which plugin was installed or prove its
