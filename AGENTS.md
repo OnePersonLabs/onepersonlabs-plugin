@@ -1,15 +1,5 @@
 # Repository Instructions
 
-## Issue and recovery ownership
-
-Use `$onepersonlabs:github-workflow` to keep actionable work, decisions, recovery
-and delivery status in the owning GitHub issue in OnePersonLabs/onepersonlabs-plugin.
-Use `$onepersonlabs:setup-repo-workflow` only for explicit setup or migration.
-Keep one primary issue through landing and up to two useful bounded helpers.
-Do not create another task ledger. New product or runtime scope needs its own
-authorization; the repository's publication default below covers finished
-authorized tooling units only.
-
 ## Local plugin development
 
 This repository uses the source-first workflow in `README.md`. The plugin root
@@ -20,35 +10,6 @@ Create and update skills under `plugins/onepersonlabs/skills/` unless the user e
 specifies another location.
 Interpret an unqualified reference to `AGENTS.md` as `plugins/onepersonlabs/AGENTS.md`
 unless the user explicitly specifies another file.
-
-During authorized implementation, make small, coherent, verified task-owned
-checkpoint commits before moving into another concern. Do not blanket-stage,
-force broken splits, or push/refresh after each checkpoint.
-
-Work in the selected checkout and branch by default. New delivery branches and
-PRs are opt-in; parallel independent writers still need separate worktrees and
-branches. Preserve small, coherent commits that are understandable and reviewable
-on their own, and leave working states.
-
-After completing a standalone unit and its required checks, push its checkpoint
-commits to the selected branch. If PR delivery is selected, review the full series
-against its frozen starting baseline, repair findings, and merge automatically
-once required checks and reviews pass. Preserve checkpoint history; do not squash
-unrelated units together. Use native auto-merge for outstanding GitHub requirements;
-complete required local checks and reviews before an immediately available merge.
-Keep branch protections and explicit manual-merge requirements in force.
-
-After landing, synchronize the accepted base and run `$onepersonlabs:refresh-local-plugins`
-with the service recovery and post-refresh checks below. A task-specific delivery
-boundary can override this default.
-
-OnePersonLabs's `plugins/onepersonlabs/AGENTS.md` has an independent positive integer instruction
-revision in its `onepersonlabs-instructions-version` marker. Increment and stage that
-revision whenever changing instruction content. The pre-commit hook compares
-the staged file with `HEAD` and rejects changed content without a staged bump;
-an unstaged bump does not satisfy the check. Initial version adoption uses 1
-in an existing repository. The first standalone commit preserves the inherited
-revision 10.
 
 `npm run install:local -- --plugin <plugin-name>` is an
 installation-only consumer operation. It never runs unit tests, contract
@@ -63,7 +24,7 @@ one, including isolated tests.
 
 ## Human-collaboration service during a local plugin refresh
 
-Before refreshing a local plugin, use `$onepersonlabs:human-collaboration`'s
+Before refreshing the local plugin, use `$onepersonlabs:human-collaboration`'s
 `pause-for-refresh` operation from the workspace being refreshed. It checks
 authenticated readiness, records whether the service was running and its bind
 settings, and stops it gracefully only when it was running. The operation must
@@ -81,18 +42,13 @@ pairing URL returned by the operation.
 
 ## After a local plugin refresh
 
-After a successful `$onepersonlabs:refresh-local-plugins` refresh, run the OnePersonLabs checks used
-at session startup. Check configuration and global instructions in each refreshed
-user-level Codex home. The user has approved the update question: apply required
-OnePersonLabs agent TOML configuration and documented defaults with the installed
-`scripts/codex-config-check.py fix`, and update outdated global instructions with
-`$onepersonlabs:update-instructions`. Do not ask for that approval again.
+After a successful `$onepersonlabs:refresh-local-plugins` refresh targeting this `onepersonlabs-plugin` repo:
 
-Keep the safety checks and dated backups from the update helpers. Do not downgrade.
-If homes share an instruction file, update its resolved target once. After a
-global-instruction replacement, restore this user-requested post-refresh rule in
-the user-level file. Keep the rule in this repository's `AGENTS.md` and the
-user-level file; do not add it to `plugins/onepersonlabs/AGENTS.md`.
+- Run the OnePersonLabs checks used
+  at session startup.
+- Apply required OnePersonLabs agent TOML configuration and documented defaults with the installed `scripts/codex-config-check.py fix`.
+- Update outdated global instructions with
+  `$onepersonlabs:update-instructions`.
 
 ## Tests
 
@@ -101,13 +57,13 @@ policy to all repository work, including `tests/` and `tools/`.
 Run commands from the repository root. Select affected checks below and complete
 all required gates.
 
-| Change or checkpoint | Check |
-| --- | --- |
-| Executable integration | `npm run test:contract -- --plugin <plugin-name>` and `npm run test:unit -- --plugin <plugin-name>` |
-| Skill instructions or activation metadata | Review the changed package against its sources and validate its structure. |
-| MCP launcher or server metadata | `npm run test:mcp -- --plugin <plugin-name>` |
-| UI code or resources | `npm run test:ui -- --plugin <plugin-name>` |
-| Package-visible files at a coherent checkpoint | `npm run test:installed -- --plugin <plugin-name>` |
+| Change or checkpoint                           | Check                                                                                               |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Executable integration                         | `npm run test:contract -- --plugin <plugin-name>` and `npm run test:unit -- --plugin <plugin-name>` |
+| Skill instructions or activation metadata      | Review the changed package against its sources and validate its structure.                          |
+| MCP launcher or server metadata                | `npm run test:mcp -- --plugin <plugin-name>`                                                        |
+| UI code or resources                           | `npm run test:ui -- --plugin <plugin-name>`                                                         |
+| Package-visible files at a coherent checkpoint | `npm run test:installed -- --plugin <plugin-name>`                                                  |
 
 `test:installed` includes contract and unit checks. When it is required at the
 same checkpoint, use it instead of first running those suites separately.
@@ -123,7 +79,3 @@ unit checks but still runs contract checks. Preserve these required hooks.
 
 The explicit `npm run release:verify` gate runs verification and clean installed
 checks for every plugin. The full skill corpus is not a routine update check.
-
-Do not add timestamp cachebusters to plugin versions and do not restore the
-retired all-plugin reinstall script. Codex's installed cache is tested only at
-the black-box checkpoint or used by the explicit installation command.
