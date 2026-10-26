@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 63 -->
+<!-- onepersonlabs-instructions-version: 64 -->
 
 # Personal engineering contract
 
@@ -89,12 +89,18 @@ No unattended issue dispatch is implied by these instructions.
 
 ## Verification and experiments
 
-Use existing checks or a bounded probe to resolve relevant uncertainty. Complete
-required gates and meaningful affected checks; reuse evidence while inputs remain
-valid. Run existing checks locally. Keep successful output quiet; surface failures
-with useful context. Do not
-add skill invocation tests or AI-consuming tests without explicit permission.
-Batch authorized AI evaluations at integration and stay within their budget.
+Use existing checks or a bounded probe to resolve relevant uncertainty. During
+implementation, run focused checks when they resolve a decision or reproduced
+failure. Batch broader affected suites at coherent integration boundaries.
+Complete required gates, run existing checks locally, and reuse evidence while
+its inputs remain valid. Keep successful output quiet; report failures with
+useful context.
+
+Do not add tests for skill invocation. AI-consuming tests and evaluations require
+explicit permission. Batch authorized evaluations at integration and stay within
+their budget. Group compatible evaluations by required model and effort. Minimize
+model calls and prompt batches. Use the lowest model and effort sufficient to
+establish the required evidence.
 
 When improving a working system against measurable objectives and the winning
 change is unknown, use $onepersonlabs:optimize.

@@ -82,14 +82,17 @@ anchors, expected results, and consequential recovery paths. Render changed
 diagrams. Source inspection supports implemented intent; it does not prove the
 documented runtime journey or a reader's understanding.
 
-The installed checkpoint runs contract and unit checks, installs into a separate
-persistent black-box Codex home, compares all package files, and verifies selected
+The installed checkpoint includes contract and unit checks. When it is required
+at the same checkpoint, use it instead of first running those suites separately.
+It installs into a separate persistent black-box Codex home, compares all package
+files, and verifies selected
 hook trust through the app-server API. It does not require interactive sign-in
 or manual `/hooks` confirmation. Surface discovery or trust failures.
 
 The pre-push hook runs `npm run verify` and
 `npm run test:installed -- --plugin all --package-only`. The latter validates
-package/discovery/trust for every marketplace plugin without another unit run.
+package/discovery/trust for every marketplace plugin without another unit run;
+it still runs contract checks.
 This is test isolation, not installation into your active homes. Reuse valid
 evidence between checkpoints; preserve these required hooks.
 
