@@ -18,11 +18,11 @@ refreshing active installations are separate delivery steps.
 | Location | Owns |
 | --- | --- |
 | [`plugins/onepersonlabs/`](plugins/onepersonlabs/) | Shipping skills, instructions, hooks, scripts, profiles, and user documentation. |
-| [`docs/`](docs/contributing.md) | Contributor guidance and evidence for open research. |
+| [`docs/`](docs/contributing.md) | Contributor guidance. |
 | [`tools/`](tools/) and [`tests/`](tests/) | Repository drivers, checks, and fixtures; these do not ship. |
 
-[GitHub issues](https://github.com/OnePersonLabs/onepersonlabs-plugin/issues)
-track open work. [Open runtime research](docs/contributing.md#open-runtime-research)
-records the limits of candidates for unattended work; no runtime is selected.
+For optional GitHub issue-to-PR automation, see the separate
+[Symphony Lite plugin](https://github.com/OnePersonLabs/symphony-lite). It is
+maintained independently and does not ship with OnePersonLabs.
 
 OnePersonLabs is [MIT licensed](LICENSE). Bundled third-party code retains its own notices.

@@ -1,6 +1,6 @@
 ---
 name: configure-harness
-description: Configure or diagnose a Codex harness by inventorying capabilities, preparing reversible configuration changes, and optionally measuring routing or profile receipt. Use for personal harness setup, profile probes, or host input failures; repository workflow setup belongs to $onepersonlabs:setup-repo-workflow.
+description: Configure or diagnose a Codex harness by inventorying capabilities, preparing reversible configuration changes, and optionally measuring routing or profile receipt. Use for personal harness setup, profile probes, or host input failures.
 ---
 
 # Configure Harness

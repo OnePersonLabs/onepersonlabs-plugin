@@ -1,6 +1,0 @@
-interface:
-  display_name: "Set up repository workflow"
-  short_description: "Configure native issue and review workflow"
-  default_prompt: "Use $onepersonlabs:setup-repo-workflow to inspect this repository and configure its issue, review, merge, and resumption workflow."
-policy:
-  allow_implicit_invocation: false

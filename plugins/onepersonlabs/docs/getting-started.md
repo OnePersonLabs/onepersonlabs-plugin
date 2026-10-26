@@ -68,12 +68,10 @@ or establish that the explanation is correct.
 
 | Situation | Request | Expected result |
 | --- | --- | --- |
-| You want a repeatable repository workflow | `Use $onepersonlabs:setup-repo-workflow to inspect and configure this repository's issue, check, review, delivery, and resumption path.` | A concrete working agreement using existing repository tools and instructions. |
 | A behavior is broken | `Use $onepersonlabs:debug to investigate this failure: [symptom and reproduction].` | A source-backed diagnosis; a repair and its verification when fixing is also authorized. |
 | Several solutions look plausible | `Use $onepersonlabs:research-solutions to compare current implementations for [problem and constraints].` | An evidence-based comparison with integration, cost, and recovery limits. |
-| You need to continue interrupted work | `Resume the existing issue and work records; reconcile current source and delivery state before continuing.` | Recovered ownership, valid evidence, outstanding work, and a next action. |
+| You need to continue interrupted work | `Resume the existing conversation and work records; reconcile the current source and any unfinished action before continuing.` | Recovered context, valid evidence, remaining work, and a next action. |
 
-The [workflow guide](workflow.md) connects these actions in one worked session.
 The [catalog](skills.md) covers every skill, including explicit-only choices.
 Existing repository instructions and your task authorization determine what the
 agent may change, publish, install, or run.

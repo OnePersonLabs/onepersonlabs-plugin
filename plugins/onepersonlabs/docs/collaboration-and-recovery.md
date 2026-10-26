@@ -2,15 +2,14 @@
 
 Use this guide when work spans turns, needs a human contribution, or includes a
 long local command. It shows how to restore the current state and resume with
-the existing owner. Routine chat does not require an inbox service. For issue
-ownership and delivery choices, see the [workflow guide](workflow.md).
+the existing owner. Routine chat does not require an inbox service.
 
 ## Resume an interrupted task
 
 Start with the existing work records and the conversation that owns the task.
-Reconcile the owning issue, any existing repository checkpoint, current
-checkout and dirty files, and any unfinished external action before repeating
-it. If a project uses Conceptor or another meaning owner, recover accepted
+Reconcile the project's chosen status record, any existing repository checkpoint,
+current checkout and dirty files, and any unfinished external action before
+repeating it. If a project uses Conceptor or another meaning owner, recover accepted
 decisions and evidence there too. The project's chosen work record holds active
 decisions, failed hypotheses, budgets, permissions, and the next safe action;
 do not create a second task ledger. That record can be the owning issue;
@@ -175,4 +174,3 @@ skill documents the plugin refresh helper and its delivery limits.
 - [Session reader](../skills/session-reader/SKILL.md) -- focused, bounded history lookup.
 - [Session history rebuild](../skills/session-history-rebuild/SKILL.md) -- explicit full-history provenance and reconstruction.
 - [Local plugin refresh](../skills/refresh-local-plugins/SKILL.md) -- refresh selection, recovery lifecycle, and installed state.
-- [GitHub issue procedure](../skills/github-workflow/SKILL.md) -- reconcile issue state and uncertain GitHub writes.

@@ -10,10 +10,8 @@ Each entry links to the skill's full instructions. Read those instructions for
 the exact workflow, limits, and any conditional references before using a
 specialized tool.
 
-## Plan and deliver work
+## Diagnose, implement, and review
 
-- **[$onepersonlabs:setup-repo-workflow](../skills/setup-repo-workflow/SKILL.md)** -- Explicit. Set up or migrate one repository's issue, checks, review, merge, parallel work, and resumption path. Result: a repository-grounded operating agreement and agreed native changes. Requires an explicit setup request; it does not perform routine issue updates.
-- **[$onepersonlabs:github-workflow](../skills/github-workflow/SKILL.md)** -- Discoverable. Reconcile GitHub issues and delivery status at planning, work start, resumption, scope change, and completion. Result: updated actionable status backed by verified work evidence. Requires GitHub to be the selected tracker and issue writes to be authorized.
 - **[$onepersonlabs:debug](../skills/debug/SKILL.md)** -- Explicit. Diagnose a concrete failure and, when requested, verify a causal fix. Result: a supported cause, counterevidence, and original-scenario verification. A symptom or passing test alone does not establish the cause.
 - **[$onepersonlabs:test-driven-development](../skills/test-driven-development/SKILL.md)** -- Explicit. Use a red-green-refactor loop for an observable behavior. Result: a meaningful test-first change with honest reporting of whether tests came before the implementation. It is optional and follows the repository's test policy.
 - **[$onepersonlabs:adversarial-review](../skills/adversarial-review/SKILL.md)** -- Explicit. Audit a plan, architecture, instruction system, or agent workflow for concrete failure paths. Result: prioritized findings tied to evidence and a plausible failure scenario. Routine code diffs use the native review path.
@@ -43,7 +41,7 @@ specialized tool.
 
 ## Configure Codex and diagnose integrations
 
-- **[$onepersonlabs:configure-harness](../skills/configure-harness/SKILL.md)** -- Discoverable. Inventory one Codex home, prepare a reversible capability/configuration change, or diagnose host input. Result: a sourced inventory and reviewed change plan, with an application receipt if applied. Requires the selected Codex home and repository; availability does not prove a tool is installed, enabled, authenticated, or callable. Repository workflow setup belongs to `setup-repo-workflow`.
+- **[$onepersonlabs:configure-harness](../skills/configure-harness/SKILL.md)** -- Discoverable. Inventory one Codex home, prepare a reversible capability/configuration change, or diagnose host input. Result: a sourced inventory and reviewed change plan, with an application receipt if applied. Requires the selected Codex home and repository; availability does not prove a tool is installed, enabled, authenticated, or callable.
 - **[$onepersonlabs:codex-hook-debug](../skills/codex-hook-debug/SKILL.md)** -- Discoverable. Diagnose hook discovery, trust, execution, output, or continuation failures across user, repository, and plugin layers. Result: a verified cause and repair in the owning layer. Requires the triggering event and active Codex environment; Git and React hooks are out of scope.
 - **[$onepersonlabs:update-instructions](../skills/update-instructions/SKILL.md)** -- Explicit. Check and replace outdated global OnePersonLabs instructions. Result: a verified installed baseline and a dated byte-exact backup when replacement occurs. Replacement discards custom rules rather than merging them; established authorization applies, or the skill asks once.
 - **[$onepersonlabs:camofox-browser](../skills/camofox-browser/SKILL.md)** -- Discoverable. Control an existing Jo CamoFox browser through its REST API. Result: navigation or page interaction using current snapshots and element references. Requires the installed, authenticated Jo service and its owned launcher; Windows/WSL visible mode needs the matching browser binary and display.
@@ -60,10 +58,9 @@ specialized tool.
 ## Invocation notes
 
 The explicit skills are `adversarial-review`, `debug`, `handoff`,
-`session-history-rebuild`, `setup-repo-workflow`, `slop-buster`,
+`session-history-rebuild`, `slop-buster`,
 `test-driven-development`, `unslop`, and `update-instructions`. Name them in
-the request, for example: `Use $onepersonlabs:setup-repo-workflow to inspect
-this repository's current issue and review path.`
+the request.
 
 All other listed skills are marked discoverable in their package metadata.
 Codex may select one when its description fits, or you may name it directly.

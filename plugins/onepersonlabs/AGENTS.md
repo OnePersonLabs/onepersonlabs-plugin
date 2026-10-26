@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 65 -->
+<!-- onepersonlabs-instructions-version: 66 -->
 
 # Personal engineering contract
 
@@ -45,47 +45,19 @@ same work. Use $onepersonlabs:write-docs for README creation, user guides, and
 substantive documentation updates; internal changes with no reader impact need
 no documentation rewrite.
 
-At a meaningful work boundary, use the existing issue or checkpoint to record the
-outcome, why now, mechanism and acceptance demonstration. Include remaining
-uncertainty, aggregate budget and reconsideration condition. Carry failed hypotheses
-and cumulative cost across agents and resumptions. After two failed repair cycles
-without progress on the same observable problem, or an exhausted agreed budget,
-stop dependent implementation.
-A structural contradiction can trigger this earlier. Compare bounded repair,
-replacement of the affected responsibility and revision of an assumption.
-Require new evidence to change the causal hypothesis or next decision; changing
-the issue or worker does not reset the budget. Reuse an active meaning owner's
+After two failed repair cycles without progress on the same observable problem, or
+an exhausted agreed budget, stop dependent implementation. A structural
+contradiction can trigger this earlier. Compare bounded repair, replacement of the
+affected responsibility, and revision of an assumption. Require new evidence to
+change the causal hypothesis or next decision. Reuse an active meaning owner's
 reassessment mechanism. Preserve required guarantees when replacing code or tests.
 
-## Ownership and delivery
+## Ownership and permissions
 
 Inspect checkout, instructions, state, and unrelated dirty work before changing it.
 Own the requested outcome; preserve others' edits and resources. Do not blanket-stage.
-During authorized implementation, make small, coherent, verified task-owned
-checkpoint commits before moving to another concern. Choose boundaries a human can
-review; do not split into broken states or use line/time quotas. A checkpoint does
-not authorize push, merge, or installation. Honor the project's delivery boundary.
-Distinguish checked, published, installed, and session-loaded state.
-
-Work in the selected checkout and branch by default. New delivery branches and
-PRs require an explicit user or project choice; parallel independent writers
-still need isolated branches/worktrees.
-
-Keep projects independent. At substantive planning, work start, resumption, and
-completion, read `<active CODEX_HOME>/onepersonlabs/github-workflow.md` (`~/.codex` if unset).
-Honor repository tracker/read-only overrides. When GitHub is selected, use
-$onepersonlabs:github-workflow automatically. The root owns authorized issue writes; workers
-return evidence. Use
-$onepersonlabs:setup-repo-workflow only when explicitly requested to configure a repository.
-
-Default to one primary issue through landing per project. Keep its builder
-responsible for PR repairs and resume that conversation when practical. Routine
-self-inspection stays there. Use native review for code diffs when independent
-judgment is justified by consequence or unresolved uncertainty; do not routinely
-duplicate local and GitHub review. Within authorized PR delivery, merge automatically
-after required checks and reviews pass unless the user or project requires manual
-merge. Keep repository protections in force and verify actual landing and base sync.
-No unattended issue dispatch is implied by these instructions.
+Distinguish checked, published, installed, and session-loaded state. Do not infer
+authorization from tool or environment capability.
 
 ## Verification and experiments
 
@@ -125,9 +97,7 @@ neither imposes universal scaffolding.
 
 Delegate when useful parallelism, expertise, context isolation, or independent
 judgment exceeds setup, handoff, and integration cost. Keep tightly coupled work
-local. Up to two useful helpers is the default, not a quota or cross-project cap;
-projects and explicit tasks may choose other budgets. Parallel implementation needs
-settled contracts and explicit write ownership.
+local. Parallel implementation needs settled contracts and explicit write ownership.
 
 Assignments give outcome, boundaries, constraints, dependencies, evidence, and stop
 condition. One writer owns each shared mutable surface; coordinate boundary changes.

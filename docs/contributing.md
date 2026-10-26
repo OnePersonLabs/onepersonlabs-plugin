@@ -32,7 +32,7 @@ prerequisites rather than installing them.
 | `tests/` | Tests and fixtures, outside the installed package. |
 | `tools/` | Repository check and installation drivers. |
 | `.agents/plugins/marketplace.json` | Marketplace identity and shipping source path. |
-| `docs/` | Contributor instructions and evidence for open research. |
+| `docs/` | Contributor instructions. |
 
 Edit source, never the installed cache. Shared user guides belong inside the
 plugin so their relative links work after installation. The root README routes
@@ -43,9 +43,7 @@ procedures here.
 ## Make one connected change
 
 Inspect current branch, dirty work, instructions, and the task's authorization.
-The [workflow guide](../plugins/onepersonlabs/docs/workflow.md) covers issue
-ownership and recovery. Link relevant design and evidence when it explains
-the change.
+Link relevant design and evidence when it explains the change.
 
 For a skill change, edit `plugins/onepersonlabs/skills/<name>/SKILL.md` and review
 its `agents/openai.yaml` activation metadata. Keep examples and references
@@ -59,9 +57,8 @@ marker and stage the bump with the content. The pre-commit hook checks staged
 content against `HEAD`. Ordinary guide edits do not require an instruction
 revision or a timestamp version bump.
 
-Keep separate independent writers in isolated branches/worktrees. Root owns
-integration and issue writes. Stage only task-owned files, preserve unrelated
-work, and checkpoint coherent verified units before moving to another concern.
+Preserve unrelated local changes and stage only files for this change. Keep each
+change coherent and preserve the reason for any exceptional choice.
 
 ## Verify the affected behavior
 
@@ -97,10 +94,8 @@ required scope are listed in the test instructions above.
 
 Use the delivery boundary authorized for the task. A verified local commit does
 not authorize a push or refresh. When publication is authorized, preserve the
-required pre-push checks and any selected PR review and merge requirements.
-Verify remote landing before reporting publication complete. The
-[workflow guide](../plugins/onepersonlabs/docs/workflow.md#follow-one-issue-through-delivery)
-explains branch and PR choices.
+required checks for this repository and verify the published result before
+reporting completion. This guide does not select a branch, review, or merge path.
 
 For an authorized refresh, use the installed `$onepersonlabs:refresh-local-plugins` skill:
 
@@ -129,18 +124,6 @@ no-downgrade checks. Report Windows and WSL outcomes separately.
 
 Report checked source, published commits, installed files, and fresh-session
 loading separately. A refresh does not change components already loaded in the
-current task. Close the issue only when its complete acceptance scope is met.
-
-## Open runtime research
-
-[Issue #4](https://github.com/OnePersonLabs/onepersonlabs-plugin/issues/4) owns
-the unresolved unattended issue-to-merge lifecycle. Two dated records support
-that work. They do not set current repository workflow policy or authorize
-implementation or deployment:
-
-- [Runtime research](runtime-research.md): 2026-10-20 comparison and unresolved
-  unattended lifecycle requirements.
-- [Local Itervox proposal](itervox-upstream-proposal.md): 2026-10-20 draft, not an
-  installed runtime or an upstream submission.
+current task.
 
 [Back to the repository](../README.md)

@@ -84,11 +84,9 @@ the item's status before creating another request. The root must reconcile
 pending submissions and ownership when it resumes. Phone reachability, submission
 receipt, agent continuation, and integration of the answer are separate states.
 
-For interrupted issue work, resume the existing conversation and checkpoint where
-possible. Inspect remote state before retrying an uncertain GitHub write. See
-[collaboration and recovery](collaboration-and-recovery.md) and the
-[workflow session](workflow.md). Auto-merge does not wake an agent or select its
-next issue.
+For interrupted work, resume the existing conversation and project checkpoint
+where possible. Reconcile any unfinished external action before repeating it.
+See [collaboration and recovery](collaboration-and-recovery.md).
 
 ## Migrating an old OPL installation
 

@@ -1,8 +1,8 @@
 # OnePersonLabs
 
-Skills, shared instructions, and hooks that help you direct Codex from a problem
-to a checked change. Use it to understand code, investigate failures, make
-decisions, collaborate with people, and maintain issue and delivery status.
+Skills, shared instructions, and hooks that help you direct Codex from a question
+or failure to clearer understanding or a checked change. Use it to understand
+code, investigate problems, make decisions, and collaborate with people.
 
 ## Start here
 
@@ -24,15 +24,14 @@ current source. Keep this read-only and identify anything you cannot verify.
 
 Expect a source-grounded explanation and a worked case, with uncertainty stated.
 See [getting started](docs/getting-started.md) for installation checks and hook
-trust. Installation does not itself select a repository workflow or dispatch work.
+trust. Installation adds skills and hooks; it does not run repository work.
 
 ## Guides
 
 | Reader task | Guide |
 | --- | --- |
 | First installation and useful request | [Getting started](docs/getting-started.md) |
-| Choose among all 32 shipped skills | [Skills by task](docs/skills.md) |
-| Set up a repo, manage issues, deliver, and resume | [Workflow](docs/workflow.md) |
+| Choose among all 30 shipped skills | [Skills by task](docs/skills.md) |
 | Inspect settings, instructions, policies, and notifications | [Configuration and hooks](docs/configuration-and-hooks.md) |
 | Declare repository capability requirements and diagnose conflicts | [Compatibility](docs/compatibility.md) |
 | Work with people, recover history, and hand off | [Collaboration and recovery](docs/collaboration-and-recovery.md) |
@@ -42,3 +41,7 @@ trust. Installation does not itself select a repository workflow or dispatch wor
 Individual [skill instructions](skills/) own detailed procedures and
 conditional dependencies. Availability and automatic discovery do not guarantee
 that a skill will be selected or complete a particular task.
+
+For optional GitHub issue-to-PR automation, see the separately installed
+[Symphony Lite plugin](https://github.com/OnePersonLabs/symphony-lite). It is
+not included in OnePersonLabs.

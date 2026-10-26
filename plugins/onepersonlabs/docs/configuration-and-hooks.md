@@ -8,7 +8,6 @@ not a security boundary or a deterministic command gate.
 ## Choose the right configuration owner
 
 - Use **[$onepersonlabs:configure-harness](../skills/configure-harness/SKILL.md)** to inventory the selected Codex home and prepare or diagnose user-level Codex settings. It distinguishes plugins, skills, tools, instructions, and effective configuration. It does not automatically install a capability or change an external account.
-- Use **[$onepersonlabs:setup-repo-workflow](../skills/setup-repo-workflow/SKILL.md)** for a repository's issue tracker, checks, review, merge, parallel work, and resumption path. It does not configure personal Codex capabilities.
 - Use **[$onepersonlabs:update-instructions](../skills/update-instructions/SKILL.md)** to check and update OnePersonLabs' global `AGENTS.md` instructions. It does not configure `config.toml`.
 - Use **[$onepersonlabs:codex-hook-debug](../skills/codex-hook-debug/SKILL.md)** when a particular hook is missing, untrusted, fails, or returns unexpected output. It identifies the active host, Codex home, event, matcher, and owning definition before recommending a repair.
 
