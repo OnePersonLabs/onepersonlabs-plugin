@@ -25,6 +25,6 @@
   "interface": {
     "displayName": "OnePersonLabs",
     "shortDescription": "One-Person Labs shared developer tooling",
-    "longDescription": "One-Person Labs skills, agents, integrations, and repository-independent guard hooks, including verified GitHub Issues deferrals and last-resort rejection of unhandled deferrals. Includes a durable human-contribution inbox, grounded review briefs, and a local phone reader/reply interface."
+    "longDescription": "One-Person Labs skills, shared instructions, agent profiles, and hooks for engineering work in Codex. Includes repository workflow and GitHub issue guidance, source-grounded research and documentation, configuration checks, advisory feedback, and a durable human-contribution inbox with a local phone reader/reply interface."
   }
 }

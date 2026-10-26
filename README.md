@@ -1,104 +1,58 @@
 # OnePersonLabs
 
-One-Person Labs developer tooling for Codex: focused skills, shared instructions, integrations, and advisory workflow hooks.
+OnePersonLabs gives Codex reusable skills for investigating problems, making
+engineering decisions, collaborating with people, and delivering checked changes.
+It also supplies shared instructions and hooks for configuration, task continuity,
+and advisory feedback.
 
-🧭 **[Understand OnePersonLabs at a glance](docs/onepersonlabs-at-a-glance.md)** -- roles, work flow, choices and what is actually active.
+## Install and try it
 
-## Install
+Use a Codex CLI with plugin support and Python 3.11 or later for the hooks.
+Run these commands in PowerShell or a POSIX shell:
 
 ```sh
 codex plugin marketplace add https://github.com/OnePersonLabs/onepersonlabs-plugin
 codex plugin add onepersonlabs@onepersonlabs
 ```
 
-Start a new Codex task after installation. Invoke skills with `$onepersonlabs:<skill-name>`, such as `$onepersonlabs:setup-repo-workflow`, `$onepersonlabs:debug`, or `$onepersonlabs:adhd`.
+Start a fresh Codex task in a repository you want to understand, then ask:
+
+```text
+Use $onepersonlabs:build-understanding to explain how this repository works.
+Follow one concrete user action from its entrypoint to its result, using the
+current source. Keep this read-only and identify anything you cannot verify.
+```
+
+Expect an explanation tied to the repository, a worked case, and explicit gaps.
+The [getting-started guide](plugins/onepersonlabs/docs/getting-started.md) covers
+installation checks, hook trust, and the next useful task. Installing the plugin
+does not configure your repository workflow or start an unattended worker.
+
+## Find your path
+
+| You want to… | Start here |
+| --- | --- |
+| Install and complete a first task | [Getting started](plugins/onepersonlabs/docs/getting-started.md) |
+| Find the right skill | [All 32 skills by task](plugins/onepersonlabs/docs/skills.md) |
+| Set up a repository or follow an issue through delivery | [Workflow and worked session](plugins/onepersonlabs/docs/workflow.md) |
+| Understand settings, global instructions, and hooks | [Configuration and hooks](plugins/onepersonlabs/docs/configuration-and-hooks.md) |
+| Request human input, resume work, or recover a session | [Collaboration and recovery](plugins/onepersonlabs/docs/collaboration-and-recovery.md) |
+| Diagnose a missing skill, failed hook, or refresh | [Troubleshooting](plugins/onepersonlabs/docs/troubleshooting.md) |
+| Change, test, and publish the plugin | [Contributing](docs/contributing.md) |
+
+The guides ship with the plugin. Each links to the skill or implementation that
+owns the detailed behavior. Skills can use tools already available to Codex;
+external accounts, browser runtimes, and optional services have their own prerequisites.
 
 Assimilation is maintained by the independent
-[All Your Base plugin](https://github.com/OnePersonLabs/all-your-base-are-belong-to-us-plugin).
-Use `$all-your-base:assimilate` after installing that plugin.
+[All Your Base plugin](https://github.com/OnePersonLabs/all-your-base-are-belong-to-us-plugin),
+invoked as `$all-your-base:assimilate` after installing it. Conceptor is optional;
+OnePersonLabs also works with a repository's existing specifications and decisions.
 
-## Develop
+## Project records and license
 
-Use Node.js 24 or later, Python 3, Git, and the Codex CLI.
-Hooks require Python 3.11 or later. The `$onepersonlabs:last30days` engine requires Python 3.12 or later.
+[Design and evidence records](docs/contributing.md#design-and-evidence-records)
+retain dated audits, experiments, and proposals. They distinguish historical
+results from current user instructions.
 
-```sh
-npm ci
-python -m pip install playwright
-npm run verify
-npm run test:installed -- --plugin onepersonlabs
-```
-
-The pre-push hook runs the deterministic checks, including real-browser UI tests.
-Install Playwright in the Python environment used by the checks (`PYTHON_BIN`
-selects a different interpreter). The UI tests use an installed Chromium browser.
-To install Playwright's development browser, run `python -m playwright install chromium`.
-Set `ONEPERSONLABS_CHROMIUM_BIN` when you need a specific browser executable.
-The checks report missing prerequisites and do not install them automatically.
-
-Shipping files live in `plugins/onepersonlabs/`. Tests and fixtures live in `tests/`. Repository commands live in `tools/`.
-
-Instruction baseline recovery uses local history first. Remote recovery uses the original OnePersonLabs plugin repository for revisions below 10 and this repository for revisions 10 and later.
-
-When the user authorizes tests, run a focused test for the affected behavior:
-
-```sh
-npm run test:focus -- --file tests/unit/onepersonlabs/codex-hooks.test.mjs
-```
-
-Review skill instructions and activation metadata against their sources and structure after changes. `npm run release:verify` runs deterministic checks and an installed-copy checkpoint.
-
-The installed-copy checkpoint uses a separate Codex home, compares the installed files with source, and verifies hook trust. To refresh OnePersonLabs in your existing Codex home:
-
-```sh
-npm run install:local -- --plugin onepersonlabs
-```
-
-## Development workflow
-
-For READMEs and user guides, `$onepersonlabs:write-docs` starts with the reader's
-task, verifies commands and outcomes against current behavior, and updates only
-the affected instructions when behavior changes. It adds no background generation
-or screenshot pipeline. The [WTFM assimilation account](docs/wtfm-assimilation.md)
-records the selected ideas and their verification limits.
-
-For substantial explanations, teaching or human interaction design,
-`$onepersonlabs:build-understanding` helps make relationships, changes and choices easier
-to grasp. Choose useful representations and worked cases; keep precise words
-and simple exchanges where they serve the task best.
-
-For consequential tool, architecture, infrastructure or integration choices,
-`$onepersonlabs:research-solutions` finds credible current implementations and checks their
-release, integration and recovery contracts. It is automatically discoverable;
-routine repairs do not require a solution survey.
-
-For consequential judgments, `$onepersonlabs:pov` grounds a position in project
-and external evidence. `$onepersonlabs:develop-alternatives` develops concrete
-competing mechanisms when needed. `$onepersonlabs:optimize` measures candidate
-improvements against correctness, noise, and required trade-offs. Agents select
-these routes when their conditions apply. Requested human page feedback uses the
-existing inbox with element context, retained drafts, and explicit submission.
-The [Compound assimilation account](docs/compound-assimilation.md) records the
-mechanisms, native owners, provenance, and validation limits.
-
-Use `$onepersonlabs:setup-repo-workflow` explicitly to configure one repository through its
-existing instructions, GitHub conventions, local checks, review lane, and merge
-policy. Default to serial work in the selected checkout and branch; new delivery
-branches and PRs are opt-in. Setup explains independent workers, optional
-helpers and their aggregate budget without adding another configuration schema.
-Ordinary authorized work uses `$onepersonlabs:github-workflow` for issue capture
-and state maintenance. Projects remain independent. The builder owns PR repairs;
-small checked commits make the series reviewable. Local verification is primary.
-For selected PR delivery, automatic merge follows required checks and reviews,
-with existing protections and explicit manual-merge overrides preserved. Native
-auto-merge does not wake the builder for repairs or start the next issue. Setup
-does not install unattended dispatch.
-
-The [overhaul audit](docs/onepersonlabs-overhaul.md) records package dispositions, sources
-and verification. The [runtime comparison](docs/runtime-research.md) and
-[local Itervox proposal](docs/itervox-upstream-proposal.md) explain the separately
-tracked automation contracts. They install no runtime or worker service.
-
-## License
-
-OnePersonLabs is MIT licensed. Bundled third-party code retains its own license notices.
+OnePersonLabs is [MIT licensed](LICENSE). Bundled third-party code retains its own notices.
