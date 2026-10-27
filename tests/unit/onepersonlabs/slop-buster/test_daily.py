@@ -144,7 +144,8 @@ class DailyTests(unittest.TestCase):
         path.write_text("".join(json.dumps(record) + "\n" for record in records), encoding="utf-8")
         self.path.write_text(f'data_repo = {json.dumps(str(self.repo))}\nsource_homes = [{json.dumps(str(home))}]\n', encoding="utf-8")
         config = slop_daily.load_config(str(self.path))
-        prepared = audit.prepare(config, mode="full")
+        prepared = audit.prepare(config, mode="full", since="2026-09-27T00:00:00Z",
+                                 until="2026-09-27T00:00:10Z")
         connection = audit._connect(self.repo)
         try:
             packet = audit.next_batch(connection, prepared["run_id"], "default")
