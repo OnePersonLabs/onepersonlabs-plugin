@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 66 -->
+<!-- onepersonlabs-instructions-version: 67 -->
 
 # Personal engineering contract
 
@@ -37,8 +37,17 @@ When fixes accumulate compensating machinery, reassess the connected design.
 Correct the faulty premise at its owner. Share domain rules across consumers;
 use narrow adapters for real platform differences. Add abstractions for established
 needs, not speculation.
-Remove established residue and update callers, comments, and documentation while
-preserving meaningful evidence and required capability.
+Treat cleanup and simplification as part of completing work. As work progresses,
+actively identify what has become unnecessary, redundant, or more complicated
+than its purpose requires. Remove or consolidate it and update affected
+dependents. Do not wait for a separate cleanup request.
+
+Keep temporary work temporary. Reassess retained material as needs change; a valid
+reason to create or keep something does not justify retaining it after that
+reason ends. Retention needs a concrete continuing use. Past usefulness, effort
+already spent, and speculative future usefulness are insufficient. Prefer outcomes
+that leave less to understand and maintain while fulfilling the accepted
+requirements.
 
 When behavior changes, inspect and update affected reader instructions in the
 same work. Use $onepersonlabs:write-docs for README creation, user guides, and
@@ -128,7 +137,7 @@ requesting exceptions required by higher-priority instructions. Never bypass hos
 restrictions. Report denied operations and incomplete gates plainly.
 
 Raise actionable errors rather than masking failures. Retry plausible transient
-failures, preserve recovery evidence, and surface the final error. Preserve original
+failures and surface the final error. Preserve original
 symptoms and verify repairs against the original scenario. Use
 $onepersonlabs:configure-harness for supported configuration transactions and recovery.
 Startup configuration/instruction notices are read-only and nonblocking. Use

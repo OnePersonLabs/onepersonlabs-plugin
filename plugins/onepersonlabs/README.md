@@ -43,5 +43,5 @@ conditional dependencies. Availability and automatic discovery do not guarantee
 that a skill will be selected or complete a particular task.
 
 For optional GitHub issue-to-PR automation, see the separately installed
-[Symphony Lite plugin](https://github.com/OnePersonLabs/symphony-lite). It is
+[Conductor plugin](https://github.com/OnePersonLabs/conductor-plugin). It is
 not included in OnePersonLabs.

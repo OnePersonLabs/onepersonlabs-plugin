@@ -22,7 +22,7 @@ refreshing active installations are separate delivery steps.
 | [`tools/`](tools/) and [`tests/`](tests/) | Repository drivers, checks, and fixtures; these do not ship. |
 
 For optional GitHub issue-to-PR automation, see the separate
-[Symphony Lite plugin](https://github.com/OnePersonLabs/symphony-lite). It is
+[Conductor plugin](https://github.com/OnePersonLabs/conductor-plugin). It is
 maintained independently and does not ship with OnePersonLabs.
 
 OnePersonLabs is [MIT licensed](LICENSE). Bundled third-party code retains its own notices.
