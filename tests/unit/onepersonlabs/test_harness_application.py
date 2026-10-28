@@ -3,6 +3,7 @@ import hashlib
 import json
 from pathlib import Path
 import tempfile
+from datetime import datetime, timedelta, timezone
 import unittest
 from unittest.mock import patch
 
@@ -42,6 +43,113 @@ class HarnessApplication(unittest.TestCase):
         self.assertEqual((receipt.parent / "0.backup").read_bytes(), old)
         self.assertEqual(application.rollback(self.home, receipt)["restored"], 1)
         self.assertEqual(agents.read_bytes(), old)
+        self.assertFalse(receipt.parent.exists())
+
+    def test_verified_transaction_expires_after_rollback_window(self):
+        target = self.home / "AGENTS.md"
+        target.write_bytes(b"old\n")
+        candidate = self.candidate("verified.md", b"old\n" + application.MANAGED_HEADING.encode())
+        result = application.apply(self.home, application.prepare(self.home, [{"target": str(target), "candidate": str(candidate)}]))
+        receipt = Path(result["receipt"])
+        with self.assertRaisesRegex(ValueError, "changed before verification"):
+            target.write_bytes(b"edited after apply\n")
+            application.finalize(self.home, receipt)
+        target.write_bytes(candidate.read_bytes())
+        application.finalize(self.home, receipt)
+        expiry = datetime.fromisoformat(json.loads(receipt.read_text())["expiresAt"])
+        still_valid = application.cleanup_transactions(self.home, now=expiry - timedelta(seconds=1))
+        self.assertEqual(still_valid["deleted"], [])
+        self.assertTrue(receipt.exists())
+        expired = application.cleanup_transactions(self.home, now=expiry + timedelta(seconds=1))
+        self.assertEqual(expired["deleted"], [str(receipt.parent)])
+        self.assertFalse(receipt.parent.exists())
+
+    def test_cleanup_preserves_unverified_and_conflicted_transactions(self):
+        target = self.home / "AGENTS.md"
+        target.write_bytes(b"old\n")
+        candidate = self.candidate("conflict.md", b"old\n" + application.MANAGED_HEADING.encode())
+        result = application.apply(self.home, application.prepare(self.home, [{"target": str(target), "candidate": str(candidate)}]))
+        receipt = Path(result["receipt"])
+        pending = application.cleanup_transactions(self.home)
+        self.assertTrue(any(item["path"] == str(receipt.parent) for item in pending["pending"]))
+        target.write_text("concurrent edit")
+        with self.assertRaisesRegex(ValueError, "changed after application"):
+            application.rollback(self.home, receipt)
+        pending = application.cleanup_transactions(self.home, now=datetime.now(timezone.utc) + timedelta(days=30))
+        self.assertTrue(any("rollback_conflict" in item["reason"] for item in pending["pending"]))
+        self.assertTrue(receipt.exists())
+
+    def test_legacy_applied_transaction_uses_original_receipt_time_for_expiry(self):
+        target = self.home / "AGENTS.md"
+        target.write_bytes(b"old\n")
+        candidate = self.candidate("legacy.md", b"old\n" + application.MANAGED_HEADING.encode())
+        result = application.apply(self.home, application.prepare(self.home, [{"target": str(target), "candidate": str(candidate)}]))
+        receipt = Path(result["receipt"])
+        record = json.loads(receipt.read_text())
+        record.pop("createdAt")
+        application._write_receipt(receipt, record)
+        old = datetime.now(timezone.utc) - timedelta(days=30)
+        import os
+        os.utime(receipt, (old.timestamp(), old.timestamp()))
+        result = application.cleanup_transactions(self.home)
+        self.assertEqual(result["deleted"], [str(receipt.parent)])
+        self.assertFalse(receipt.parent.exists())
+
+    def test_cleanup_preview_and_symlink_safety(self):
+        tx_root = self.home / "onepersonlabs" / "harness" / "transactions"
+        tx_root.mkdir(parents=True)
+        outside = self.root / "outside"
+        outside.mkdir()
+        link = tx_root / ("0" * 8 + "-" + "0" * 4 + "-" + "0" * 4 + "-" + "0" * 4 + "-" + "0" * 12)
+        try:
+            link.symlink_to(outside, target_is_directory=True)
+        except OSError:
+            self.skipTest("directory symlinks unavailable")
+        with self.assertRaisesRegex(ValueError, "symlink traversal"):
+            application.cleanup_transactions(self.home, preview=True)
+
+    def test_cleanup_preserves_unexpected_transaction_files(self):
+        target = self.home / "AGENTS.md"
+        target.write_bytes(b"old\n")
+        candidate = self.candidate("extra.md", b"old\n" + application.MANAGED_HEADING.encode())
+        result = application.apply(self.home, application.prepare(self.home, [{"target": str(target), "candidate": str(candidate)}]))
+        receipt = Path(result["receipt"])
+        application.finalize(self.home, receipt)
+        record = json.loads(receipt.read_text())
+        expiry = datetime.fromisoformat(record["expiresAt"])
+        extra = receipt.parent / "unexpected.txt"
+        extra.write_text("preserve", encoding="utf-8")
+        cleanup = application.cleanup_transactions(self.home, now=expiry + timedelta(seconds=1))
+        self.assertTrue(any("unexpected transaction contents" in item["reason"] for item in cleanup["pending"]))
+        self.assertTrue(extra.exists())
+        self.assertTrue(receipt.exists())
+
+    def test_cleanup_reports_malformed_receipts_without_deleting(self):
+        target = self.home / "AGENTS.md"
+        target.write_bytes(b"old\n")
+        candidate = self.candidate("malformed.md", b"old\n" + application.MANAGED_HEADING.encode())
+        result = application.apply(self.home, application.prepare(self.home, [{"target": str(target), "candidate": str(candidate)}]))
+        receipt = Path(result["receipt"])
+        receipt.write_text("{broken", encoding="utf-8")
+        cleanup = application.cleanup_transactions(self.home, now=datetime.now(timezone.utc) + timedelta(days=30))
+        self.assertTrue(any("malformed transaction receipt" in item["reason"] for item in cleanup["pending"]))
+        self.assertTrue(receipt.exists())
+
+    def test_cleanup_rejects_unbounded_verified_expiry(self):
+        target = self.home / "AGENTS.md"
+        target.write_bytes(b"old\n")
+        candidate = self.candidate("unbounded.md", b"old\n" + application.MANAGED_HEADING.encode())
+        result = application.apply(self.home, application.prepare(self.home, [{"target": str(target), "candidate": str(candidate)}]))
+        receipt = Path(result["receipt"])
+        target.write_bytes(candidate.read_bytes())
+        application.finalize(self.home, receipt)
+        record = json.loads(receipt.read_text())
+        verified = datetime.fromisoformat(record["verifiedAt"])
+        record["expiresAt"] = (verified + timedelta(days=8)).isoformat()
+        application._write_receipt(receipt, record)
+        cleanup = application.cleanup_transactions(self.home, now=verified + timedelta(days=30))
+        self.assertTrue(any("invalid transaction retention timestamps" in item["reason"] for item in cleanup["pending"]))
+        self.assertTrue(receipt.exists())
 
     def test_effective_override_and_installed_cache_denied(self):
         override = self.home / "AGENTS.override.md"

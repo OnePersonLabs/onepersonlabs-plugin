@@ -300,7 +300,7 @@ def decide(home, decision):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    for name in ("init", "discover", "cards", "plan", "followup", "record", "report", "decide", "prepare", "apply", "rollback"):
+    for name in ("init", "discover", "cards", "plan", "followup", "record", "report", "decide", "prepare", "apply", "rollback", "finalize", "cleanup"):
         command = commands.add_parser(name)
         command.add_argument("--home", type=Path, required=True)
         if name == "cards":
@@ -315,11 +315,13 @@ def main():
             command.add_argument("--cli", action="append", default=[])
         if name in {"followup", "record", "report"}:
             command.add_argument("--run", required=True)
-        option = {"plan": "spec", "followup": "spec", "record": "record", "report": "report", "decide": "decision", "prepare": "files", "apply": "plan", "rollback": "receipt"}.get(name)
+        option = {"plan": "spec", "followup": "spec", "record": "record", "report": "report", "decide": "decision", "prepare": "files", "apply": "plan", "rollback": "receipt", "finalize": "receipt"}.get(name)
         if option:
             command.add_argument("--" + option, type=Path, required=True)
         if name == "prepare":
             command.add_argument("--output", type=Path, required=True)
+        if name == "cleanup":
+            command.add_argument("--preview", action="store_true", help="show expired transactions without deleting them")
     args = parser.parse_args()
     if args.command == "init":
         result = init(args.home)
@@ -337,15 +339,25 @@ def main():
     elif args.command in {"followup", "record", "report"}:
         result = globals()[args.command](args.home, args.run, read(getattr(args, "spec" if args.command == "followup" else args.command)))
     else:
-        from application import prepare, apply, rollback
+        from application import prepare, apply, rollback, finalize, cleanup_transactions
+        root = state_root(args.home)
         if args.command == "prepare":
-            result = prepare(args.home, read(args.files))
-            if args.output.exists():
-                raise ValueError("prepared plan output must not already exist")
-            write(args.output, result)
-            result = {"plan": str(args.output.resolve())}
+            with lock(root):
+                result = prepare(args.home, read(args.files))
+                if args.output.exists():
+                    raise ValueError("prepared plan output must not already exist")
+                write(args.output, result)
+                result = {"plan": str(args.output.resolve())}
         else:
-            result = apply(args.home, read(args.plan)) if args.command == "apply" else rollback(args.home, read(args.receipt))
+            with lock(root):
+                if args.command == "apply":
+                    result = apply(args.home, read(args.plan))
+                elif args.command == "rollback":
+                    result = rollback(args.home, read(args.receipt))
+                elif args.command == "finalize":
+                    result = finalize(args.home, read(args.receipt))
+                else:
+                    result = cleanup_transactions(args.home, preview=args.preview)
     print(json.dumps(result))
 
 

@@ -25,7 +25,8 @@ import uuid
 ROOT = Path(__file__).resolve().parents[3]
 SCRIPTS = ROOT / "plugins/onepersonlabs/skills/human-collaboration/scripts"
 sys.path.insert(0, str(SCRIPTS))
-from inbox import Conflict, Inbox, InboxError
+from inbox import (Conflict, Inbox, InboxError, GENERATED_TEMP_RETENTION_SECONDS,
+                   cleanup_generated_temps)
 from server import HumanServer, notify
 from catalog import Catalog
 from service import connect, receipt, save_receipt, connection_links
@@ -104,6 +105,19 @@ class InboxTests(unittest.TestCase):
 
     def submit(self, item, key="request-1", body="Keep the evidence; bound the views."):
         return self.inbox.submit(item["id"], item["viewed_revision"], body, key)
+
+    def test_refresh_removes_only_abandoned_owned_atomic_temps(self):
+        owned = self.inbox.root / ".INBOX.md.abcdefgh"
+        active = self.inbox.root / ".INBOX.md.ijklmnop"
+        unrelated = self.inbox.root / ".notes.md.abcdefgh"
+        for path in (owned, active, unrelated):
+            path.write_text("temporary", encoding="utf-8")
+        old = time.time() - GENERATED_TEMP_RETENTION_SECONDS - 1
+        os.utime(owned, (old, old))
+        cleanup_generated_temps(self.inbox.root)
+        self.assertFalse(owned.exists())
+        self.assertTrue(active.exists())
+        self.assertTrue(unrelated.exists())
 
     def test_file_save_is_not_submission_and_mtime_is_not_the_protocol(self):
         item = self.publish()

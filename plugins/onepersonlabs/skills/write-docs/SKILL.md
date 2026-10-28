@@ -43,8 +43,9 @@ they help maintain a consequential claim; do not require a new provenance schema
 Give a README a clear purpose, suitable audience, first useful task, expected
 result, material limitations, and routes to deeper information. Put internal
 terminology and contributor mechanics where the reader needs them. Link to the
-owning guide instead of duplicating a long procedure. Preserve historical receipts
-as dated evidence, outside the main first-use path.
+owning guide instead of duplicating a long procedure. Retain a historical receipt
+only when a named consumer still needs its exact claim and version. Keep its
+validity conditions, disposal boundary, and cleanup owner with that consumer.
 
 Write steps as actions in the order the reader performs them. State prerequisites
 before they block progress. Use the actual control names and copyable command
@@ -66,7 +67,9 @@ Update them together and repair navigation. Recheck source when prior evidence
 depends on changed inputs. An internal refactor with no reader impact needs no
 documentation rewrite; explain that judgment in the ordinary work summary if useful.
 
-Keep unaffected material and meaningful historical evidence. Avoid whole-repository
+Keep unaffected material and evidence with a current consumer. Remove expired
+generated evidence and repair its references; keep accepted conclusions in their
+existing owner without archiving raw receipts. Avoid whole-repository
 regeneration, repeated source surveys, cosmetic churn, and duplicate status ledgers.
 Use existing project records and checks; this workflow adds no scheduler, service,
 recurring evaluation, or mandatory screenshot pipeline.

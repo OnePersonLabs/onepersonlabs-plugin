@@ -139,6 +139,7 @@ function onepersonlabsFixture(t) {
   cpSync(join(onepersonlabsScripts, 'codex-config-check.py'), join(source, 'scripts', 'codex-config-check.py'))
   cpSync(join(onepersonlabsScripts, 'migrate_identity.py'), join(source, 'scripts', 'migrate_identity.py'))
   cpSync(join(onepersonlabsScripts, '..', 'skills', 'configure-harness', 'scripts', 'application.py'), join(source, 'skills', 'configure-harness', 'scripts', 'application.py'))
+  cpSync(join(onepersonlabsScripts, '..', 'skills', 'configure-harness', 'scripts', 'harness.py'), join(source, 'skills', 'configure-harness', 'scripts', 'harness.py'))
   writeFileSync(join(source, 'config.defaults.toml'), [
     '[features]',
     'hooks = true',

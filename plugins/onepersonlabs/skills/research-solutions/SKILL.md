@@ -82,7 +82,11 @@ required contract, identify that contract and the concrete work or scope decisio
 needed; do not silently narrow the outcome or invent a native feature. Preserve
 actionable work in the selected tracker under existing authority.
 
-Keep evidence and decisions in the project's existing record. Give the user a
-short explanation and link the detailed artifact. Stop when further research
-would not change the recommendation. Reopen on changed requirements, stale decisive
-evidence or a credible new contender; install no recurring research machinery.
+Return findings and source links in the existing conversation. Persist detail
+only for a named downstream consumer, with validity conditions, a disposal
+boundary, and a cleanup owner. Put accepted decisions in their existing owner;
+do not create a research archive. Delete temporary probes and exports when the
+decision is delivered, or after the seven-day inactive recovery window. Stop
+when further research would not change the recommendation. Reopen on changed
+requirements, stale decisive evidence or a credible new contender; install no
+recurring research machinery.

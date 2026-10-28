@@ -15,6 +15,7 @@ from pathlib import Path
 import re
 import sqlite3
 import tempfile
+import time
 from typing import Any, Iterator
 import uuid
 
@@ -22,6 +23,8 @@ SCHEMA = 3
 MAX_TEXT = 128 * 1024
 CONTRIBUTION_LIMITS = {"title": 2000, "body": MAX_TEXT, "request_id": 200}
 MAX_SOURCE = 512 * 1024
+GENERATED_TEMP_RETENTION_SECONDS = 7 * 24 * 60 * 60
+_GENERATED_TEMP_NAME = re.compile(r"^\.(?:INBOX\.md|DECISIONS\.md|[0-9a-f-]{36}\.md)\.[A-Za-z0-9_]{8}$")
 DISPOSITIONS = {"adopted", "partial", "not_adopted", "explained", "follow_up"}
 
 
@@ -87,6 +90,27 @@ def atomic_write(path: Path, value: str) -> None:
     finally:
         if os.path.exists(temporary):
             os.unlink(temporary)
+
+
+def cleanup_generated_temps(root: Path, *, now: float | None = None) -> list[str]:
+    """Remove abandoned atomic-write temps for known generated views only."""
+    root = Path(root).resolve(strict=True)
+    cutoff = (time.time() if now is None else now) - GENERATED_TEMP_RETENTION_SECONDS
+    removed = []
+    pending = [root]
+    while pending:
+        directory = pending.pop()
+        for path in directory.iterdir():
+            if path.is_symlink() or (hasattr(path, "is_junction") and path.is_junction()):
+                if _GENERATED_TEMP_NAME.fullmatch(path.name):
+                    raise InboxError(f"refusing to follow generated temporary link: {path}")
+                continue
+            if path.is_dir():
+                pending.append(path)
+            elif _GENERATED_TEMP_NAME.fullmatch(path.name) and path.is_file() and path.stat().st_mtime <= cutoff:
+                path.unlink()
+                removed.append(str(path))
+    return removed
 
 
 def discover(cwd: Path) -> Path | None:
@@ -914,6 +938,7 @@ class Inbox:
     def refresh(self) -> None:
         """Regenerate indexes and missing projections; never replace a reply file."""
         with self.transaction() as db:
+            cleanup_generated_temps(self.root)
             for row in db.execute("SELECT * FROM versions ORDER BY item,revision").fetchall():
                 version = dict(row)
                 path = self.brief_path(version["item"], version["revision"])

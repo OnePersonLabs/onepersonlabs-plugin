@@ -12,11 +12,19 @@ import re
 import stat
 import sys
 import tempfile
+import time
 import uuid
+from contextlib import contextmanager
 
 MARKERS = (
     ("onepersonlabs-instructions-version", re.compile(r"^<!-- onepersonlabs-instructions-version: ([1-9][0-9]*) -->$", re.MULTILINE)),
     ("opl-instructions-version", re.compile(r"^<!-- opl-instructions-version: ([1-9][0-9]*) -->$", re.MULTILINE)),
+)
+BACKUP_RETENTION_SECONDS = 7 * 24 * 60 * 60
+_BACKUP_NAME = re.compile(
+    r"^(?:AGENTS\.md|AGENTS\.override\.md)"
+    r"(?:\.onepersonlabs-backup-[0-9]{8}-[0-9]{3,}(?:\.pending|\.expires-[0-9]+)?"
+    r"|\.opl-backup-(?:[0-9a-f]{32}|[0-9]{8}-(?:[0-9]{3}|confidence-[0-9]{3}|discard-[0-9]{3}|oververification-[0-9]{3})))$"
 )
 
 
@@ -79,13 +87,84 @@ def _backup_path(target: Path) -> Path:
     date = datetime.now().strftime("%Y%m%d")
     sequence = 1
     while True:
-        candidate = target.with_name(f"{target.name}.onepersonlabs-backup-{date}-{sequence:03d}")
-        if not candidate.exists() and not candidate.is_symlink():
+        base = target.with_name(f"{target.name}.onepersonlabs-backup-{date}-{sequence:03d}")
+        candidate = base.with_name(base.name + ".pending")
+        if (not candidate.exists() and not candidate.is_symlink()
+                and not base.exists() and not list(target.parent.glob(base.name + ".expires-*"))):
             return candidate
         sequence += 1
 
 
-def apply_installed(home: Path, root: Path, expected: str, expected_target: str, expected_bundled: str) -> dict:
+@contextmanager
+def _writer_lock(home: Path):
+    """Share configure-harness's per-home write lock while pruning/applying."""
+    home = Path(home).expanduser()
+    if home.is_symlink():
+        raise ValueError("Codex home must be a non-symlink directory")
+    home = home.resolve(strict=True)
+    if not home.is_dir():
+        raise ValueError("Codex home must be a non-symlink directory")
+    lock_root = home / "onepersonlabs" / "harness"
+    lock_root.mkdir(parents=True, exist_ok=True)
+    lock_path = lock_root / ".write-lock"
+    try:
+        descriptor = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    except FileExistsError:
+        raise ValueError(f"another Codex home write owns {lock_path}; inspect before retrying") from None
+    os.close(descriptor)
+    try:
+        yield home
+    finally:
+        lock_path.unlink()
+
+
+def _cleanup_backups_unlocked(home: Path, *, now: float | None = None, preview: bool = False) -> dict:
+    """Remove only expired backups created by this helper in this Codex home."""
+    home = Path(home).expanduser().resolve(strict=True)
+    cutoff = (time.time() if now is None else now) - BACKUP_RETENTION_SECONDS
+    deleted, pending = [], []
+    for candidate in home.iterdir():
+        if not _BACKUP_NAME.fullmatch(candidate.name):
+            continue
+        if candidate.is_symlink() or not candidate.is_file():
+            pending.append({"path": str(candidate), "reason": "not a regular backup file"})
+            continue
+        expiry = re.search(r"\.expires-([0-9]+)$", candidate.name)
+        if expiry:
+            if int(expiry.group(1)) > (time.time() if now is None else now):
+                continue
+            if not preview:
+                candidate.unlink()
+            deleted.append(str(candidate))
+            continue
+        if candidate.name.endswith(".pending"):
+            pending.append({"path": str(candidate), "reason": "update verification or recovery is unresolved"})
+            continue
+        # Legacy backups expire only when the active target proves a later
+        # version was installed, using the original file timestamp.
+        target = home / re.split(r"\.(?:onepersonlabs-backup|opl-backup)-", candidate.name, maxsplit=1)[0]
+        try:
+            saved_version = version(candidate.read_bytes(), optional=True)
+            active_version = version(target.read_bytes()) if target.is_file() and not target.is_symlink() else None
+        except (OSError, ValueError, UnicodeError):
+            saved_version = active_version = None
+        expired = (saved_version is not None and active_version is not None
+                   and active_version > saved_version and candidate.stat().st_mtime <= cutoff)
+        if expired:
+            if not preview:
+                candidate.unlink()
+            deleted.append(str(candidate))
+        else:
+            pending.append({"path": str(candidate), "reason": "legacy backup lacks proof of a later verified replacement"})
+    return {"deleted": [] if preview else deleted, "would_delete": deleted if preview else [], "pending": pending}
+
+
+def cleanup_backups(home: Path, *, now: float | None = None, preview: bool = False) -> dict:
+    with _writer_lock(home) as resolved:
+        return _cleanup_backups_unlocked(resolved, now=now, preview=preview)
+
+
+def _apply_installed(home: Path, root: Path, expected: str, expected_target: str, expected_bundled: str) -> dict:
     before = snapshot(home, root)
     if before["error"]:
         raise ValueError(f"cannot replace instructions with an invalid version: {before['error']}")
@@ -105,6 +184,8 @@ def apply_installed(home: Path, root: Path, expected: str, expected_target: str,
         raise ValueError("refusing to downgrade a newer user instruction version")
     if source.resolve() == target.resolve():
         raise ValueError("installed instructions and effective target resolve to the same file")
+
+    cleanup = _cleanup_backups_unlocked(home)
 
     original = target.read_bytes() if target.exists() else None
     if original == replacement:
@@ -144,6 +225,23 @@ def apply_installed(home: Path, root: Path, expected: str, expected_target: str,
             raise ValueError("instructions changed during application; update stopped")
         os.replace(temporary, target)
         temporary = None
+        if target.read_bytes() != replacement:
+            raise OSError("replacement readback did not match; inspect the retained backup")
+        if backup is not None:
+            verified_at = time.time()
+            expires_at = int(verified_at + BACKUP_RETENTION_SECONDS)
+            verified_backup = backup.with_name(
+                backup.name.removesuffix(".pending") + f".expires-{expires_at}"
+            )
+            backup.rename(verified_backup)
+            backup = verified_backup
+    except BaseException:
+        # A failed write with the original still present needs no recovery copy.
+        # Keep the pending backup when the target changed and recovery may depend on it.
+        if (backup is not None and original is not None and target.is_file()
+                and hashlib.sha256(target.read_bytes()).hexdigest() == hashlib.sha256(original).hexdigest()):
+            backup.unlink(missing_ok=True)
+        raise
     finally:
         if temporary is not None:
             temporary.unlink(missing_ok=True)
@@ -154,13 +252,19 @@ def apply_installed(home: Path, root: Path, expected: str, expected_target: str,
         "backup": str(backup) if backup else None,
         "version": installed_version,
         "sha256": hashlib.sha256(replacement).hexdigest(),
+        "cleanup": cleanup,
     }
+
+
+def apply_installed(home: Path, root: Path, expected: str, expected_target: str, expected_bundled: str) -> dict:
+    with _writer_lock(home) as resolved:
+        return _apply_installed(resolved, root, expected, expected_target, expected_bundled)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    for command in ("inspect", "apply"):
+    for command in ("inspect", "apply", "cleanup"):
         child = commands.add_parser(command)
         child.add_argument("--home")
         child.add_argument("--plugin-root")
@@ -168,11 +272,15 @@ def main() -> None:
             child.add_argument("--expected-sha256", required=True)
             child.add_argument("--expected-target", required=True)
             child.add_argument("--expected-bundled-sha256", required=True)
+        if command == "cleanup":
+            child.add_argument("--preview", action="store_true")
     args = parser.parse_args()
     home = home_path(args.home)
     root = plugin_path(args.plugin_root)
     if args.command == "inspect":
         result = snapshot(home, root)
+    elif args.command == "cleanup":
+        result = cleanup_backups(home, preview=args.preview)
     else:
         result = apply_installed(home, root, args.expected_sha256, args.expected_target,
                                  args.expected_bundled_sha256)

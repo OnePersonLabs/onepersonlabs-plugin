@@ -39,6 +39,8 @@ class ConfigCheckTests(unittest.TestCase):
         helper.mkdir(parents=True)
         shutil.copy2(ROOT / "plugins" / "onepersonlabs" / "skills" / "configure-harness" / "scripts" / "application.py",
                      helper / "application.py")
+        shutil.copy2(ROOT / "plugins" / "onepersonlabs" / "skills" / "configure-harness" / "scripts" / "harness.py",
+                     helper / "harness.py")
         (self.plugin / "scripts").mkdir()
         shutil.copy2(SCRIPT, self.plugin / "scripts" / SCRIPT.name)
 

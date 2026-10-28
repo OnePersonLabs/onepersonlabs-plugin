@@ -11,6 +11,7 @@ from pathlib import Path
 import re
 import stat
 import tempfile
+from datetime import datetime, timedelta, timezone
 import tomllib
 import uuid
 
@@ -21,6 +22,7 @@ _HEADING = re.compile(r"^#{1,2} (?!#)", re.MULTILINE)
 _DIGEST = re.compile(r"^[a-f0-9]{64}$")
 _IGNORE_CONFIG_MARKER = re.compile(r"[ \t]*#[ \t]*onepersonlabs:ignore-config-check(?:[ \t]+version=[^\s#]+)?[ \t]*(?:\r?\n)?")
 _SCHEMA_COMMENT = re.compile(r"^[ \t]*#:[ \t]*schema\b")
+TRANSACTION_RETENTION = timedelta(days=7)
 
 
 def _hash(data: bytes | None) -> str:
@@ -420,6 +422,7 @@ def _validate(kind: str, before: bytes | None, after: bytes) -> None:
 def prepare(home: Path, files: list[dict]) -> dict:
     """Bind candidate bytes and reviewed target snapshots without writing files."""
     root = _home(home)
+    cleanup_transactions(root)
     if not isinstance(files, list) or not files:
         raise ValueError("files must be a nonempty list")
     entries, seen = [], set()
@@ -488,16 +491,215 @@ def _write_receipt(path: Path, receipt: dict) -> None:
     _atomic_write(path, json.dumps(receipt, indent=2, sort_keys=True).encode("utf-8"))
 
 
+def cleanup_transactions(home: Path, *, now: datetime | None = None, preview: bool = False) -> dict:
+    """Prune harness-owned transactions only after recovery is no longer needed."""
+    root = _home(home)
+    tx_root = root / "onepersonlabs" / "harness" / "transactions"
+    if tx_root.is_symlink():
+        raise ValueError("harness transactions path must not be a symlink")
+    if not tx_root.exists():
+        return {"deleted": [], "would_delete": [], "pending": []}
+    _no_links(tx_root, root)
+    if not tx_root.is_dir():
+        raise ValueError("harness transactions path is not a directory")
+    now = now or datetime.now(timezone.utc)
+    deleted, pending = [], []
+    for tx_dir in tx_root.iterdir():
+        if not re.fullmatch(r"[0-9a-f-]{36}", tx_dir.name):
+            continue
+        _no_links(tx_dir, root)
+        if not tx_dir.is_dir():
+            pending.append({"path": str(tx_dir), "reason": "transaction is not a directory"})
+            continue
+        receipt_path = tx_dir / "receipt.json"
+        _no_links(receipt_path, root)
+        if not receipt_path.is_file():
+            pending.append({"path": str(tx_dir), "reason": "transaction receipt is missing; inspect recovery"})
+            continue
+        try:
+            record = json.loads(receipt_path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError) as error:
+            pending.append({"path": str(tx_dir), "reason": f"malformed transaction receipt: {error}"})
+            continue
+        if (not isinstance(record, dict) or record.get("home") != str(root)
+                or record.get("transaction") != str(tx_dir)):
+            pending.append({"path": str(tx_dir), "reason": "receipt ownership does not match"})
+            continue
+        state, expires = record.get("state"), record.get("expiresAt")
+        if not isinstance(state, str) or state not in {"prepared", "applied", "verified", "rolled_back", "rollback_conflict"}:
+            pending.append({"path": str(tx_dir), "reason": "unknown transaction state; inspect recovery"})
+            continue
+        entries = record.get("files")
+        if not isinstance(entries, list) or not entries:
+            pending.append({"path": str(tx_dir), "reason": "transaction files are invalid"})
+            continue
+        malformed = None
+        for index, entry in enumerate(entries):
+            if not isinstance(entry, dict):
+                malformed = "transaction file entry is invalid"
+                break
+            target, kind = entry.get("target"), entry.get("kind")
+            original, candidate = entry.get("original_sha256"), entry.get("candidate_sha256")
+            status, backup = entry.get("status"), entry.get("backup")
+            if (not isinstance(target, str) or not Path(target).is_absolute()
+                    or not isinstance(kind, str) or kind not in {"instructions", "config", "policy"}
+                    or (original != MISSING and (not isinstance(original, str) or not _DIGEST.fullmatch(original)))
+                    or not isinstance(candidate, str) or not _DIGEST.fullmatch(candidate)
+                    or not isinstance(status, str) or status not in {"pending", "written", "unchanged"}):
+                malformed = "transaction file entry has invalid identity or hashes"
+                break
+            try:
+                if _target_kind(root, Path(target)) != kind:
+                    malformed = "transaction target is no longer permitted"
+                    break
+            except (OSError, ValueError):
+                malformed = "transaction target is no longer permitted"
+                break
+            if original == MISSING:
+                if backup is not None:
+                    malformed = "new-file transaction unexpectedly has a backup"
+                    break
+            else:
+                expected_backup = tx_dir / f"{index}.backup"
+                if backup != str(expected_backup):
+                    malformed = "transaction backup identity is invalid"
+                    break
+                try:
+                    _no_links(expected_backup, root)
+                    if _hash(_read_regular(expected_backup)) != original:
+                        malformed = "transaction backup hash does not match"
+                        break
+                except (OSError, ValueError):
+                    malformed = "transaction backup is unavailable or unsafe"
+                    break
+        if malformed:
+            pending.append({"path": str(tx_dir), "reason": malformed})
+            continue
+        def parse_time(value):
+            if not isinstance(value, str):
+                raise ValueError("timestamp is missing")
+            parsed = datetime.fromisoformat(value)
+            if parsed.utcoffset() is None:
+                raise ValueError("timestamp has no timezone")
+            return parsed.astimezone(timezone.utc)
+        try:
+            created_at = parse_time(record["createdAt"]) if "createdAt" in record else None
+            if state == "verified":
+                verified_at = parse_time(record.get("verifiedAt"))
+                expires_at = parse_time(expires)
+                if (expires_at < verified_at or expires_at > verified_at + TRANSACTION_RETENTION
+                        or (created_at is not None and verified_at < created_at)):
+                    raise ValueError("verified retention window is invalid")
+        except (KeyError, TypeError, ValueError, OverflowError):
+            pending.append({"path": str(tx_dir), "reason": "invalid transaction retention timestamps"})
+            continue
+        expired = state == "rolled_back"
+        if state == "applied" and created_at is None:
+            # Legacy applied receipts had no verification timestamp. A matching
+            # current target is the proof that the write completed; anchor the
+            # seven-day window to the original receipt mtime, never migration time.
+            try:
+                matches = all(
+                    _target_kind(root, _absolute(entry["target"])) == entry.get("kind")
+                    and _hash(_read_regular(_absolute(entry["target"]))) == entry.get("candidate_sha256")
+                    for entry in record.get("files", [])
+                )
+            except (KeyError, TypeError, ValueError, OSError):
+                matches = False
+            if matches and record.get("files"):
+                verified = datetime.fromtimestamp(receipt_path.stat().st_mtime, timezone.utc)
+                record.update(state="verified", verifiedAt=verified.isoformat(),
+                              expiresAt=(verified + TRANSACTION_RETENTION).isoformat())
+                _write_receipt(receipt_path, record)
+                state, expires = "verified", record["expiresAt"]
+        if state == "rolled_back":
+            pass
+        elif state == "verified":
+            try:
+                expired = isinstance(expires, str) and datetime.fromisoformat(expires) <= now
+            except (ValueError, TypeError):
+                pending.append({"path": str(tx_dir), "reason": "invalid expiry; inspect recovery"})
+                continue
+            if not expired:
+                continue
+        elif state in {"prepared", "applied", "rollback_conflict"}:
+            pending.append({"path": str(tx_dir), "reason": f"{state} transaction remains a recovery obligation"})
+            continue
+        else:
+            pending.append({"path": str(tx_dir), "reason": "unknown transaction state; inspect recovery"})
+            continue
+        expected = {"receipt.json"}
+        safe = True
+        for index, entry in enumerate(entries):
+            backup = entry.get("backup") if isinstance(entry, dict) else None
+            if backup is None:
+                continue
+            backup_path = _absolute(backup)
+            if backup_path.parent != tx_dir or backup_path.name != f"{index}.backup":
+                safe = False
+                break
+            _no_links(backup_path, root)
+            if not backup_path.is_file():
+                safe = False
+                break
+            expected.add(backup_path.name)
+        actual = set()
+        for child in tx_dir.iterdir():
+            if child.is_symlink() or (hasattr(child, "is_junction") and child.is_junction()) or not child.is_file():
+                safe = False
+                break
+            actual.add(child.name)
+        if not safe or actual != expected:
+            pending.append({"path": str(tx_dir), "reason": "unexpected transaction contents; inspect before cleanup"})
+            continue
+        if not preview:
+            for name in expected - {"receipt.json"}:
+                (tx_dir / name).unlink()
+            receipt_path.unlink()
+            tx_dir.rmdir()
+        deleted.append(str(tx_dir))
+    return {"deleted": [] if preview else deleted, "would_delete": deleted if preview else [], "pending": pending}
+
+
+def finalize(home: Path, receipt: dict | str | Path) -> dict:
+    """Start rollback expiry after verifying all applied targets still match."""
+    root = _home(home)
+    record = (json.loads(_absolute(receipt).read_text(encoding="utf-8"))
+              if isinstance(receipt, (str, Path)) else receipt)
+    tx_dir = _absolute(record["transaction"])
+    receipt_path = tx_dir / "receipt.json"
+    _no_links(receipt_path, root)
+    if tx_dir.parent != root / "onepersonlabs" / "harness" / "transactions" or record.get("home") != str(root):
+        raise ValueError("receipt is outside harness transactions")
+    persisted = json.loads(receipt_path.read_text(encoding="utf-8"))
+    if persisted != record or record.get("state") != "applied":
+        raise ValueError("only the matching applied transaction can be finalized")
+    for entry in record.get("files", []):
+        target = _absolute(entry["target"])
+        if _target_kind(root, target) != entry.get("kind"):
+            raise ValueError("receipt target is not permitted")
+        if _hash(_read_regular(target)) != entry.get("candidate_sha256"):
+            raise ValueError(f"target changed before verification: {target}")
+    verified_at = datetime.now(timezone.utc)
+    record["state"] = "verified"
+    record["verifiedAt"] = verified_at.isoformat()
+    record["expiresAt"] = (verified_at + TRANSACTION_RETENTION).isoformat()
+    _write_receipt(receipt_path, record)
+    return {"receipt": str(receipt_path), "state": "verified", "expiresAt": record["expiresAt"]}
+
+
 def apply(home: Path, plan: dict) -> dict:
     """Apply a reviewed plan; roll back own writes if application fails."""
     root = _home(home)
+    cleanup_transactions(root)
     checked = _check_plan(root, plan)
     tx_root = root / "onepersonlabs" / "harness" / "transactions"
     _no_links(tx_root, root)
     tx_root.mkdir(parents=True, exist_ok=True)
     tx_dir = tx_root / str(uuid.uuid4())
     tx_dir.mkdir(mode=0o700)
-    receipt = {"home": str(root), "transaction": str(tx_dir), "state": "prepared", "files": []}
+    receipt = {"home": str(root), "transaction": str(tx_dir), "state": "prepared",
+               "createdAt": datetime.now(timezone.utc).isoformat(), "files": []}
     for index, (entry, original, replacement) in enumerate(checked):
         backup = None
         if original is not None:
@@ -605,4 +807,5 @@ def rollback(home: Path, receipt: dict | str | Path) -> dict:
     _write_receipt(receipt_path, record)
     if conflicts:
         raise ValueError(f"{len(conflicts)} target(s) changed after application; conflicting files were preserved")
+    cleanup_transactions(root)
     return {"receipt": str(receipt_path), "state": "rolled_back", "restored": restored_count}

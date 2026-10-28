@@ -5,7 +5,7 @@ description: Configure or diagnose a Codex harness by inventorying capabilities,
 
 # Configure Harness
 
-Build a usable, user-owned harness from the capabilities actually available in the selected Codex home. Treat a skill, plugin, tool, and instruction rule as different objects. Availability, eligibility, activation, and task success each need their own evidence. Keep choices and test results under `<selected Codex home>/onepersonlabs/harness/` so an interrupted run can resume.
+Build a usable, user-owned harness from the capabilities actually available in the selected Codex home. Treat a skill, plugin, tool, and instruction rule as different objects. Availability, eligibility, activation, and task success each need their own evidence. Keep accepted configuration choices under `<selected Codex home>/onepersonlabs/harness/`. Keep temporary test results there only for the current verification or recovery consumer; delete them when that purpose ends.
 
 Target one curated default setup. Introduce separate task profiles only when
 evidence shows a conflict that conditional guidance cannot resolve cleanly.
@@ -39,7 +39,18 @@ require two agents or a model evaluation. Report unmeasured routing as unknown.
 
 ## Review, apply, and recover
 
-Show the concrete proposed state, ownership of each change, evidence, remaining uncertainty, and expected effects. Use `prepare --home PATH --files PATH --output PATH` with a JSON list of reviewed `target` and `candidate` files to prepare file changes. Use `apply --home PATH --plan PATH` only after the reviewed change is authorized. Reuse existing authorization within its scope; do not ask again for an already approved transaction. Retain the returned receipt before proceeding to another change; use `rollback --home PATH --receipt PATH` for a failed or rejected application. The managed section may be absent on first setup: review its placement, then create exactly one. Stop on duplicate headings or ambiguous ownership rather than guessing where text belongs.
+Show the concrete proposed state, ownership of each change, evidence, remaining uncertainty, and expected effects. Use `prepare --home PATH --files PATH --output PATH` with a JSON list of reviewed `target` and `candidate` files to prepare file changes. Use `apply --home PATH --plan PATH` only after the reviewed change is authorized. Reuse existing authorization within its scope; do not ask again for an already approved transaction. Keep the returned receipt for recovery through verification. After confirming every target matches its approved candidate, run `finalize --home PATH --receipt PATH` to start the seven-day rollback window. If verification fails, retain the receipt and backups for recovery. Use `rollback --home PATH --receipt PATH` for a failed or rejected application. The managed section may be absent on first setup: review its placement, then create exactly one. Stop on duplicate headings or ambiguous ownership rather than guessing where text belongs.
+
+After the required checks pass, run `finalize --home PATH --receipt PATH`.
+It verifies the applied files and starts a fixed seven-day rollback window.
+Keep a failed or conflicting transaction for recovery; do not finalize it to
+make it eligible for deletion. Preview overdue disposal with
+`cleanup --home PATH --preview`, then run `cleanup --home PATH`. Preparation,
+application, and rollback also perform cleanup under the harness write lock.
+Legacy receipts use their original timestamp after current-file reconciliation;
+reading or inspecting a receipt does not renew it. Report retained recovery
+obligations and deletion failures. Delete task-owned input plans and temporary
+probe outputs after their consumer finishes.
 
 For OnePersonLabs startup configuration, present the discovered OnePersonLabs roles and each
 required setting from the plugin-root `config.defaults.toml` file before
@@ -49,4 +60,6 @@ not establish ownership. Preserve custom registrations and unrelated configurati
 features/agents transaction contract; inspect them without adding them to a
 harness apply plan.
 
-For a global instruction change outside the harness-owned `Harness Policies (managed by $onepersonlabs:configure-harness)` section, use `$onepersonlabs:update-instructions` to update the full file. It replaces outdated instructions under established authorization and saves the old file byte for byte in a dated backup; it does not merge custom rules. Put essential, unmeasured constraints inline. Add compact conditional pointers to category policies and procedures only when their targets resolve and their route can be verified; avoid circular pointers. Add a runtime recovery hook only after measured failures show a hook is needed; no hook is part of the default setup. When an authorized evaluation tests routing, verify the root route, a relevant documentation event, and subagent behavior separately in fresh contexts. Otherwise report routing as unmeasured. Give the user the durable run location and any remaining uncertainty.
+For a global instruction change outside the harness-owned `Harness Policies (managed by $onepersonlabs:configure-harness)` section, use `$onepersonlabs:update-instructions` to update the full file. It replaces outdated instructions under established authorization and saves the old file byte for byte in a verified seven-day rollback backup; it does not merge custom rules. Put essential, unmeasured constraints inline. Add compact conditional pointers to category policies and procedures only when their targets resolve and their route can be verified; avoid circular pointers. Add a runtime recovery hook only after measured failures show a hook is needed; no hook is part of the default setup. When an authorized evaluation tests routing, verify the root route, a relevant documentation event, and subagent behavior separately in fresh contexts. Otherwise report routing as unmeasured. Report the current configuration owner, any remaining recovery obligation, and the disposal boundary for retained generated artifacts.
+
+Run `cleanup --home PATH --preview` to inspect expired helper-owned transactions, then `cleanup --home PATH` to remove eligible completed or rolled-back data. Cleanup retains prepared, unverified, conflicted, malformed, and other unresolved recovery transactions. It removes applied transactions only after `finalize` confirms every approved target and its bytes. Accepted harness decisions remain in their existing state file. Keep unresolved human submissions and authored instructions.

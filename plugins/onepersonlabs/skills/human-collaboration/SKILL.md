@@ -157,9 +157,14 @@ or `follow_up` for a remaining question. Both stay in the same conversation.
 Unresolved later responses keep the item With agent. Root handoffs must preserve
 partly applied work in the existing task checkpoint before changing ownership.
 
-For Conceptor projects, put accepted meaning, reasons, alternatives and evidence
-in Conceptor's existing documents/checkpoint. Link them from the outcome. OnePersonLabs and
-the native host own scheduling; Conceptor does not become a second coordinator.
+For Conceptor projects, put accepted meaning and reasons in their existing
+meaning owner and link it from the outcome. Retain generated presentation files
+only while the contribution needs them; delete temporary copies after closure
+and reconciliation. Preserve authored source files, human submissions, accepted
+decisions, and the inbox's current views. Give any retained diagnostic evidence
+a concrete consumer, validity conditions, disposal boundary, and cleanup owner.
+OnePersonLabs and the native host own scheduling; Conceptor does not become a
+second coordinator.
 
 The human may start a contribution in the phone interface or with `contribute`.
 Establish its context before promoting it to a product decision. A human does not

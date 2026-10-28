@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 67 -->
+<!-- onepersonlabs-instructions-version: 68 -->
 
 # Personal engineering contract
 
@@ -42,12 +42,26 @@ actively identify what has become unnecessary, redundant, or more complicated
 than its purpose requires. Remove or consolidate it and update affected
 dependents. Do not wait for a separate cleanup request.
 
-Keep temporary work temporary. Reassess retained material as needs change; a valid
-reason to create or keep something does not justify retaining it after that
-reason ends. Retention needs a concrete continuing use. Past usefulness, effort
-already spent, and speculative future usefulness are insufficient. Prefer outcomes
-that leave less to understand and maintain while fulfilling the accepted
-requirements.
+Keep temporary work temporary. Before persisting generated evidence, receipts,
+diagnostics, or backups, identify the consumer, validity conditions, disposal
+boundary, and cleanup owner. Return evidence in the current conversation unless
+a concrete consumer needs persistence. Use the existing owner; do not create a
+second archive or a sidecar for each document. Prefer a recognizable filename,
+directory name, or field in an existing record for a disposal signal when that
+is sufficient. Past usefulness and speculative future use do not justify retention.
+
+Delete disposable artifacts when their purpose ends, including completion,
+cancellation, supersession, and abandonment. Prefer immediate cleanup plus
+opportunistic sweeps at existing startup, refresh, or next-operation boundaries.
+Do not add a ledger, scheduler, or elaborate crash protocol just to guarantee
+deletion at an exact time. Let later sweeps remove interrupted cleanup leftovers.
+Use a seven-day recovery window for inactive temporary diagnostics and verified
+rollback backups unless their owning contract specifies another bound. Reading
+an artifact does not renew its lifetime. Reconcile uncertain operations before
+deleting recovery state; preserve only what that obligation still needs. Retain
+qualification evidence only while its exact claim and version have a consumer.
+Preserve authored content and unresolved human submissions. Report unresolved
+cleanup failures; do not treat an archive or a cleanup log as disposal.
 
 When behavior changes, inspect and update affected reader instructions in the
 same work. Use $onepersonlabs:write-docs for README creation, user guides, and

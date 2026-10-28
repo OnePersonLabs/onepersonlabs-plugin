@@ -49,6 +49,18 @@ def load_application(plugin_root: Path):
     return module
 
 
+def load_harness_lock(plugin_root: Path):
+    path = plugin_root / "skills" / "configure-harness" / "scripts" / "harness.py"
+    if not path.is_file() or path.is_symlink():
+        raise ConfigCheckError(f"OnePersonLabs configuration lock helper is missing or unsafe: {path}")
+    spec = importlib.util.spec_from_file_location("onepersonlabs_harness_lock", path)
+    if spec is None or spec.loader is None:
+        raise ConfigCheckError(f"Cannot load OnePersonLabs configuration lock helper: {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def plugin_version(plugin_root: Path) -> str:
     path = plugin_root / ".codex-plugin" / "plugin.json"
     try:
@@ -564,12 +576,15 @@ def apply_config(home: Path, plugin_root: Path, original: bytes | None, candidat
 def apply_verified_config(home: Path, plugin_root: Path, original: bytes | None, candidate: bytes,
                           inventory: dict[str, str], defaults: dict[str, dict[str, Any]], *, include_policy: bool) -> dict[str, Any]:
     _verify_rendered(candidate, inventory, defaults, include_policy=include_policy)
-    result = apply_config(home, plugin_root, original, candidate)
-    final = read_config_bytes(home)
-    if final is None:
-        raise ConfigCheckError("config.toml disappeared after OnePersonLabs applied its repair")
-    _verify_rendered(final, inventory, defaults, include_policy=include_policy)
-    return result
+    harness = load_harness_lock(plugin_root)
+    with harness.lock(harness.state_root(home)):
+        result = apply_config(home, plugin_root, original, candidate)
+        final = read_config_bytes(home)
+        if final is None:
+            raise ConfigCheckError("config.toml disappeared after OnePersonLabs applied its repair")
+        _verify_rendered(final, inventory, defaults, include_policy=include_policy)
+        load_application(plugin_root).finalize(home, result["receipt"])
+        return result
 
 
 def inspect(home: Path, plugin_root: Path, *, include_policy: bool = True,
@@ -622,7 +637,14 @@ def command_ignore(home: Path, plugin_root: Path) -> tuple[dict[str, Any], int]:
     matching_marker, _stale = marker_state(raw, version)
     if matching_marker:
         return {"ignored": True, "compliant": True, "findings": [], "version": version}, 0
-    result = apply_config(home, plugin_root, original, insert_ignore_marker(remove_stale_markers(raw, version), version))
+    candidate = insert_ignore_marker(remove_stale_markers(raw, version), version)
+    harness = load_harness_lock(plugin_root)
+    with harness.lock(harness.state_root(home)):
+        result = apply_config(home, plugin_root, original, candidate)
+        final = read_config_bytes(home)
+        if final != candidate:
+            raise ConfigCheckError("config.toml readback differs after applying the ignore marker")
+        load_application(plugin_root).finalize(home, result["receipt"])
     return {"ignored": True, "compliant": True, "findings": [], "version": version, "applied": result}, 0
 
 

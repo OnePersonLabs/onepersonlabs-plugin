@@ -1,6 +1,6 @@
 ---
 name: update-instructions
-description: Update outdated global AGENTS.md from installed OnePersonLabs defaults under established authorization, with a dated byte-exact backup.
+description: Update outdated global AGENTS.md from installed OnePersonLabs defaults under established authorization, with a verified seven-day rollback backup.
 ---
 
 # Update OnePersonLabs Instructions
@@ -8,7 +8,7 @@ description: Update outdated global AGENTS.md from installed OnePersonLabs defau
 The user owns their global instructions. When an update is available, inspect
 the effective target and installed OnePersonLabs version, then reuse applicable update authorization or ask once whether to replace
 the target with the installed `AGENTS.md`. Explain that active custom rules will
-be replaced and the existing file will be saved as a dated backup. A clear yes
+be replaced and the existing file will be saved for a bounded rollback window. A clear yes
 authorizes that update; do not ask the user to review a candidate or diff.
 
 ## Inspect and establish authorization
@@ -49,12 +49,29 @@ same `--home` and `--plugin-root` overrides used during inspection.
 
 The helper refuses to downgrade a newer target, verifies that the target and
 installed instructions have not changed since inspection, saves a byte-exact
-backup, and atomically replaces the target. Backup names use
+rollback copy, and atomically replaces the target. A verified replacement keeps
+that copy for seven days. An incomplete replacement preserves its recovery copy
+until its state is reconciled. Backup names use
 `AGENTS.md.onepersonlabs-backup-YYYYMMDD-NNN`; `NNN` starts at `001` each day and increases
 to avoid overwriting an earlier backup. A failed backup or replacement is an
-error; never report success unless the replacement completed.
+error; never report success unless the replacement completed and its bytes
+were verified. The backup filename ends in `.pending` until verification succeeds.
+Successful verification renames it with `.expires-<epoch-seconds>` for a fixed
+seven-day rollback window. No separate retention ledger is created.
+
+The next apply removes verified expired backups. Preview with
+`scripts/instructions.py cleanup --preview`, then run
+`scripts/instructions.py cleanup` to remove overdue backups without updating
+instructions. Pass the same home override when applicable. Legacy backups require a valid later instruction
+version in the current target and use their original timestamp. A failed update
+or unknown ownership remains an explicit recovery obligation. Report cleanup
+failures instead of silently extending retention. An inactive home is cleaned
+on the next applicable invocation, not by a background timer.
 
 Re-run inspection and confirm the effective target has the installed version
-and hash. Report the backup location. Ask the user to start a fresh session to
-load the resulting global instructions; do not claim the current session's
-already-loaded instructions were replaced.
+and hash. The apply helper confirms exact readback and removes expired,
+helper-owned backups on the next update or explicit `cleanup` invocation. Check
+cleanup output and report unresolved recovery paths. Report the new backup
+location while its rollback window remains. Ask the user to start a fresh
+session to load the resulting global instructions; do not claim the current
+session's already-loaded instructions were replaced.

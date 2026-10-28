@@ -1,8 +1,11 @@
 import importlib.util
 import hashlib
+import json
+import os
 import re
 from pathlib import Path
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 
@@ -76,7 +79,7 @@ class InstructionUpdates(unittest.TestCase):
         self.target.write_bytes(original)
         result = self.apply(hashlib.sha256(original).hexdigest())
         self.assertEqual(Path(result["backup"]).read_bytes(), original)
-        self.assertRegex(Path(result["backup"]).name, r"^AGENTS\.md\.onepersonlabs-backup-\d{8}-001$")
+        self.assertRegex(Path(result["backup"]).name, r"^AGENTS\.md\.onepersonlabs-backup-\d{8}-001\.expires-\d+$")
         self.assertEqual(self.target.read_bytes(), (self.plugin / "AGENTS.md").read_bytes())
         again = self.apply(result["sha256"])
         self.assertFalse(again["changed"])
@@ -94,13 +97,13 @@ class InstructionUpdates(unittest.TestCase):
         self.target.write_bytes(original)
         first = self.apply(hashlib.sha256(original).hexdigest())
         first_backup = Path(first["backup"])
-        self.assertTrue(re.fullmatch(r"AGENTS\.md\.onepersonlabs-backup-\d{8}-001", first_backup.name))
+        self.assertTrue(re.fullmatch(r"AGENTS\.md\.onepersonlabs-backup-\d{8}-001\.expires-\d+", first_backup.name))
 
         second_original = self.target.read_bytes()
         (self.plugin / "AGENTS.md").write_bytes(content(4, "Second installed version."))
         second = self.apply(hashlib.sha256(second_original).hexdigest())
         second_backup = Path(second["backup"])
-        self.assertEqual(second_backup.name, first_backup.name[:-3] + "002")
+        self.assertRegex(second_backup.name, r"\.onepersonlabs-backup-\d{8}-002\.expires-\d+$")
         self.assertEqual(first_backup.read_bytes(), original)
         self.assertEqual(second_backup.read_bytes(), second_original)
 
@@ -116,6 +119,78 @@ class InstructionUpdates(unittest.TestCase):
         result = self.apply("missing")
         self.assertIsNone(result["backup"])
         self.assertEqual(self.target.read_bytes(), (self.plugin / "AGENTS.md").read_bytes())
+
+    def test_cleanup_removes_only_expired_owned_backups_and_supports_preview(self):
+        now = time.time()
+        old = self.home / f"AGENTS.md.onepersonlabs-backup-20200101-001.expires-{int(now - 1)}"
+        recent = self.home / f"AGENTS.md.onepersonlabs-backup-20200101-002.expires-{int(now + 100)}"
+        unrelated = self.home / "other-backup-20200101"
+        for path in (old, recent, unrelated):
+            path.write_bytes(b"backup")
+        now = time.time()
+        preview = instructions.cleanup_backups(self.home, now=now, preview=True)
+        self.assertEqual(preview["deleted"], [])
+        self.assertEqual(preview["would_delete"], [str(old)])
+        self.assertTrue(old.exists())
+        result = instructions.cleanup_backups(self.home, now=now)
+        self.assertEqual(result["deleted"], [str(old)])
+        self.assertFalse(old.exists())
+        self.assertTrue(recent.exists())
+        self.assertTrue(unrelated.exists())
+
+    def test_failed_update_keeps_unresolved_recovery_backup_until_reconciled(self):
+        original = content(1)
+        self.target.write_bytes(original)
+        real_replace = instructions.os.replace
+        calls = 0
+
+        def replace_then_fail(source, target):
+            nonlocal calls
+            calls += 1
+            real_replace(source, target)
+            if calls == 1:
+                raise OSError("readback interruption")
+
+        with patch.object(instructions.os, "replace", side_effect=replace_then_fail):
+            with self.assertRaisesRegex(OSError, "readback interruption"):
+                self.apply(hashlib.sha256(original).hexdigest())
+        backups = [path for path in self.home.glob("AGENTS.md.onepersonlabs-backup-*")
+                   if instructions._BACKUP_NAME.fullmatch(path.name)]
+        self.assertEqual(len(backups), 1)
+        backup = backups[0]
+        self.assertEqual(backup.read_bytes(), original)
+        self.assertTrue(backup.name.endswith(".pending"))
+        cleanup = instructions.cleanup_backups(self.home, now=time.time() + 60 * 60 * 24 * 30)
+        self.assertEqual(cleanup["deleted"], [])
+        self.assertTrue(backup.exists())
+
+    def test_successful_update_starts_fixed_retention_only_after_verified_readback(self):
+        original = content(1)
+        self.target.write_bytes(original)
+        result = self.apply(hashlib.sha256(original).hexdigest())
+        backup = Path(result["backup"])
+        expiry = int(backup.name.rsplit(".expires-", 1)[1])
+        self.assertGreaterEqual(expiry, time.time() + instructions.BACKUP_RETENTION_SECONDS - 2)
+
+    def test_legacy_opl_backup_is_only_reconciled_after_later_version_is_active(self):
+        legacy = self.home / "AGENTS.md.opl-backup-20200101-001"
+        legacy.write_bytes(content(1, "old"))
+        active = content(3, "current")
+        self.target.write_bytes(active)
+        old = time.time() - instructions.BACKUP_RETENTION_SECONDS - 10
+        os.utime(legacy, (old, old))
+        result = instructions.cleanup_backups(self.home)
+        self.assertEqual(result["deleted"], [str(legacy)])
+        self.assertFalse(legacy.exists())
+
+    def test_legacy_uuid_backup_name_is_scoped_and_reconciled(self):
+        legacy = self.home / "AGENTS.md.opl-backup-0cddb0f5eae24572af294b78b580ab12"
+        legacy.write_bytes(content(1, "old"))
+        self.target.write_bytes(content(3, "current"))
+        old = time.time() - instructions.BACKUP_RETENTION_SECONDS - 10
+        os.utime(legacy, (old, old))
+        result = instructions.cleanup_backups(self.home)
+        self.assertEqual(result["deleted"], [str(legacy)])
 
     def test_changed_override_during_apply_is_rejected(self):
         original = content(1)
