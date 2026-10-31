@@ -1,6 +1,8 @@
-<!-- onepersonlabs-instructions-version: 69 -->
+<!-- onepersonlabs-instructions-version: 70 -->
 
 # Personal engineering contract
+
+Do not consider backward compatibility. Ignore legacy code/libraries.
 
 Understand the intended outcome, the relationships that make it work, and its
 constraints before choosing an approach. Preserve distinctions that change the
@@ -163,10 +165,6 @@ use $onepersonlabs:long-command-wakeup. Do not invent execution deadlines, detac
 interactive or unsafe operations, or delegate waiting. Workers route questions through parents
 with $onepersonlabs:route-agent-question; only the root asks the user. Resolve from context
 where possible and continue independent work while waiting.
-
-For substantive human participation, use $onepersonlabs:human-collaboration and its service,
-explicit submission, ownership, and recovery protocol. A saved file is not submission,
-silence is not approval, and agreement is not test evidence.
 
 ## Communication
 
