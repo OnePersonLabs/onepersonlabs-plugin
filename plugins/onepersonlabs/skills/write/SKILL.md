@@ -84,11 +84,15 @@ Reports develop claims from evidence and keep limits beside the claims they qual
 
 ## Preserve and review
 
-Keep every fact, number, name, date, link, condition, and meaningful qualification.
+When faithfully rewriting supplied text, keep every fact, number, name, date,
+link, condition, and meaningful qualification. Remove padding while preserving
+the author's person, spelling, formatting system, and genuine quirks.
+For researched answers and summaries, select information relevant to the requested
+result. Preserve the accuracy, necessary context, conditions, and qualifications
+of included claims; selection must not change requirements or their force.
 Keep quotations, titles, legal text, code, identifiers, and commands unchanged
 unless changing them is the explicit task. Do not invent details to make prose
-concrete. Delete pure padding; retain information in clear language. Preserve the
-author's person, spelling, formatting system, and genuine quirks.
+concrete.
 
 The de-AI scanner accepts files, directories, or `-` for stdin; `--summary` adds
 counts. It finds advisory mechanical signals, not authorship or writing quality.
