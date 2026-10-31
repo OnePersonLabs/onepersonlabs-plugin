@@ -16,6 +16,14 @@ summaries, generic offers, and closers with no useful content. Preserve genuine
 uncertainty and reasons that change the reader's decision. End on the last useful
 point. A long investigation does not require a long account of the investigation.
 
+Select information for the question actually asked. For next questions or decisions,
+give the nearest consequential choices and only the context or dependencies needed
+to address them. Leave later backlog with its existing owner unless it changes a
+current choice. Link to supporting detail instead of reproducing the issue history.
+Do not append a second catalogue of deferred work, preventive disclaimers, or a
+process audit. Report checks and limitations when they change confidence in the
+answer; summarize them once.
+
 Use familiar short words and established technical terms. Avoid invented
 abbreviations. Keep grammar when it helps a sentence read in one pass. Do not drop
 articles merely to sound terse, or replace an explanation with cryptic fragments.
