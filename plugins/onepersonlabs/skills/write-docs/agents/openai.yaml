@@ -1,6 +1,0 @@
-interface:
-  display_name: "Write docs"
-  short_description: "Write and maintain docs around real user tasks"
-  default_prompt: "Use $onepersonlabs:write-docs to write or update documentation from current behavior, with a clear first task, expected result, and meaningful limitations."
-policy:
-  allow_implicit_invocation: false

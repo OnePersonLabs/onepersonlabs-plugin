@@ -12,7 +12,7 @@ specialized tool.
 
 ## Diagnose, implement, and review
 
-- **[$onepersonlabs:write](../skills/write/SKILL.md)** -- Discoverable. Write or revise text with universal drafting rules and automatically selected guidance for concise replies, technical precision, documentation, and editing. Documentation uses the full source-grounded reader workflow. The old `de-ai-writing`, `simplified-technical-english`, and `write-docs` names remain explicit compatibility entrypoints.
+- **[$onepersonlabs:write](../skills/write/SKILL.md)** -- Discoverable. Write or revise text with universal drafting rules and automatically selected guidance for concise replies, technical precision, documentation, and editing. Documentation uses the full source-grounded reader workflow.
 - **[$onepersonlabs:debug](../skills/debug/SKILL.md)** -- Explicit. Diagnose a concrete failure and, when requested, verify a causal fix. Result: a supported cause, counterevidence, and original-scenario verification. A symptom or passing test alone does not establish the cause.
 - **[$onepersonlabs:test-driven-development](../skills/test-driven-development/SKILL.md)** -- Explicit. Use a red-green-refactor loop for an observable behavior. Result: a meaningful test-first change with honest reporting of whether tests came before the implementation. It is optional and follows the repository's test policy.
 - **[$onepersonlabs:adversarial-review](../skills/adversarial-review/SKILL.md)** -- Explicit. Audit a plan, architecture, instruction system, or agent workflow for concrete failure paths. Result: prioritized findings tied to evidence and a plausible failure scenario. Routine code diffs use the native review path.
@@ -57,8 +57,7 @@ specialized tool.
 
 The explicit skills are `adversarial-review`, `debug`, `handoff`,
 `session-history-rebuild`, `slop-buster`,
-`test-driven-development`, `unslop`, `update-instructions`, `de-ai-writing`,
-`simplified-technical-english`, and `write-docs`. Name them in
+`test-driven-development`, `unslop`, and `update-instructions`. Name them in
 the request.
 
 All other listed skills are marked discoverable in their package metadata.

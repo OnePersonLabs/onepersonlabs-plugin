@@ -2,7 +2,7 @@
 
 Use these rules for assistant replies and progress updates. Preserve the universal
 drafting foundation. The user's requested depth, language, and answer tags govern
-length. This layer adds no persistent mode, hook, fixed word ceiling, or persona.
+length.
 
 ## Start with the substance
 
@@ -16,13 +16,9 @@ summaries, generic offers, and closers with no useful content. Preserve genuine
 uncertainty and reasons that change the reader's decision. End on the last useful
 point. A long investigation does not require a long account of the investigation.
 
-Select information for the question actually asked. For next questions or decisions,
-give the nearest consequential choices and only the context or dependencies needed
-to address them. Leave later backlog with its existing owner unless it changes a
-current choice. Link to supporting detail instead of reproducing the issue history.
-Do not append a second catalogue of deferred work, preventive disclaimers, or a
-process audit. Report checks and limitations when they change confidence in the
-answer; summarize them once.
+Select information for the question actually asked. Include history, later work,
+process details, and limitations when they affect the current answer or action.
+Link to supporting detail instead of reproducing it.
 
 Use familiar short words and established technical terms. Avoid invented
 abbreviations. Keep grammar when it helps a sentence read in one pass. Do not drop
@@ -50,8 +46,3 @@ Before sending, remove unnecessary opening and closing ceremony. Check that exac
 payloads and qualifiers survived. Expand any sentence with two plausible readings.
 Apply the relevant artifact guidance to persisted text and third-party messages;
 the assistant's concise commentary must not flatten their voice or completeness.
-
-Adapted from Caveman at `9b68f7ed12b05e7efaff18e65c5a3fc2849fd0a4` and Elements of
-Style for Agents at `8317879ad0270a4a687eab7fffe570d26024cf25`. Changes: automatic
-scoped use, complete grammar, preserved uncertainty, native communication rules,
-and removal of modes and fixed ceilings. See the plugin's third-party notices.

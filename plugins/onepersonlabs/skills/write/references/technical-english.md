@@ -4,13 +4,6 @@ Apply the clarity principles of ASD-STE100 to eligible software prose. This skil
 
 ## Route by purpose and reader
 
-Keep the universal drafting foundation active. Read this reference for all
-agent-consumed specs, implementation plans, instruction files, skill entrypoints
-and references, prompts, tool descriptions, assignments, and handoffs. Apply it
-to GitHub issue decisions, requirements, and acceptance criteria: these guide
-Conductor and future agents. Also apply it to human procedures, runbooks, and
-recovery instructions. Preserve quoted reports and examples in their original form.
-
 - **Normative or operational:** For requirements, acceptance criteria, procedures, and instructions another agent must act on, state one action or testable claim at a time. Put conditions before their effects. Name the actor when it matters. Reuse one term for each concept.
 - **Implementation guidance:** For technical explanations that guide a design or implementation, use direct verbs and short, coherent paragraphs. Retain the vocabulary needed for precision; do not force a controlled dictionary.
 - **Human-facing prose:** When the primary purpose is to explain, teach, or persuade a person, preserve the voice and structure suited to that reader. Do not apply a controlled register solely because the subject is technical.

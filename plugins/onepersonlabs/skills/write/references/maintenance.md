@@ -1,6 +1,6 @@
 # Maintain the shared drafting foundation, catalogue, and scanner
 
-Use this workflow when the `Last source review` date in `SKILL.md` is at least 30 days old, or when the user asks to refresh `$onepersonlabs:write` or `$de-ai-writing`, update its Wikipedia basis, or check source freshness. Ordinary writing must not make a network request before the interval expires.
+Use this workflow when the `Last source review` date in `SKILL.md` is at least 30 days old, or when the user asks to refresh `$onepersonlabs:write`, update its Wikipedia basis, or check source freshness. Ordinary writing must not make a network request before the interval expires.
 
 ## Source
 

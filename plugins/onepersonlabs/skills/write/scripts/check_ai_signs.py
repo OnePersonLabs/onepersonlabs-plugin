@@ -307,7 +307,7 @@ def collect_paths(arguments: Iterable[str]) -> tuple[list[Path], bool]:
 
 
 def latest_source() -> tuple[int, str]:
-    request = Request(SOURCE_API, headers={"User-Agent": "OnePersonLabs-de-ai-writing/1.0 (source status check)"})
+    request = Request(SOURCE_API, headers={"User-Agent": "OnePersonLabs-write/1.0 (source status check)"})
     last_error: OSError | URLError | None = None
     for attempt in range(1, 4):
         try:
