@@ -18,9 +18,9 @@ from urllib.error import URLError
 from urllib.request import Request, urlopen
 
 
-SOURCE_REVISION = 1376434705
-SOURCE_TIMESTAMP = "2026-09-24T03:34:26Z"
-SOURCE_REVIEWED = date.fromisoformat("2026-09-25")
+SOURCE_REVISION = 1382925076
+SOURCE_TIMESTAMP = "2026-10-31T01:01:54Z"
+SOURCE_REVIEWED = date.fromisoformat("2026-10-31")
 SOURCE_INTERVAL_DAYS = 30
 SOURCE_API = (
     "https://en.wikipedia.org/w/api.php?action=query&prop=revisions&"

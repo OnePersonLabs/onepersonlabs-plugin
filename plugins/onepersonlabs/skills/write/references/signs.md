@@ -1,14 +1,16 @@
 # Signs of AI writing: catalogue and fixes
 
-This is an adaptation for general human-facing prose of Wikipedia's [Signs of AI writing](https://en.wikipedia.org/w/index.php?title=Wikipedia:Signs_of_AI_writing&oldid=1376434705), retrieved 2026-09-25.
+This is an adaptation for general human-facing prose of Wikipedia's [Signs of AI writing](https://en.wikipedia.org/w/index.php?title=Wikipedia:Signs_of_AI_writing&oldid=1382925076), reviewed 2026-10-31.
 
-- Source revision: `1376434705`
-- Source timestamp: `2026-09-24T03:34:26Z`
-- Last reviewed: `2026-09-25`
+- Source revision: `1382925076`
+- Source timestamp: `2026-10-31T01:01:54Z`
+- Last reviewed: `2026-10-31`
 - License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 - Scope: Wikipedia-only markup, citation, category, edit-summary, and moderation signs are omitted.
 
 The source is a field guide, not an authorship test. These patterns are symptoms. Fix what a sentence is doing: padding, exaggerating, hedging, restating, or correcting a misconception nobody raised. Do not swap one conspicuous word for a synonym while preserving the same empty sentence.
+
+Apply each observation to the text's purpose. Useful marketing language, intentional repetition, labels, dialogue, and a real statement of uncertainty can remain. The source's observations do not impose an encyclopedic voice on other writing. Generic significance framing and the `honest` style cue below also include local editorial refinements.
 
 `Scanner` below states whether `scripts/check_ai_signs.py` can find part of the sign. Scanner matches require editorial review.
 
@@ -74,7 +76,7 @@ Scanner: common lead forms.
 
 ### 1.8 Completeness-shaped headings
 
-Headings such as `Awards and recognition` or generic `X and Y` pairings can create sections that exist to complete an outline rather than serve the reader.
+An `Awards and recognition` section can exist to complete a generic outline rather than serve the reader. The source's current observation is specific to this heading; an ordinary `X and Y` pairing is not itself a defect.
 
 Keep the heading only when the material needs a separate section.
 
@@ -108,9 +110,9 @@ Scanner: phrase matches.
 
 ### 2.4 Negative parallelism
 
-The prose corrects a misconception the reader did not have: `not only ... but also`, `not just X, but Y`, `this isn't X, it's Y`, `it's X, not Y`, or `no X, no Y, just Z`. Contrast can be useful, but do not manufacture an opposing idea just to make the sentence sound emphatic.
+The prose corrects a misconception the reader did not have: `not only ... but also`, `not just X, but Y`, `this isn't X, it's Y`, `it's X, not Y`, or `no X, no Y, just Z`. The same framing can appear in reverse as `Y rather than X`. Contrast can be useful, but do not manufacture an opposing idea just to make the sentence sound emphatic.
 
-Scanner: common constructions, including `it's X, not Y`.
+Scanner: common constructions, including `it's X, not Y`. Reversed contrasts remain judgment-only because the same wording often expresses a necessary choice.
 
 ### 2.5 Generic significance framing
 
@@ -162,7 +164,7 @@ Scanner: Markdown list pattern.
 
 ### 3.4 Em-dash overuse
 
-Repeated em dashes can give every qualification the same dramatic rhythm. Rewrite with commas, colons, parentheses, or full stops. Do not replace the mark mechanically with another dash. An occasional em dash can be right.
+The source now classifies em-dash overuse as a historical indicator. Repeated em dashes can still give every qualification the same dramatic rhythm. Use punctuation that fits the sentence and house style. Do not mechanically replace every dash or force uniformly short sentences and comma/full-stop rhythms. An occasional em dash can be right when the applicable style permits it.
 
 Scanner: spaced em dashes and paired em dashes on one line.
 
@@ -206,7 +208,9 @@ Remove `as of my last update`, `based on available information`, `not widely doc
 
 If a fact is unknown, say so once and tell the reader what to do: `Opening hours are not posted; call ahead.`
 
-Scanner: phrase matches.
+Also review repeated corrective qualifications such as `should be treated as ... rather than ...`, `does not by itself establish ...`, and `should not be confused with ...`. Keep them when they prevent a consequential misunderstanding. Remove generic warnings about how to read a source when they add no information. Preserve the actual uncertainty, evidence boundary, and limits of a claim.
+
+Scanner: phrase matches for older availability disclaimers. Corrective source-use framing requires judgment; matching those phrases alone would flag necessary qualifications.
 
 ### 4.3 Placeholders
 
@@ -235,6 +239,7 @@ Scanner: paragraph-opening phrases. Whether the paragraph is redundant remains a
 - Definite claims when the evidence supports them.
 - Specific or unusual facts instead of generic praise.
 - Natural variation in sentence length and rhythm.
+- Punctuation chosen for the sentence instead of mechanically suppressing every alternative to commas and full stops.
 - Uncertainty stated once and concretely.
 
 ## Do not "fix" these

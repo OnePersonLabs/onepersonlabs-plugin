@@ -1,0 +1,6 @@
+interface:
+  display_name: "Write"
+  short_description: "Write clearly, preserve meaning, and match the reader"
+  default_prompt: "Use $onepersonlabs:write to write or revise this text with the shared drafting foundation and the applicable precision, documentation, editing, or concise-reply guidance."
+policy:
+  allow_implicit_invocation: true

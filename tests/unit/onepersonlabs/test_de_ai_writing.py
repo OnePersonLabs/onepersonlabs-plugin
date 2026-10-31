@@ -12,7 +12,7 @@ import unittest
 from unittest.mock import patch
 
 
-SCRIPT = Path(__file__).resolve().parents[3] / "plugins/onepersonlabs/skills/de-ai-writing/scripts/check_ai_signs.py"
+SCRIPT = Path(__file__).resolve().parents[3] / "plugins/onepersonlabs/skills/write/scripts/check_ai_signs.py"
 SPEC = importlib.util.spec_from_file_location("check_ai_signs", SCRIPT)
 assert SPEC and SPEC.loader
 SCANNER = importlib.util.module_from_spec(SPEC)
@@ -119,15 +119,25 @@ class ScannerTests(unittest.TestCase):
     def test_source_metadata_stays_synchronized(self):
         skill = SKILL.read_text(encoding="utf-8")
         signs = SIGNS.read_text(encoding="utf-8")
+        instructions = (SCRIPT.parents[3] / "AGENTS.md").read_text(encoding="utf-8")
         skill_date = re.search(r"Last source review: `([0-9]{4}-[0-9]{2}-[0-9]{2})`", skill)
+        instructions_date = re.search(r"Last source review: `([0-9]{4}-[0-9]{2}-[0-9]{2})`", instructions)
         signs_date = re.search(r"Last reviewed: `([0-9]{4}-[0-9]{2}-[0-9]{2})`", signs)
         signs_revision = re.search(r"Source revision: `([0-9]+)`", signs)
         self.assertIsNotNone(skill_date)
+        self.assertIsNotNone(instructions_date)
         self.assertIsNotNone(signs_date)
         self.assertIsNotNone(signs_revision)
         self.assertEqual(skill_date.group(1), SCANNER.SOURCE_REVIEWED.isoformat())
+        self.assertEqual(instructions_date.group(1), SCANNER.SOURCE_REVIEWED.isoformat())
         self.assertEqual(signs_date.group(1), SCANNER.SOURCE_REVIEWED.isoformat())
         self.assertEqual(int(signs_revision.group(1)), SCANNER.SOURCE_REVISION)
+        foundation = r"^#{2,3} Universal drafting foundation\s*\n(.*?)\nLast source review:"
+        skill_foundation = re.search(foundation, skill, re.MULTILINE | re.DOTALL)
+        instructions_foundation = re.search(foundation, instructions, re.MULTILINE | re.DOTALL)
+        self.assertIsNotNone(skill_foundation)
+        self.assertIsNotNone(instructions_foundation)
+        self.assertEqual(skill_foundation.group(1).strip(), instructions_foundation.group(1).strip())
 
 
 if __name__ == "__main__":

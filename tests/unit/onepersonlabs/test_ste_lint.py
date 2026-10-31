@@ -8,7 +8,7 @@ import tempfile
 import unittest
 
 
-SCRIPT = Path(__file__).resolve().parents[3] / "plugins/onepersonlabs/skills/simplified-technical-english/scripts/ste_lint.py"
+SCRIPT = Path(__file__).resolve().parents[3] / "plugins/onepersonlabs/skills/write/scripts/ste_lint.py"
 SPEC = importlib.util.spec_from_file_location("ste_lint", SCRIPT)
 assert SPEC and SPEC.loader
 LINTER = importlib.util.module_from_spec(SPEC)

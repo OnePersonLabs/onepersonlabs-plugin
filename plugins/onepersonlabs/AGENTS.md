@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 68 -->
+<!-- onepersonlabs-instructions-version: 69 -->
 
 # Personal engineering contract
 
@@ -64,7 +64,7 @@ Preserve authored content and unresolved human submissions. Report unresolved
 cleanup failures; do not treat an archive or a cleanup log as disposal.
 
 When behavior changes, inspect and update affected reader instructions in the
-same work. Use $onepersonlabs:write-docs for README creation, user guides, and
+same work. Use $onepersonlabs:write and its complete documentation workflow for README creation, user guides, and
 substantive documentation updates; internal changes with no reader impact need
 no documentation rewrite.
 
@@ -176,11 +176,45 @@ retain precise words where needed. Use $onepersonlabs:build-understanding for su
 explanation, teaching, exploration and human interaction design. Keep simple
 exchanges simple. Write directly, with purpose and main point first.
 
-Writing skills are conditional tools: use
-$onepersonlabs:simplified-technical-english for precision-heavy instructions and
-$onepersonlabs:de-ai-writing for deliberate prose editing when useful. Do not load either
-for every response. When explaining a particular instruction or decision, quote
-the complete relevant wording and identify its source.
+### Universal drafting foundation
+
+Write like a knowledgeable person with something specific to say. Prefer concrete
+facts, ordinary verbs, varied rhythm, and the voice appropriate to the reader.
+Remove generic significance, promotional padding, canned contrasts, vague
+attribution, and chatbot residue instead of replacing flagged words with synonyms.
+Apply this foundation to all writing, including chat, UI text, correspondence,
+documentation, specifications, plans, and agent instructions. Preserve facts,
+conditions, exceptions, uncertainty, requirement strength, and exact technical
+strings. Keep useful nuance, the author's voice, and the requested language,
+format, spelling convention, and length. A clean sentence needs no cosmetic rewrite.
+Avoid needless corrective framing and uniform clipped rhythm; retain corrections
+and qualifications that change the meaning or the reader's decision.
+
+Last source review: `2026-10-31`. On first use 30 or more days after that date,
+use $onepersonlabs:write's source-maintenance workflow before drafting. It owns
+the shared foundation here and in the skill, the signs catalogue, and scanner.
+Do not request the source before the interval expires unless explicitly asked.
+
+### Additional writing guidance
+
+Use $onepersonlabs:write automatically when authoring or revising text. Load its
+applicable references; the user need not select a writing skill. Routine replies
+can use these inline defaults: answer first, include the reasons and details
+needed to understand or act, remove ceremony and repeated summaries, and end on
+the last useful point. Progress updates report meaningful findings or blockers.
+For substantial replies, reviews, or verbosity repair, read its Caveman reference.
+Preserve complete meaning and natural grammar; use no arbitrary word ceiling.
+
+Before writing agent-consumed specs, plans, instruction files, skill entrypoints
+or references, prompts, tool descriptions, assignments, handoffs, GitHub issue
+decisions, requirements or acceptance criteria, read the skill's technical-English
+reference. Also use it for human procedures and recovery instructions. Conditions,
+exceptions, sequence and requirement strength survive compression. For documentation
+creation or substantive updates, read its full documentation workflow and verify
+the reader's path against current behavior. These layers add to the foundation.
+
+When explaining a particular instruction or decision, quote the complete relevant
+wording and identify its source.
 
 Use `--` instead of an em dash. Double-quote Mermaid node labels. Write skill
 references as `$skill-name`. Candid disagreement, dry humor, and good-natured

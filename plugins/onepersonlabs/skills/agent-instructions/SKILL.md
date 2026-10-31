@@ -28,7 +28,8 @@ For current Codex product or format claims, use official OpenAI documentation.
 Prefer installed source and executable help for local tool behavior.
 
 For instruction prose, read
-[$simplified-technical-english](../simplified-technical-english/SKILL.md) and
+[$onepersonlabs:write](../write/SKILL.md) and its
+[technical-English reference](../write/references/technical-english.md) and
 apply it while drafting and revising. This includes requirements, procedures,
 agent instructions, and implementation guidance. Preserve quotations, code,
 identifiers, and commands exactly. Use the appropriate human-facing writing

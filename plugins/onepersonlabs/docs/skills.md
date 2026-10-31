@@ -12,11 +12,11 @@ specialized tool.
 
 ## Diagnose, implement, and review
 
+- **[$onepersonlabs:write](../skills/write/SKILL.md)** -- Discoverable. Write or revise text with universal drafting rules and automatically selected guidance for concise replies, technical precision, documentation, and editing. Documentation uses the full source-grounded reader workflow. The old `de-ai-writing`, `simplified-technical-english`, and `write-docs` names remain explicit compatibility entrypoints.
 - **[$onepersonlabs:debug](../skills/debug/SKILL.md)** -- Explicit. Diagnose a concrete failure and, when requested, verify a causal fix. Result: a supported cause, counterevidence, and original-scenario verification. A symptom or passing test alone does not establish the cause.
 - **[$onepersonlabs:test-driven-development](../skills/test-driven-development/SKILL.md)** -- Explicit. Use a red-green-refactor loop for an observable behavior. Result: a meaningful test-first change with honest reporting of whether tests came before the implementation. It is optional and follows the repository's test policy.
 - **[$onepersonlabs:adversarial-review](../skills/adversarial-review/SKILL.md)** -- Explicit. Audit a plan, architecture, instruction system, or agent workflow for concrete failure paths. Result: prioritized findings tied to evidence and a plausible failure scenario. Routine code diffs use the native review path.
 - **[$onepersonlabs:agent-instructions](../skills/agent-instructions/SKILL.md)** -- Discoverable. Author, consolidate, audit, or score agent instructions and skill packages. Result: the requested instruction artifact or a scoped review; a score is not a runtime behavior test.
-- **[$onepersonlabs:write-docs](../skills/write-docs/SKILL.md)** -- Discoverable. Write or update reader documentation from current behavior. Result: a complete task path with checked commands, outcomes, limits, and recovery.
 - **[$onepersonlabs:handoff](../skills/handoff/SKILL.md)** -- Explicit. Prepare a compact continuation document for a fresh agent. Result: a temporary handoff with current ownership, permission boundaries, decisions, evidence, and recovery state. It does not start a new session.
 - **[$onepersonlabs:refresh-local-plugins](../skills/refresh-local-plugins/SKILL.md)** -- Discoverable. Refresh selected changed plugin sources in existing Windows and WSL user homes. Result: per-home install and hook-trust status, plus any remaining failure. Requires a source checkout, Node.js, Codex plugin commands, and the human-collaboration pause/resume procedure when that service is in use. Publishing is separate.
 - **[$onepersonlabs:long-command-wakeup](../skills/long-command-wakeup/SKILL.md)** -- Discoverable. Queue one continuation after a safe local command that is demonstrably expected to run for more than about two minutes. Result: a retained command log and one completion request. Requires Python 3.11+ and `codex queue`; do not use for interactive, approval-dependent, destructive, or natively waitable work.
@@ -50,8 +50,6 @@ specialized tool.
 ## Research, writing, and review of agent behavior
 
 - **[$onepersonlabs:last30days](../skills/last30days/SKILL.md)** -- Discoverable. Research recent reactions, recommendations, comparisons, or source health across supported services. Result: a cited synthesis with actual source coverage and saved-artifact location. Requires Python 3.12+ and usable configured sources; it is not for timeless general research.
-- **[$onepersonlabs:de-ai-writing](../skills/de-ai-writing/SKILL.md)** -- Discoverable. Draft, revise, or audit human-facing prose for common AI-writing signs. Result: revised prose or a contextual list of likely issues. It does not rewrite technical procedures, which belong to `simplified-technical-english`.
-- **[$onepersonlabs:simplified-technical-english](../skills/simplified-technical-english/SKILL.md)** -- Discoverable. Write or revise precise specifications, procedures, agent instructions, and implementation guidance. Result: clearer operational prose that preserves requirements and conditions. It does not certify formal ASD-STE100 compliance.
 - **[$onepersonlabs:slop-buster](../skills/slop-buster/SKILL.md)** -- Explicit. Capture an identified agent incident or audit selected session history and maintain evidence-backed detectors. Result: source-anchored findings and resumable coverage, or one captured incident. Corpus runs require the configured private evidence repository; review modes use model assistance. Hooks are advisory.
 - **[$onepersonlabs:unslop](../skills/unslop/SKILL.md)** -- Explicit. Trace one identified agent failure and, when authorized and useful, compare instruction corrections through replay. Result: causal analysis labeled as replay-tested or reasoned without replay. Requires a specific incident; replay additionally needs explicit permission and supported session tooling.
 
@@ -59,7 +57,8 @@ specialized tool.
 
 The explicit skills are `adversarial-review`, `debug`, `handoff`,
 `session-history-rebuild`, `slop-buster`,
-`test-driven-development`, `unslop`, and `update-instructions`. Name them in
+`test-driven-development`, `unslop`, `update-instructions`, `de-ai-writing`,
+`simplified-technical-english`, and `write-docs`. Name them in
 the request.
 
 All other listed skills are marked discoverable in their package metadata.
