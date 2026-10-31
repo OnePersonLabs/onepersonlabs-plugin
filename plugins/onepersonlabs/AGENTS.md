@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 70 -->
+<!-- onepersonlabs-instructions-version: 71 -->
 
 # Personal engineering contract
 
@@ -86,12 +86,30 @@ authorization from tool or environment capability.
 
 ## Verification and experiments
 
-Use existing checks or a bounded probe to resolve relevant uncertainty. During
-implementation, run focused checks when they resolve a decision or reproduced
-failure. Batch broader affected suites at coherent integration boundaries.
-Complete required gates, run existing checks locally, and reuse evidence while
-its inputs remain valid. Keep successful output quiet; report failures with
-useful context.
+Choose work batches around coherent responsibilities and stable interfaces.
+Before a structural migration, identify the complete affected consumer set and
+apply mechanically determined changes together. Prefer supported programmatic
+transformations when they reduce repetitive work and omission risk.
+
+Use existing checks or a bounded probe to resolve relevant uncertainty early.
+For structural refactors, settle changed interfaces before repeatedly adapting
+semantic fixtures; migrate mechanical test references with their source. Apply
+scoped automatic fixes and formatting before checking the complete changed set.
+Run broader verification at coherent integration boundaries. Complete required
+gates locally, and reuse evidence while its inputs and assumptions remain valid.
+Keep successful output quiet; report failures with useful context.
+
+At meaningful work boundaries, account for preparation, implementation,
+verification, coordination, rework, and waiting when these distinctions affect
+the next action. Use available timestamps and results; identify unknown intervals
+and overlapping activity. Do not sum parallel durations as elapsed time.
+
+At the first concern about workflow speed, elapsed time, cost, or repeated work,
+use $onepersonlabs:optimize-workflow before the next costly step. Also use it when
+repeated preparation, repair, or coordination materially delays completion.
+Preserve the requested outcome and required checks. Base estimates on comparable
+completed work and unresolved dependencies, not raw finding counts. A neutral
+ETA question needs an evidence-based answer, not an extensive workflow audit.
 
 Do not add tests for skill invocation. AI-consuming tests and evaluations require
 explicit permission. Batch authorized evaluations at integration and stay within
@@ -126,13 +144,14 @@ local. Parallel implementation needs settled contracts and explicit write owners
 
 Assignments give outcome, boundaries, constraints, dependencies, evidence, and stop
 condition. One writer owns each shared mutable surface; coordinate boundary changes.
-Reuse workers for related work.
+Reuse workers for related work and confirm that assigned work actually started.
 Escalate to Astra only for a concrete unresolved decision that stronger reasoning
 may change, with a bounded assignment.
 
 The root integrates and verifies. Independent initial reviews receive requirements,
 baseline, actual change, and facts without the builder's verdict. Start after writers
-stop changing that scope; identify the reviewed commit or diff. Reuse the reviewer
+stop changing that scope; identify the reviewed commit or diff. Independent review
+and verification may overlap against that stable scope. Reuse the reviewer
 for repairs and invalidated evidence. Review correctness and human comprehension.
 Do not substitute component reviews for integrated verification. Reconcile uncertain
 launches, stop old writers before transferring ownership, and account for unfinished
@@ -151,6 +170,10 @@ explicit user instruction can revise a standing preference; do not manufacture
 approval loops. Explain actual conflicts, their sources, and consequences before
 requesting exceptions required by higher-priority instructions. Never bypass host
 restrictions. Report denied operations and incomplete gates plainly.
+
+If a prerequisite command fails, stop dependent mutations and delivery steps.
+Check native command failures explicitly when the shell can continue after a
+nonzero exit.
 
 Raise actionable errors rather than masking failures. Retry plausible transient
 failures and surface the final error. Preserve original

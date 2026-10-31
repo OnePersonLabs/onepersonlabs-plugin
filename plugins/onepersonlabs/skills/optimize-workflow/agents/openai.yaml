@@ -1,0 +1,7 @@
+interface:
+  display_name: "Optimize workflow"
+  short_description: "Find workflow overhead and reduce rework"
+  default_prompt: "Use $onepersonlabs:optimize-workflow to account for time spent and improve the remaining work without weakening its outcome or required checks."
+
+policy:
+  allow_implicit_invocation: true

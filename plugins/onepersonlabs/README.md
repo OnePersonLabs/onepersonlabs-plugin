@@ -31,7 +31,7 @@ trust. Installation adds skills and hooks; it does not run repository work.
 | Reader task | Guide |
 | --- | --- |
 | First installation and useful request | [Getting started](docs/getting-started.md) |
-| Choose among all 30 shipped skills | [Skills by task](docs/skills.md) |
+| Choose among all 29 shipped skills | [Skills by task](docs/skills.md) |
 | Inspect settings, instructions, policies, and notifications | [Configuration and hooks](docs/configuration-and-hooks.md) |
 | Declare repository capability requirements and diagnose conflicts | [Compatibility](docs/compatibility.md) |
 | Work with people, recover history, and hand off | [Collaboration and recovery](docs/collaboration-and-recovery.md) |

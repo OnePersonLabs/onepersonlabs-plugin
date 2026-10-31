@@ -5,6 +5,11 @@ description: Improve a working system against measured objectives when the winni
 
 # Optimize a working system
 
+When this skill is invoked about agent delivery speed, coordination, or rework,
+use [$onepersonlabs:optimize-workflow](../optimize-workflow/SKILL.md) directly.
+Do not run this skill's benchmark procedure first. Continue below when selecting
+an implementation requires a controlled performance comparison.
+
 Select this workflow when the system already works and the task is to improve a measurable property, but it is not yet known which change wins. Start it without waiting for the user to name the skill. Use the existing implementation workflow for ordinary requested changes; use debugging when the main need is to explain a failure, and use `$onepersonlabs:solve-novel-software` when a risky technical assumption needs a falsifying probe. Route back here when the decision is which candidate performs better.
 
 ## Establish a trustworthy comparison
