@@ -1,6 +1,6 @@
 interface:
   display_name: "Restart Codex Desktop"
-  short_description: "Prepare a safe Desktop restart and continuation"
-  default_prompt: "Use $restart-codex-desktop to reload Codex Desktop and prepare any requested continuation."
+  short_description: "Restart Desktop automatically and continue work"
+  default_prompt: "Use $restart-codex-desktop to quit and relaunch Codex Desktop automatically, then continue the authorized work in the appropriate chat."
 policy:
   allow_implicit_invocation: true

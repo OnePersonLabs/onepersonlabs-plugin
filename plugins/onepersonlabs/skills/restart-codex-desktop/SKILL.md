@@ -1,123 +1,142 @@
 ---
 name: restart-codex-desktop
-description: Restart or reload Codex Desktop after plugin, skill, instruction, or configuration changes, with optional reopening and a scoped continuation in an existing thread. Use when a fresh Desktop session is needed; installing or editing configuration alone does not authorize quitting the app.
+description: Automatically quit and relaunch Codex Desktop when a restart is requested or needed to load changed plugins, skills, instructions, or configuration. Optionally continue an existing chat; choose a fresh chat when a clean initial context is the actual goal. Configuration edits alone do not authorize interrupting unrelated work.
 ---
 
 # Restart Codex Desktop
 
-Prepare a restart without losing the next action. This skill works without
-Conductor. Automatic discovery does not authorize an immediate restart.
+Perform the restart, including graceful Quit, independent relaunch and any
+authorized continuation. The agent runs the helper; the user does not need to
+open a terminal or close the app. OnePersonLabs works without Conductor.
 
-## Establish the restart boundary
+## Choose what needs to restart
 
-Discover the available Desktop tools first. Prefer a supported native restart
-operation if its current contract covers graceful exit and reopening. The
-currently exposed app tools have no restart operation. On native Windows, use
-the bundled helper below. Other platforms and non-Appx installations need a
-verified platform route or a manual Quit and reopen; do not adapt the Windows
-helper by guessing executable names.
+Distinguish the running application from the conversation context. Restarting
+Desktop reloads its processes and configuration; reopening an old chat retains
+its history and does not establish a fresh initial skill/instruction context.
 
-Finish the current coherent edit batch and its required checks before restarting.
-Preserve unfinished work and its next authorized action in the existing work owner.
-Reconcile active
-writers, child agents, commands, pending approvals, and unsaved authored content.
-Tell the user which application will close and which work will be interrupted.
-Use existing restart authorization when it applies. If the user only requested
-configuration changes, prepare the restart command and leave execution optional.
+Continue the existing chat when its history is useful and the changed runtime
+settings are the concern. Choose a fresh chat when new initial instructions,
+skill discovery or an unnecessarily large history make that the intended result.
+Use native thread tools for an authorized fresh chat. When creation is only
+available to a running agent, resume this chat after restart solely to verify
+recovery and create the fresh chat with the agreed handoff. Never start a second
+writer before the first owner has stopped. A new-chat URL only prefills the
+composer; it does not submit the prompt.
 
-Resolve an optional thread/session identifier to an exact local UUID on the
-correct host. Use available thread tools to confirm its title and current state.
-Use `CODEX_THREAD_ID` only when the request means this chat. Do not select the
-most recent session or infer another chat from a title match. A remote host or
-WSL home is outside the helper's native Windows continuation route.
+Inspect the active host's restart and thread tools first. Prefer a native restart
+operation if its current contract covers the outcome. The Windows helper below
+supports the installed OpenAI.Codex Appx package. For another platform or package,
+verify its native route before acting; do not substitute a manual procedure and
+claim automatic restart is complete.
 
-## Inspect and prepare
+## Reach a safe checkpoint
 
-Use Python 3.11 or newer and the helper from this loaded skill directory:
+Finish the current coherent edit batch and its required checks. Preserve remaining
+work, accepted decisions, evidence, current ownership and the next authorized
+action with the existing issue or handoff owner. Reconcile active writers, child
+agents, commands, pending approvals and unsaved authored content. Tell the user
+that Desktop will close and which chat or next action will resume.
+
+Reuse existing restart authorization. A request to configure a plugin alone does
+not authorize interrupting unrelated work. Resolve any target chat to its exact
+local UUID using native thread tools; never select the most recent chat. Honor
+its model and permissions. A remote host or WSL chat is outside this helper's
+native Windows continuation route.
+
+## Inspect and start
+
+Run this loaded skill's helper with Python 3.11 or newer:
 
 ```powershell
 python -B -X utf8 '<skill>/scripts/restart_desktop.py' inspect
 ```
 
-Inspection reads the installed `OpenAI.Codex` Appx manifest, verifies its Desktop
-entrypoint and resources, and reports only the matching UI process identities.
-The app's root UI may be `Codex.exe` or `ChatGPT.exe`; the bundled
-`resources/codex.exe` is a CLI runner. A process name alone cannot distinguish
-them. Inspection does not close, launch, or message anything.
+It reads the installed Appx manifest's App entrypoint, verifies Desktop resources
+and reports matching PID/start-time identities. The root UI can be ChatGPT.exe or
+Codex.exe; resources/codex.exe is the CLI. A process name alone is insufficient.
 
-Prepare one command for an **external PowerShell terminal that survives Desktop
-exit**. Replace `<skill>` with the absolute loaded skill directory. Run it before
-the user uses the application's **Quit** action:
+Run the automatic operation from the agent's own tool:
 
 ```powershell
-python -B -X utf8 '<skill>/scripts/restart_desktop.py' wait-and-reopen --timeout-seconds 60
+python -B -X utf8 '<skill>/scripts/restart_desktop.py' restart --thread '<UUID>' --message '<authorized next action>'
 ```
 
-Add `--thread '<UUID>'` to reopen an existing chat. Quote actual PowerShell
-arguments with single quotes and double any embedded single quote. Do not launch
-the helper from a Desktop-owned terminal or tool process whose survival after
-Quit has not been established. If no surviving external terminal is available,
-give the user the command or use a fully manual restart.
+Omit --thread to restart without continuing work. A thread ID without --message
+uses a short continuation of that chat's authorized work. --codex-home defaults
+to the active native Windows Codex home. Quote real PowerShell arguments with
+single quotes, doubling embedded single quotes. Do not pass a shell command as
+the message. --delay-seconds defaults to 10, allowing the calling turn to finish;
+--timeout-seconds defaults to 60 for app exit.
 
-On Windows, closing a window can leave the application running in the tray.
-Use the application's Quit action. The helper never sends forceful termination
-or kills a process by name. It waits at most the selected timeout for all observed
-UI processes at the manifest path to exit, then launches that exact UI executable.
-It stops if the installation changes, new UI processes appear before exit, or the
-timeout expires. A timeout leaves the app alone and sends no continuation.
-After launch, it waits up to 30 seconds for a new UI process. Process observation
-does not establish UI readiness, thread navigation, or configuration receipt.
+The helper starts a hidden, finite process through local Windows WMI. It verifies
+that the worker is outside the parent's process job before reporting armed. This
+matters because merely detaching a console can leave a child in a job that dies
+with Desktop. No service, scheduled task or recurring process is installed.
 
-## Optional continuation
+The worker checks the original main process identity, verifies the target window
+and foreground state, then invokes the installed app's native Ctrl+Q Quit command
+once. It refuses held keys, an ambiguous target, a changed process or denied
+foreground activation. Closing a window is not used: Windows can keep the app
+running in the tray. There is no force kill or process-name kill.
 
-A thread ID alone requests navigation. When the user also requests that work
-continue after restart, prepare one short prompt stating the authorized next
-action, constraints, and unresolved checks. Show that prompt before execution.
-The restart request does not authorize deployments, messages to other people,
-additional evaluations, or wider task scope.
+After confirmed old-process exit, it launches the exact manifest executable with
+the selected CODEX_HOME and waits for a new process. Refusal before Quit input
+stops the operation. Uncertain input delivery never repeats the keys; the helper
+reopens only if it observes actual exit. A launch failure remains in the receipt
+for recovery. Process observation alone does not prove UI readiness or loaded settings.
 
-Add these arguments to the same external-terminal command:
+The command returns a receipt path and worker PID. Once armed, end the current
+turn; do not start more edits or launch another restart. If readiness is uncertain,
+inspect the returned receipt before any retry. The original worker may already
+exist. The exclusive worker claim prevents the same operation from quitting twice.
+
+## Continue and reconcile
+
+With a target chat, the worker calls its verified native CLI's queue --resume
+exactly once after relaunch. It preserves the chat's model and permissions. The
+message must stay within existing authority; restart adds no deployment, outreach
+or evaluation permission. The worker appends the receipt path for its resumed owner.
+
+Queue acceptance and resumed work are separate results. The CLI can exit zero
+while warning that resume failed. Failed or timed-out submission is unknown,
+because acceptance may already have happened. Never resend while the original
+submission remains unresolved; no visible turn is not proof of an empty queue.
+
+Read the receipt directly or run:
 
 ```powershell
---thread '<UUID>' --codex-home '<native-Windows-Codex-home>' --message '<reviewed continuation prompt>'
+python -B -X utf8 '<skill>/scripts/restart_desktop.py' status --receipt '<returned-path>'
 ```
 
-The helper verifies the package's native CLI supports `queue --resume` before
-waiting for Quit. After observing a new UI process, it calls
-`codex queue --thread <UUID> --message <prompt> --resume` exactly once using the
-selected `CODEX_HOME`. It preserves the thread's model and permissions. This
-submits an AI prompt and can start another turn; omit `--message` when only
-reopening was requested. Never enqueue a second copy through an app tool.
+Receipts live under <Codex home>/onepersonlabs/desktop-restarts. Each has one
+matching .claimed file. The resumed root owns reconciliation and removes both
+after confirming restart and continuation delivery, or resolving a failed
+operation. Preserve unresolved submission state and report it. On later restart
+maintenance, inspect inactive receipts older than seven days and remove only
+those whose operations are reconciled; reading them does not renew retention.
+These are temporary recovery records, not a task ledger or evidence archive.
 
-Queue acceptance and resumed work are different results. The CLI can exit zero
-while warning that resume failed. The helper therefore reports `accepted` with
-the CLI output and `resume_confirmed: false`. Any failed or timed-out submission
-is `unknown`, because acceptance may already have happened. It never retries.
-Keep the external terminal result and the reviewed prompt visible. On an unknown
-result or missing turn, reconcile the original submission and pending state using
-supported evidence before sending another prompt. No visible turn does not prove
-that a queued prompt is absent. If the original submission remains unresolved,
-report that uncertainty and do not resend. No persistent service, queue
-ledger, or recovery sidecar is created.
+Verify the intended loaded configuration or skill availability in the resumed
+context. If a fresh chat was chosen, pass the checkpoint and source/issue pointers
+through the native create-thread tool and confirm that work starts. Distinguish
+app restart, queue acceptance, message delivery and fresh-context loading. Do not
+close the owning work because package tests or mocked process checks passed.
 
-In the resumed chat, check the pending work and actual loaded capabilities before
-continuing. Reopening an existing chat does not prove that changed skills or
-startup instructions entered that chat's context. Use a fresh chat when the
-change requires new initial context. A received continuation establishes delivery;
-only completed work and its required checks establish task completion.
+## Mechanism sources
 
-## Evidence and limits
+The installed Windows app defines a native Quit role with Ctrl+Q in its application
+menu. Electron documents [Quit roles and accelerators](https://www.electronjs.org/docs/latest/tutorial/menus#roles).
+The adapter uses [SetForegroundWindow](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setforegroundwindow)
+and [SendInput](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput),
+then separately observes exit. Recheck the installed accelerator when app behavior changes.
 
-The [official Desktop command reference](https://developers.openai.com/codex/app/commands/)
-documents `codex://threads/<thread-id>` for navigation. The
-[official CLI reference](https://learn.chatgpt.com/docs/cli/reference) documents
-queueing to an existing session. Inspect installed `queue --help` for the local
-`--resume` behavior. The current Windows package's manifest and installed app
-source establish its executable and its window-close/tray-Quit distinction;
-recheck those sources if the installed behavior changes.
+Microsoft documents [job inheritance](https://learn.microsoft.com/en-us/windows/win32/procthread/job-objects)
+and [local WMI process creation](https://learn.microsoft.com/en-us/windows/win32/wmisdk/creating-processes-remotely).
+Local creation can remain in the interactive session while avoiding the caller's
+job; the worker verifies independence rather than assuming launch success proves it.
 
-Report inspection, helper launch, old-process exit, new-process observation,
-queue acceptance, delivery, and loaded capability separately. Source review and
-simulated process checks do not qualify an actual restart. If the native route
-cannot meet the request, state that limit and leave a concrete manual recovery
-path; do not add an app-server, unsupported IPC, SQLite writes, or a daemon.
+The [Desktop command reference](https://developers.openai.com/codex/app/commands/)
+documents existing-chat navigation and new-chat composer links. Inspect the
+installed queue --help for --resume behavior. Use supported native routes;
+do not mutate session databases or invent app IPC to manufacture continuation.

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Wait for a manual Windows Desktop Quit, reopen it, and optionally queue once."""
+"""Restart Windows Desktop from an independent helper, then optionally continue."""
 
 from __future__ import annotations
 
 import argparse
+import ctypes
+from ctypes import wintypes
 import json
 import math
 import os
@@ -13,6 +15,14 @@ import sys
 import time
 import uuid
 import xml.etree.ElementTree as ET
+
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+from windows_ui import QuitInputError, inspect_quit_target, request_quit
+
+DEFAULT_CONTINUATION = "Continue the authorized work from its last checkpoint. Verify the restarted app's loaded configuration before proceeding."
 
 
 DISCOVER = r"""
@@ -122,8 +132,6 @@ def wait_for_start(target: dict, inspect=inspect_desktop,
 
 
 def prepare_continuation(target: dict, args: argparse.Namespace) -> Path | None:
-    if args.codex_home and not args.message:
-        raise ValueError("--codex-home requires --message")
     if not args.message:
         return None
     if not args.thread or not args.codex_home:
@@ -141,23 +149,151 @@ def prepare_continuation(target: dict, args: argparse.Namespace) -> Path | None:
     return cli
 
 
-def restart(args: argparse.Namespace, inspect=inspect_desktop, launch=subprocess.Popen) -> dict:
-    target = inspect()
+def restart(args: argparse.Namespace, inspect=inspect_desktop, launch=subprocess.Popen,
+            quit_app=None, report=lambda **values: None, target=None) -> dict:
+    if target:
+        # Renderer processes can change during the short arming delay. The original
+        # main-window identity must still exist; refresh its dependent process set.
+        selected = target["quit_window"]
+        current = inspect()
+        if (current["executable"] != target["executable"]
+                or (selected["pid"], selected["started"]) not in identities(current)):
+            raise RuntimeError("Desktop changed after preparation; no Quit input was sent")
+        target = current
+    else:
+        target = inspect()
     cli = prepare_continuation(target, args)
-    print(json.dumps({"state": "waiting_for_manual_quit", "executable": target["executable"],
-                      "processes": target["processes"], "timeout_seconds": args.timeout_seconds}), flush=True)
+    report(state="requesting_quit")
+    try:
+        quit_result = (quit_app or request_quit)(target)
+    except QuitInputError as error:
+        # Ctrl+Q may already have reached the app before input delivery became
+        # uncertain. Never send it again; actual exit decides whether to reopen.
+        quit_result = error.details
+    report(state="waiting_for_exit", quit_result=quit_result)
     wait_for_exit(target, args.timeout_seconds, inspect=inspect)
+    report(state="old_processes_exited")
     command = [target["executable"]]
     if args.thread:
         command.append(f"codex://threads/{args.thread}")
-    launch(command, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    environment = os.environ.copy()
+    if args.codex_home:
+        environment["CODEX_HOME"] = str(Path(args.codex_home).resolve())
+    launch(command, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+           stderr=subprocess.DEVNULL, env=environment)
     wait_for_start(target, inspect=inspect)
     # A process launch is observable; UI readiness and loaded configuration are not.
     result = {"state": "new_process_observed", "executable": target["executable"],
-              "thread": args.thread, "ui_ready": False}
+              "thread": args.thread, "ui_ready": False, "quit_result": quit_result}
     if cli:
-        result["continuation"] = queue_once(cli, Path(args.codex_home).resolve(), args.thread, args.message)
+        report(state="submitting_continuation")
+        message = args.message
+        if getattr(args, "receipt", None):
+            message += f"\n\nRestart receipt: {args.receipt}. Reconcile the result and delete this receipt and its matching .claimed file once no recovery remains."
+        result["continuation"] = queue_once(cli, Path(args.codex_home).resolve(), args.thread, message)
     return result
+
+
+LAUNCH_HELPER = r"""
+$ErrorActionPreference = 'Stop'
+$spec = [Console]::In.ReadToEnd() | ConvertFrom-Json
+$startup = New-CimInstance -ClassName Win32_ProcessStartup -ClientOnly -Property @{
+    ShowWindow = [uint16]0; CreateFlags = [uint32]16777216
+}
+$result = Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{
+    CommandLine = $spec.commandLine; CurrentDirectory = $spec.cwd; ProcessStartupInformation = $startup
+}
+$result | Select-Object ReturnValue,ProcessId | ConvertTo-Json -Compress
+"""
+
+
+def independent_process() -> bool:
+    kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel.GetCurrentProcess.restype = wintypes.HANDLE
+    kernel.IsProcessInJob.argtypes = [wintypes.HANDLE, wintypes.HANDLE, ctypes.POINTER(wintypes.BOOL)]
+    inside = wintypes.BOOL()
+    if not kernel.IsProcessInJob(kernel.GetCurrentProcess(), None, ctypes.byref(inside)):
+        raise ctypes.WinError(ctypes.get_last_error())
+    return not inside.value
+
+
+def write_receipt(path: Path, record: dict) -> None:
+    temporary = path.with_suffix(".writing")
+    with temporary.open("w", encoding="utf-8") as stream:
+        json.dump(record, stream, indent=2)
+        stream.flush()
+        os.fsync(stream.fileno())
+    os.replace(temporary, path)
+
+
+def worker(receipt: Path) -> dict:
+    # An exclusive claim prevents a repeated internal worker invocation from quitting twice.
+    claim = receipt.with_suffix(".claimed")
+    with claim.open("x", encoding="utf-8") as stream:
+        stream.write(str(os.getpid()))
+    record = json.loads(receipt.read_text(encoding="utf-8"))
+
+    def report(**values):
+        record.update(values, updated_at=time.time())
+        write_receipt(receipt, record)
+
+    try:
+        if not independent_process():
+            raise RuntimeError("Restart helper remains in a parent job; Desktop was not closed")
+        args = argparse.Namespace(**record["request"])
+        args.receipt = str(receipt)
+        report(state="armed", helper_pid=os.getpid(), independent=True)
+        delay = record["not_before"] - time.time()
+        if delay > 0:
+            time.sleep(delay)
+        if time.time() > record["not_before"] + 30:
+            raise RuntimeError("Restart launch expired; Desktop was not closed")
+        result = restart(args, report=report, target=record["target"])
+        report(state="finished", result=result)
+        return result
+    except Exception as error:
+        report(state="failed", error=str(error), details=getattr(error, "details", None))
+        raise
+
+
+def arm_restart(args: argparse.Namespace, inspect=inspect_desktop) -> dict:
+    target = inspect()
+    if not identities(target):
+        raise RuntimeError("Desktop is not running")
+    target["quit_window"] = inspect_quit_target(target)
+    prepare_continuation(target, args)
+    directory = Path(args.codex_home) / "onepersonlabs" / "desktop-restarts"
+    directory.mkdir(parents=True, exist_ok=True)
+    receipt = directory / f"{uuid.uuid4()}.json"
+    record = {"state": "prepared", "created_at": time.time(),
+              "not_before": time.time() + args.delay_seconds,
+              "target": target, "request": vars(args),
+              "disposal": "Remove this receipt and matching claim after the resumed owner reconciles the result. Preserve unresolved continuation state."}
+    write_receipt(receipt, record)
+    command = subprocess.list2cmdline([sys.executable, "-B", str(Path(__file__).resolve()),
+                                      "worker", "--receipt", str(receipt)])
+    try:
+        result = subprocess.run(
+            ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", LAUNCH_HELPER],
+            input=json.dumps({"commandLine": command, "cwd": str(SCRIPT_DIR)}),
+            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=20,
+            creationflags=subprocess.CREATE_NO_WINDOW, check=True)
+        started = json.loads(result.stdout)
+        if started["ReturnValue"] != 0:
+            raise RuntimeError(f"Windows helper launch failed: {started['ReturnValue']}")
+        deadline = time.monotonic() + 5
+        while time.monotonic() < deadline:
+            current = json.loads(receipt.read_text(encoding="utf-8"))
+            if current["state"] == "failed":
+                raise RuntimeError(current["error"])
+            if current.get("independent"):
+                return {"state": "armed", "helper_pid": started["ProcessId"],
+                        "receipt": str(receipt), "not_before": record["not_before"]}
+            time.sleep(0.1)
+        raise RuntimeError("Helper readiness is uncertain; inspect the receipt instead of launching another")
+    except Exception as error:
+        # A process may already exist. Do not overwrite its state or retry the launch.
+        raise RuntimeError(f"{error}; restart receipt: {receipt}") from error
 
 
 def positive_timeout(value: str) -> float:
@@ -176,19 +312,30 @@ def thread_id(value: str) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("mode", choices=["inspect", "wait-and-reopen"])
+    parser.add_argument("mode", choices=["inspect", "restart", "worker", "status"])
     parser.add_argument("--thread", type=thread_id)
     parser.add_argument("--message", help="explicitly authorized continuation; queued once after launch")
     parser.add_argument("--codex-home", help="native Windows Codex home owning the destination thread")
     parser.add_argument("--timeout-seconds", type=positive_timeout, default=60)
+    parser.add_argument("--delay-seconds", type=positive_timeout, default=10)
+    parser.add_argument("--receipt", type=Path, help="existing restart receipt for status/internal worker")
     args = parser.parse_args()
     try:
         if args.mode == "inspect":
             if args.message or args.thread or args.codex_home:
                 raise ValueError("inspect does not accept continuation arguments")
             result = inspect_desktop()
+        elif args.mode in {"worker", "status"}:
+            if not args.receipt:
+                raise ValueError("--receipt is required")
+            result = worker(args.receipt) if args.mode == "worker" else json.loads(args.receipt.read_text(encoding="utf-8"))
         else:
-            result = restart(args)
+            args.codex_home = str(Path(args.codex_home or os.environ.get("CODEX_HOME", str(Path.home() / ".codex"))).resolve(strict=True))
+            if args.thread and not args.message:
+                args.message = DEFAULT_CONTINUATION
+            # The worker receives JSON-only arguments and never a shell command.
+            args.receipt = None
+            result = arm_restart(args)
         print(json.dumps(result, indent=2))
         return 0 if result.get("continuation", {}).get("state", "accepted") == "accepted" else 2
     except (OSError, ValueError, RuntimeError, ET.ParseError, subprocess.SubprocessError) as error:
