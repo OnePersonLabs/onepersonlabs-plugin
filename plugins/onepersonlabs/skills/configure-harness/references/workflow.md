@@ -34,6 +34,14 @@ Eliminate redundant routes before writing new routing text. A broad global rule 
 
 For instruction routing, keep a compact always-loaded core in the managed section. Put one category's optional detail in its own policy file, then link to a procedural skill or reference only when that category is active. Each pointer must name a real target and a clear condition for reading it. Check that the core, category, and procedure route resolves without pointing back to an earlier layer. Keep a constraint inline until fresh-context tests establish that its conditional route works. Test root routing, documentation-triggered retrieval, and subagent inheritance or retrieval as separate events; success in one does not establish the others.
 
+Keep reusable OnePersonLabs guidance in its maintained plugin owner. For subagent
+configuration and execution decisions, read [subagent guidance](subagents.md).
+A home-specific policy should contain only that home's actual additional choices;
+do not copy the shared policy into a second maintained file. Before retiring a
+temporary policy, reconcile its useful rules, consumers and recovery obligations.
+Package checks verify links and structure; routing remains unmeasured without an
+authorized behavioral evaluation.
+
 ## Prepared changes
 
 Keep candidate files separate from live targets. The `prepare` input is a JSON list of objects with `target` and `candidate` paths. Check that each candidate is complete, that its target is intended, and that the preview includes the full change. A section headed `Harness Policies (managed by $onepersonlabs:configure-harness)` has exactly one owner in the global file. On first setup, its absence is normal; review the insertion point and create exactly one section. Duplicate headings or ambiguous ownership are stop conditions. For global instruction updates outside that section, `$onepersonlabs:update-instructions` replaces the full file after one approval and saves the prior contents byte for byte in a dated backup; it does not merge personal rules.

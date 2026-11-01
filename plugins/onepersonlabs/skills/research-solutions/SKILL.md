@@ -47,6 +47,10 @@ mandatory candidate count, panel, scorecard or fixed exploration quota.
 
 ## Verify the assembled path
 
+When the decision concerns a subagent harness or execution arrangement, read
+[subagent guidance](../configure-harness/references/subagents.md). Verify the
+active model, effort, context and role controls before proposing another runtime.
+
 Inspect the boundaries that could invalidate the recommendation: supported APIs,
 authentication and billing, state ownership, platform/toolchain support, licensing,
 failure detection, cancellation and recovery. For a multi-part solution, trace the

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Restart Codex Desktop"
+  short_description: "Prepare a safe Desktop restart and continuation"
+  default_prompt: "Use $restart-codex-desktop to reload Codex Desktop and prepare any requested continuation."
+policy:
+  allow_implicit_invocation: true

@@ -15,7 +15,6 @@ specialized tool.
 - **[$onepersonlabs:optimize-workflow](../skills/optimize-workflow/SKILL.md)** -- Discoverable. Respond to the first concern about workflow speed, cost, or rework by accounting for effort and improving the next work batch. Result: an evidence-based bottleneck finding and revised execution sequence that preserves scope and required checks. A neutral ETA question does not require an extensive audit; controlled performance comparisons use `$onepersonlabs:optimize`.
 - **[$onepersonlabs:write](../skills/write/SKILL.md)** -- Discoverable. Write or revise text with universal drafting rules and automatically selected guidance for concise replies, technical precision, documentation, and editing. Documentation uses the full source-grounded reader workflow.
 - **[$onepersonlabs:debug](../skills/debug/SKILL.md)** -- Explicit. Diagnose a concrete failure and, when requested, verify a causal fix. Result: a supported cause, counterevidence, and original-scenario verification. A symptom or passing test alone does not establish the cause.
-- **[$onepersonlabs:test-driven-development](../skills/test-driven-development/SKILL.md)** -- Explicit. Use a red-green-refactor loop for an observable behavior. Result: a meaningful test-first change with honest reporting of whether tests came before the implementation. It is optional and follows the repository's test policy.
 - **[$onepersonlabs:adversarial-review](../skills/adversarial-review/SKILL.md)** -- Explicit. Audit a plan, architecture, instruction system, or agent workflow for concrete failure paths. Result: prioritized findings tied to evidence and a plausible failure scenario. Routine code diffs use the native review path.
 - **[$onepersonlabs:agent-instructions](../skills/agent-instructions/SKILL.md)** -- Discoverable. Author, consolidate, audit, or score agent instructions and skill packages. Result: the requested instruction artifact or a scoped review; a score is not a runtime behavior test.
 - **[$onepersonlabs:handoff](../skills/handoff/SKILL.md)** -- Explicit. Prepare a compact continuation document for a fresh agent. Result: a temporary handoff with current ownership, permission boundaries, decisions, evidence, and recovery state. It does not start a new session.
@@ -43,6 +42,7 @@ specialized tool.
 ## Configure Codex and diagnose integrations
 
 - **[$onepersonlabs:configure-harness](../skills/configure-harness/SKILL.md)** -- Discoverable. Inventory one Codex home, prepare a reversible capability/configuration change, or diagnose host input. Result: a sourced inventory and reviewed change plan, with an application receipt if applied. Requires the selected Codex home and repository; availability does not prove a tool is installed, enabled, authenticated, or callable.
+- **[$onepersonlabs:restart-codex-desktop](../skills/restart-codex-desktop/SKILL.md)** -- Discoverable. Prepare a Desktop reload after plugin or configuration changes, optionally reopening an existing chat and submitting one authorized continuation. The Windows helper waits in an external terminal for the user to Quit, then starts the verified app executable. Queue acceptance does not prove resumed work; other platforms use a verified native or manual route.
 - **[$onepersonlabs:codex-hook-debug](../skills/codex-hook-debug/SKILL.md)** -- Discoverable. Diagnose hook discovery, trust, execution, output, or continuation failures across user, repository, and plugin layers. Result: a verified cause and repair in the owning layer. Requires the triggering event and active Codex environment; Git and React hooks are out of scope.
 - **[$onepersonlabs:update-instructions](../skills/update-instructions/SKILL.md)** -- Explicit. Check and replace outdated global OnePersonLabs instructions. Result: a verified installed baseline and a dated byte-exact backup when replacement occurs. Replacement discards custom rules rather than merging them; established authorization applies, or the skill asks once.
 - **[$onepersonlabs:camofox-browser](../skills/camofox-browser/SKILL.md)** -- Discoverable. Control an existing Jo CamoFox browser through its REST API. Result: navigation or page interaction using current snapshots and element references. Requires the installed, authenticated Jo service and its owned launcher; Windows/WSL visible mode needs the matching browser binary and display.
@@ -58,7 +58,7 @@ specialized tool.
 
 The explicit skills are `adversarial-review`, `debug`, `handoff`,
 `session-history-rebuild`, `slop-buster`,
-`test-driven-development`, `unslop`, and `update-instructions`. Name them in
+`unslop` and `update-instructions`. Name them in
 the request.
 
 All other listed skills are marked discoverable in their package metadata.

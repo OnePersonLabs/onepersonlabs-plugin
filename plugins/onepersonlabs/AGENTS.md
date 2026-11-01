@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 71 -->
+<!-- onepersonlabs-instructions-version: 72 -->
 
 # Personal engineering contract
 
@@ -8,6 +8,9 @@ Understand the intended outcome, the relationships that make it work, and its
 constraints before choosing an approach. Preserve distinctions that change the
 capability. Check important interpretations against concrete cases and source
 evidence; distinguish facts, inference, and unknowns. Investigate proportionately.
+Challenge consequential weak assumptions in the user's request and your own
+proposal. Explain the evidence and the effect on the intended outcome before
+building on an assumption that could invalidate substantial work.
 When revising an agreed plan, account for substantive omissions instead of
 silently narrowing the outcome. Finish connected behavior through its consumer;
 isolated checks do not establish the complete outcome.
@@ -39,10 +42,16 @@ When fixes accumulate compensating machinery, reassess the connected design.
 Correct the faulty premise at its owner. Share domain rules across consumers;
 use narrow adapters for real platform differences. Add abstractions for established
 needs, not speculation.
+Let canonical capability contracts narrow, widen or change shape as their
+responsibilities change. Keep authority explicit at its owner; query parameters
+and options must not quietly grant new authority. Avoid tiny per-caller interfaces
+that conceal one shared capability or force its consumers to rebuild domain rules.
 Treat cleanup and simplification as part of completing work. As work progresses,
 actively identify what has become unnecessary, redundant, or more complicated
 than its purpose requires. Remove or consolidate it and update affected
 dependents. Do not wait for a separate cleanup request.
+Complete necessary cohesive refactors; avoiding churn does not justify leaving
+the requested behavior dependent on a faulty responsibility or contract.
 
 Keep temporary work temporary. Before persisting generated evidence, receipts,
 diagnostics, or backups, identify the consumer, validity conditions, disposal
@@ -87,7 +96,7 @@ authorization from tool or environment capability.
 ## Verification and experiments
 
 Choose work batches around coherent responsibilities and stable interfaces.
-Before a structural migration, identify the complete affected consumer set and
+Before a structural migration, map the complete affected consumers and failure paths, then
 apply mechanically determined changes together. Prefer supported programmatic
 transformations when they reduce repetitive work and omission risk.
 
@@ -132,9 +141,9 @@ Try cheap, reversible experiments within scope when they can change a decision.
 Target the assumption most likely to invalidate the approach. State hypothesis,
 contrary evidence, oracle, and stop condition. Assess benefit alongside time, AI
 usage, repairs, and maintenance; report unknowns honestly. Use
-$onepersonlabs:solve-novel-software for difficult feasibility or oracle design. Debugging and
-TDD remain explicit methods through $onepersonlabs:debug and $onepersonlabs:test-driven-development;
-neither imposes universal scaffolding.
+$onepersonlabs:solve-novel-software for difficult feasibility or oracle design.
+Debugging and test-driven development remain explicit methods; neither imposes
+universal scaffolding.
 
 ## Delegation and review
 
@@ -148,11 +157,30 @@ Reuse workers for related work and confirm that assigned work actually started.
 Escalate to Astra only for a concrete unresolved decision that stronger reasoning
 may change, with a bounded assignment.
 
+Choose each worker's model and reasoning effort for its task, including handoff,
+reading, correction and integration cost. Keep the inexpensive configured fallback
+for suitable work; the parent's model alone is not a reason to select Astra.
+Choose context separately: preserve relevant history for continuing coupled work,
+and use a complete fresh brief for bounded work or independent review. A fork is
+a starting snapshot; communicate later decisions before dependent work continues.
+Inspect the active tool contract, role overrides and observed runtime rather than
+assuming that a requested model or inherited history determines model selection.
+
+When configuring subagents or diagnosing model, context, cache, cost or coordination
+problems, read [the maintained subagent guidance](skills/configure-harness/references/subagents.md)
+from the installed OnePersonLabs plugin. Resolve that relative path against the
+plugin root when these instructions are copied to a user-level file. Cache
+eligibility does not prove a hit or lower subscription usage. Keep the root
+responsible for integration and the complete outcome, with or without optional
+project coordination or meaning tools.
+
 The root integrates and verifies. Independent initial reviews receive requirements,
 baseline, actual change, and facts without the builder's verdict. Start after writers
 stop changing that scope; identify the reviewed commit or diff. Independent review
 and verification may overlap against that stable scope. Reuse the reviewer
 for repairs and invalidated evidence. Review correctness and human comprehension.
+Independently review substantial plans before dependent implementation, then
+review the integrated implementation against the accepted requirements and plan.
 Do not substitute component reviews for integrated verification. Reconcile uncertain
 launches, stop old writers before transferring ownership, and account for unfinished
 descendants before handoff.

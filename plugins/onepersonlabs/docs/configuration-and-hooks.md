@@ -41,10 +41,21 @@ matches. `fix` explicitly reconciles it and verifies the result; it does not
 perform an install or load the changed settings into an already-running task.
 
 The managed baseline is defined in
-[`config.defaults.toml`](../config.defaults.toml). It covers the
-`apply_patch_preserve_line_endings` feature, enables agents, and sets the
-default subagent model and reasoning effort to Luna/high when those values are
-absent. A user's explicit subagent model or effort is preserved.
+[`config.defaults.toml`](../config.defaults.toml). It enables agents and the
+`apply_patch_preserve_line_endings` feature. Missing child model and reasoning
+preferences receive Luna/high. The checker preserves an explicit child model or
+effort independently, so a custom model can retain the default effort and vice
+versa. It does not change the root model or reasoning preference.
+
+Choose both model and effort for the worker's task. Context is a separate choice:
+relevant parent history can help a continuing collaborator, while a fresh brief
+can suit bounded work or independent review. The current spawn tool permits
+explicit model/effort overrides only for fresh children. A selected role can
+override model settings after task choices and child defaults. Check the active
+tool and the child's own runtime metadata before claiming what ran; written
+settings and a successful spawn do not establish the selected runtime model.
+See [subagent guidance](../skills/configure-harness/references/subagents.md) for
+the supported precedence, context and cost limits.
 
 The package ships two Codex agent profiles for Slop Buster:
 
@@ -65,12 +76,12 @@ that changed afterward and reports a conflict for inspection.
 
 ## Know which copy changed
 
-| State | What it establishes |
-| --- | --- |
-| Written and checked | The source checkout contains the change and its stated verification. |
-| Published | The commits are available remotely; an open PR still awaits landing. |
-| Landed | The accepted branch contains the change, with required checks and review complete. |
-| Installed | The selected Codex home has a refreshed plugin copy and its reported trust state. |
+| State                  | What it establishes                                                                               |
+| ---------------------- | ------------------------------------------------------------------------------------------------- |
+| Written and checked    | The source checkout contains the change and its stated verification.                              |
+| Published              | The commits are available remotely; an open PR still awaits landing.                              |
+| Landed                 | The accepted branch contains the change, with required checks and review complete.                |
+| Installed              | The selected Codex home has a refreshed plugin copy and its reported trust state.                 |
 | Loaded in a fresh task | That new task can discover the installed components; earlier tasks retain already-loaded context. |
 
 Each transition needs its own evidence. A source edit does not update an installed
@@ -113,13 +124,13 @@ The plugin's [hook definitions](../hooks/hooks.json) define these event
 behaviors. Codex must have the plugin enabled and its current hook definitions
 trusted for the hooks to run.
 
-| Hook family | What it does | What it does not establish |
-| --- | --- | --- |
-| Session start and user prompt | Reports managed configuration or instruction notices; checks repository compatibility and handles its pending acknowledgments. | It does not silently repair settings or replace instructions. |
-| Prompt, pre-tool, and stop lifecycle | Slop Buster can add advisory steering and persist findings for later review. | It does not force an apology, stop continuation, or require a Boolean rating. |
-| Tool and task lifecycle | The task watchdog records local activity events for later status or optional notification. | Recording activity does not start the notification process or prove that a stalled task is complete. |
-| Human-collaboration events | Reads relevant local collaboration state and supplies pending context when available. | It does not enroll a session, start the service, or submit a human contribution. |
-| Bash pre-tool use | Applies a conservative check to common destructive shell-command shapes. | It is not a complete shell parser or general command safety system. |
+| Hook family                          | What it does                                                                                                                   | What it does not establish                                                                           |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| Session start and user prompt        | Reports managed configuration or instruction notices; checks repository compatibility and handles its pending acknowledgments. | It does not silently repair settings or replace instructions.                                        |
+| Prompt, pre-tool, and stop lifecycle | Slop Buster can add advisory steering and persist findings for later review.                                                   | It does not force an apology, stop continuation, or require a Boolean rating.                        |
+| Tool and task lifecycle              | The task watchdog records local activity events for later status or optional notification.                                     | Recording activity does not start the notification process or prove that a stalled task is complete. |
+| Human-collaboration events           | Reads relevant local collaboration state and supplies pending context when available.                                          | It does not enroll a session, start the service, or submit a human contribution.                     |
+| Bash pre-tool use                    | Applies a conservative check to common destructive shell-command shapes.                                                       | It is not a complete shell parser or general command safety system.                                  |
 
 The [Bash guard](../scripts/codex-dangerous-shell-gate.py) recognizes certain
 force-push forms, `git reset --hard`, recursive removal aimed at root, home,

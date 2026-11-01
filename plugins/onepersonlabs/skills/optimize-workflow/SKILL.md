@@ -29,6 +29,13 @@ Finish this step with a supported account of the main cost and its uncertainty.
 
 ## Find the avoidable cost
 
+When worker selection, context transfer, cache assumptions, duplicate investigation
+or repeated worker corrections contribute to the cost, read
+[subagent guidance](../configure-harness/references/subagents.md). Compare complete
+successful work, including parent input, briefs, child input and output, review,
+repairs and integration. Select model and effort for the next task; choose context
+separately. Neither the parent's model nor a cache percentage selects the winner.
+
 Inspect the remaining dependencies and reuse established decisions and valid
 evidence. Identify whether repeated setup, partial migrations, changing contracts,
 serial coordination, or redundant verification is delaying completion. Distinguish

@@ -1,7 +1,10 @@
 # OnePersonLabs-owned feature and optional child defaults. Root model preferences are personal.
 # Child preferences are filled only when absent; explicit child preferences remain user-owned.
+# Model and effort fall back independently. Roles and task selections can override them.
 [features]
 apply_patch_preserve_line_endings = true
 
 [agents]
 enabled = true
+default_subagent_model = "gpt-6-luna"
+default_subagent_reasoning_effort = "high"

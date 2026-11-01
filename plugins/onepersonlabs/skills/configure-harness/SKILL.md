@@ -1,6 +1,6 @@
 ---
 name: configure-harness
-description: Configure or diagnose a Codex harness by inventorying capabilities, preparing reversible configuration changes, and optionally measuring routing or profile receipt. Use for personal harness setup, profile probes, or host input failures.
+description: Configure or diagnose a Codex harness by inventorying capabilities, preparing reversible configuration changes, and optionally measuring routing or profile receipt. Use for personal harness setup, subagent model or context diagnosis, profile probes, or host input failures.
 ---
 
 # Configure Harness
@@ -23,6 +23,11 @@ Group real user needs into small capability categories. For each category, show 
 Compare the current route and the strongest alternative before adding a capability. Prefer disabling a redundant route before adding another overlapping instruction. Choose the narrowest supported scope: per-skill invocation policy when that owns activation; plugin enablement when the whole plugin is at issue; task-specific instructions where no supported control exists. Never patch installed caches as configuration. An inventory or recommendation alone does not authorize installation, external account creation, payment, or changes to the user's live profile.
 
 ## Optional measurement and diagnosis
+
+For subagent model, effort, context, cache, cost or coordination decisions, read
+[subagent guidance](references/subagents.md). Inspect requested configuration and
+observed runtime separately. Use existing source and session evidence before a
+live probe; report unresolved selection rather than repeatedly launching workers.
 
 Use deterministic inventory and existing evidence first. Model evaluation is
 optional and requires an explicit finite budget and authorization for AI usage.
