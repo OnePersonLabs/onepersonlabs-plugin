@@ -108,13 +108,15 @@ when the particular task warrants them. Parent history does not itself select
 the parent's model.
 [Released child configuration](https://github.com/openai/codex/blob/rust-v0.166.0/codex-rs/core/src/agent/child_config.rs#L51-L85)
 
-The Desktop alpha has the same child-configuration implementation. Existing live
-Desktop evidence nevertheless includes child selections unexplained by on-disk
-defaults and the apparent request. Source precedence does not resolve that
-runtime discrepancy. Inspect the active home, loaded configuration, selected
-role and a newly created child's own turn metadata before claiming actual model
-selection. Do not mistake inherited parent turn records for the child's own
-selected model. Report unresolved runtime selection explicitly.
+The Desktop alpha has the same child-configuration implementation. Before reload,
+live Desktop evidence included child selections unexplained by on-disk defaults
+and the apparent request. After a verified Desktop restart on 2026-11-02, one
+authorized fresh default-role child with no model or effort override recorded
+Luna/high in its own turn metadata, matching the configured fallback. That check
+does not establish full-history fork or role-override behavior. Inspect the active
+home, loaded configuration, selected role and a new child's own turn metadata
+when actual selection matters. Do not mistake inherited parent turn records for
+the child's selected model. Report unresolved runtime selection explicitly.
 [Exact Desktop-version source](https://github.com/openai/codex/blob/rust-v0.166.0-alpha.5.1/codex-rs/core/src/agent/child_config.rs#L103-L121)
 
 If the observed model is suitable, accept that choice explicitly for the task.

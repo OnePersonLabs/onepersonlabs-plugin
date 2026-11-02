@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Restart Windows Desktop from an independent helper, then optionally continue."""
+"""Arm an independent Windows Desktop exit watcher, then reopen and optionally continue."""
 
 from __future__ import annotations
 
@@ -18,9 +18,6 @@ import xml.etree.ElementTree as ET
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-if str(SCRIPT_DIR) not in sys.path:
-    sys.path.insert(0, str(SCRIPT_DIR))
-from windows_ui import QuitInputError, inspect_quit_target, request_quit
 
 DEFAULT_CONTINUATION = "Continue the authorized work from its last checkpoint. Verify the restarted app's loaded configuration before proceeding."
 
@@ -35,8 +32,21 @@ $package = $packages[0]
 $apps = @($manifest.SelectNodes('/*[local-name()="Package"]/*[local-name()="Applications"]/*[local-name()="Application"][@Id="App"]'))
 if ($apps.Count -ne 1) { throw 'Expected one manifest App entrypoint' }
 $exe = [IO.Path]::GetFullPath((Join-Path $package.InstallLocation $apps[0].Executable))
-$processes = @(Get-Process | Where-Object { $_.Path -and $_.Path -eq $exe } | ForEach-Object {
-    @{ pid = $_.Id; started = $_.StartTime.ToUniversalTime().Ticks.ToString() }
+$processes = @(Get-CimInstance Win32_Process | Where-Object { $_.ExecutablePath -eq $exe } | ForEach-Object {
+    $processId = $_.ProcessId
+    $native = Get-Process -Id $processId -ErrorAction SilentlyContinue
+    if (-not $native) { return }
+    try {
+        if (-not $_.CommandLine) { throw 'Cannot identify Desktop process role' }
+        @{ pid = $_.ProcessId; started = $native.StartTime.ToUniversalTime().Ticks.ToString()
+       parent_pid = $_.ParentProcessId
+       kind = $(if ($_.CommandLine -match '(?:^|\s)--type(?:=|\s)') { 'child' } else { 'main' })
+       hwnd = $native.MainWindowHandle.ToInt64(); title = $native.MainWindowTitle }
+    } catch {
+        # A renderer or the original main can exit while this read-only snapshot is built.
+        if (-not (Get-Process -Id $processId -ErrorAction SilentlyContinue)) { return }
+        throw
+    }
 })
 @{ root = $package.InstallLocation; processes = $processes } | ConvertTo-Json -Depth 4 -Compress
 """
@@ -73,24 +83,39 @@ def inspect_desktop() -> dict:
     return state
 
 
-def identities(state: dict) -> set[tuple[int, str]]:
-    return {(int(item["pid"]), str(item["started"])) for item in state["processes"]}
+def identity(process: dict) -> tuple[int, str]:
+    return int(process["pid"]), str(process["started"])
+
+
+def main_processes(state: dict) -> list[dict]:
+    # Electron renderer/utility turnover is normal. Only its browser/main process
+    # owns the app lifetime; command-line type and exact-image parents distinguish it.
+    processes = state["processes"]
+    pids = {int(item["pid"]) for item in processes}
+    mains = [item for item in processes if item["kind"] == "main"]
+    if any(int(item["parent_pid"]) in pids for item in mains):
+        raise RuntimeError("ambiguous Desktop main-process ancestry; reconcile before restarting")
+    return mains
+
+
+def check_installation(target: dict, current: dict) -> None:
+    if current["executable"] != target["executable"] or current["root"] != target["root"]:
+        raise RuntimeError("installed Desktop changed; no launch or continuation was attempted")
+
+
+def original_main_running(target: dict, current: dict) -> bool:
+    check_installation(target, current)
+    mains = main_processes(current)
+    if any(identity(item) != identity(target["main_process"]) for item in mains):
+        raise RuntimeError("new Desktop main process appeared; reconcile a possible external restart")
+    return bool(mains)
 
 
 def wait_for_exit(target: dict, timeout: float, inspect=inspect_desktop,
                   clock=time.monotonic, sleep=time.sleep) -> None:
-    original = identities(target)
-    if not original:
-        raise RuntimeError("Desktop is not running; this restart helper will not launch an unobserved target")
     deadline = clock() + timeout
     while True:
-        current = inspect()
-        if current["executable"] != target["executable"]:
-            raise RuntimeError("installed Desktop changed while waiting; inspect again before reopening")
-        running = identities(current)
-        if running - original:
-            raise RuntimeError("new Desktop processes appeared; reconcile a possible external restart")
-        if not running:
+        if not original_main_running(target, inspect()):
             return
         if clock() >= deadline:
             raise TimeoutError("Desktop did not exit before the timeout; no launch or continuation was attempted")
@@ -118,16 +143,18 @@ def queue_once(cli: Path, home: Path, thread: str, message: str) -> dict:
 
 
 def wait_for_start(target: dict, inspect=inspect_desktop,
-                   clock=time.monotonic, sleep=time.sleep) -> None:
+                   clock=time.monotonic, sleep=time.sleep) -> dict:
     deadline = clock() + 30
     while True:
         current = inspect()
-        if current["executable"] != target["executable"]:
-            raise RuntimeError("Desktop installation changed during launch; no continuation was attempted")
-        if identities(current):
-            return
+        check_installation(target, current)
+        mains = main_processes(current)
+        if len(mains) > 1 or any(identity(item) == identity(target["main_process"]) for item in mains):
+            raise RuntimeError("ambiguous Desktop launch; no continuation was attempted")
+        if mains:
+            return mains[0]
         if clock() >= deadline:
-            raise TimeoutError("no new Desktop process was observed; no continuation was attempted")
+            raise TimeoutError("no new Desktop main process was observed; no continuation was attempted")
         sleep(0.5)
 
 
@@ -149,44 +176,32 @@ def prepare_continuation(target: dict, args: argparse.Namespace) -> Path | None:
     return cli
 
 
-def restart(args: argparse.Namespace, inspect=inspect_desktop, launch=subprocess.Popen,
-            quit_app=None, report=lambda **values: None, target=None) -> dict:
-    if target:
-        # Renderer processes can change during the short arming delay. The original
-        # main-window identity must still exist; refresh its dependent process set.
-        selected = target["quit_window"]
-        current = inspect()
-        if (current["executable"] != target["executable"]
-                or (selected["pid"], selected["started"]) not in identities(current)):
-            raise RuntimeError("Desktop changed after preparation; no Quit input was sent")
-        target = current
-    else:
-        target = inspect()
+def watch_and_relaunch(args: argparse.Namespace, target: dict, inspect=inspect_desktop,
+                       launch=subprocess.Popen, report=lambda **values: None) -> dict:
     cli = prepare_continuation(target, args)
-    report(state="requesting_quit")
-    try:
-        quit_result = (quit_app or request_quit)(target)
-    except QuitInputError as error:
-        # Ctrl+Q may already have reached the app before input delivery became
-        # uncertain. Never send it again; actual exit decides whether to reopen.
-        quit_result = error.details
-    report(state="waiting_for_exit", quit_result=quit_result)
+    # Readiness precedes the agent's GUI Quit. The app may already be gone when
+    # the first observation runs, so never require it to remain alive afterward.
+    report(state="waiting_for_exit", exit_deadline=time.time() + args.timeout_seconds)
     wait_for_exit(target, args.timeout_seconds, inspect=inspect)
-    report(state="old_processes_exited")
+    report(state="original_main_exited")
     command = [target["executable"]]
     if args.thread:
         command.append(f"codex://threads/{args.thread}")
     environment = os.environ.copy()
     if args.codex_home:
         environment["CODEX_HOME"] = str(Path(args.codex_home).resolve())
+    # Recheck immediately before our one launch, including replacement-main refusal.
+    if original_main_running(target, inspect()):
+        raise RuntimeError("original Desktop main reappeared; reconcile before reopening")
+    report(state="launching", launch_attempted=True)
     launch(command, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
            stderr=subprocess.DEVNULL, env=environment)
-    wait_for_start(target, inspect=inspect)
-    # A process launch is observable; UI readiness and loaded configuration are not.
+    new_main = wait_for_start(target, inspect=inspect)
+    # Process observation does not establish UI readiness or loaded configuration.
     result = {"state": "new_process_observed", "executable": target["executable"],
-              "thread": args.thread, "ui_ready": False, "quit_result": quit_result}
+              "main_process": new_main, "thread": args.thread, "ui_ready": False}
     if cli:
-        report(state="submitting_continuation")
+        report(state="submitting_continuation", continuation_attempted=True)
         message = args.message
         if getattr(args, "receipt", None):
             message += f"\n\nRestart receipt: {args.receipt}. Reconcile the result and delete this receipt and its matching .claimed file once no recovery remains."
@@ -227,7 +242,7 @@ def write_receipt(path: Path, record: dict) -> None:
 
 
 def worker(receipt: Path) -> dict:
-    # An exclusive claim prevents a repeated internal worker invocation from quitting twice.
+    # An exclusive claim prevents a repeated internal worker invocation from launching or queuing twice.
     claim = receipt.with_suffix(".claimed")
     with claim.open("x", encoding="utf-8") as stream:
         stream.write(str(os.getpid()))
@@ -240,15 +255,15 @@ def worker(receipt: Path) -> dict:
     try:
         if not independent_process():
             raise RuntimeError("Restart helper remains in a parent job; Desktop was not closed")
+        if time.time() > record["created_at"] + 30:
+            raise RuntimeError("Watcher preparation expired; no launch or continuation was attempted")
         args = argparse.Namespace(**record["request"])
         args.receipt = str(receipt)
-        report(state="armed", helper_pid=os.getpid(), independent=True)
-        delay = record["not_before"] - time.time()
-        if delay > 0:
-            time.sleep(delay)
-        if time.time() > record["not_before"] + 30:
-            raise RuntimeError("Restart launch expired; Desktop was not closed")
-        result = restart(args, report=report, target=record["target"])
+        target = record["target"]
+        if not original_main_running(target, inspect_desktop()):
+            raise RuntimeError("original Desktop main exited before watcher readiness; no launch was attempted")
+        report(state="starting", helper_pid=os.getpid(), independent=True)
+        result = watch_and_relaunch(args, target, report=report)
         report(state="finished", result=result)
         return result
     except Exception as error:
@@ -258,18 +273,34 @@ def worker(receipt: Path) -> dict:
 
 def arm_restart(args: argparse.Namespace, inspect=inspect_desktop) -> dict:
     target = inspect()
-    if not identities(target):
-        raise RuntimeError("Desktop is not running")
-    target["quit_window"] = inspect_quit_target(target)
+    mains = main_processes(target)
+    if len(mains) != 1:
+        raise RuntimeError("Expected exactly one running Desktop main process")
+    if not mains[0]["hwnd"]:
+        raise RuntimeError("No visible Desktop main window was found; restore it before arming")
+    target["main_process"] = mains[0]
     prepare_continuation(target, args)
     directory = Path(args.codex_home) / "onepersonlabs" / "desktop-restarts"
     directory.mkdir(parents=True, exist_ok=True)
-    receipt = directory / f"{uuid.uuid4()}.json"
-    record = {"state": "prepared", "created_at": time.time(),
-              "not_before": time.time() + args.delay_seconds,
-              "target": target, "request": vars(args),
-              "disposal": "Remove this receipt and matching claim after the resumed owner reconciles the result. Preserve unresolved continuation state."}
-    write_receipt(receipt, record)
+    # Serialize competing arm requests; every receipt, even finished, belongs to
+    # an owner who must reconcile it before another launch can be authorized.
+    lock = directory / "arming.lock"
+    try:
+        guard = lock.open("x", encoding="utf-8")
+    except FileExistsError as error:
+        raise RuntimeError(f"Another arm is active or unresolved; reconcile {lock}") from error
+    try:
+        with guard:
+            existing = list(directory.glob("*.json"))
+            if existing:
+                raise RuntimeError(f"Reconcile the existing restart receipt before another arm: {existing[0]}")
+            receipt = directory / f"{uuid.uuid4()}.json"
+            record = {"state": "prepared", "created_at": time.time(),
+                      "target": target, "request": vars(args),
+                      "disposal": "Remove this receipt and matching claim after the resumed owner reconciles the result. Preserve unresolved continuation state."}
+            write_receipt(receipt, record)
+    finally:
+        lock.unlink()
     command = subprocess.list2cmdline([sys.executable, "-B", str(Path(__file__).resolve()),
                                       "worker", "--receipt", str(receipt)])
     try:
@@ -286,9 +317,11 @@ def arm_restart(args: argparse.Namespace, inspect=inspect_desktop) -> dict:
             current = json.loads(receipt.read_text(encoding="utf-8"))
             if current["state"] == "failed":
                 raise RuntimeError(current["error"])
-            if current.get("independent"):
-                return {"state": "armed", "helper_pid": started["ProcessId"],
-                        "receipt": str(receipt), "not_before": record["not_before"]}
+            if current["state"] == "waiting_for_exit" and current.get("independent"):
+                return {"state": "armed", "helper_pid": current["helper_pid"],
+                        "receipt": str(receipt), "target": {
+                            "executable": target["executable"], "main_process": target["main_process"]},
+                        "exit_deadline": current["exit_deadline"]}
             time.sleep(0.1)
         raise RuntimeError("Helper readiness is uncertain; inspect the receipt instead of launching another")
     except Exception as error:
@@ -312,12 +345,11 @@ def thread_id(value: str) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("mode", choices=["inspect", "restart", "worker", "status"])
+    parser.add_argument("mode", choices=["inspect", "arm", "worker", "status"])
     parser.add_argument("--thread", type=thread_id)
     parser.add_argument("--message", help="explicitly authorized continuation; queued once after launch")
     parser.add_argument("--codex-home", help="native Windows Codex home owning the destination thread")
     parser.add_argument("--timeout-seconds", type=positive_timeout, default=60)
-    parser.add_argument("--delay-seconds", type=positive_timeout, default=10)
     parser.add_argument("--receipt", type=Path, help="existing restart receipt for status/internal worker")
     args = parser.parse_args()
     try:

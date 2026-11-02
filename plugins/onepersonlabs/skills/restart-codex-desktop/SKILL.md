@@ -44,7 +44,7 @@ local UUID using native thread tools; never select the most recent chat. Honor
 its model and permissions. A remote host or WSL chat is outside this helper's
 native Windows continuation route.
 
-## Inspect and start
+## Inspect, arm and quit
 
 Run this loaded skill's helper with Python 3.11 or newer:
 
@@ -53,43 +53,57 @@ python -B -X utf8 '<skill>/scripts/restart_desktop.py' inspect
 ```
 
 It reads the installed Appx manifest's App entrypoint, verifies Desktop resources
-and reports matching PID/start-time identities. The root UI can be ChatGPT.exe or
-Codex.exe; resources/codex.exe is the CLI. A process name alone is insufficient.
+and reports process identities. The root UI can be ChatGPT.exe or Codex.exe;
+resources/codex.exe is the CLI. A process name alone is insufficient.
 
-Run the automatic operation from the agent's own tool:
+Use supported computer-use to select the matching app window and locate its
+actual Quit control before arming. Inspect the File menu or tray menu as exposed
+by the installed app. Use the observed control, not a remembered shortcut.
+Windows Desktop can remove its native menu while retaining a custom menu;
+the source's Ctrl+Q definition does not establish a working accelerator.
+Closing the window can leave the app in the tray. Do not force-kill processes
+or invoke undocumented IPC. If no supported Quit route is available, report
+that blocker before arming.
+
+Start the independent recovery helper from the agent's own tool:
 
 ```powershell
-python -B -X utf8 '<skill>/scripts/restart_desktop.py' restart --thread '<UUID>' --message '<authorized next action>'
+python -B -X utf8 '<skill>/scripts/restart_desktop.py' arm --thread '<UUID>' --message '<authorized next action>'
 ```
 
 Omit --thread to restart without continuing work. A thread ID without --message
 uses a short continuation of that chat's authorized work. --codex-home defaults
 to the active native Windows Codex home. Quote real PowerShell arguments with
 single quotes, doubling embedded single quotes. Do not pass a shell command as
-the message. --delay-seconds defaults to 10, allowing the calling turn to finish;
---timeout-seconds defaults to 60 for app exit.
+the message. --timeout-seconds defaults to 60 for app exit.
 
 The helper starts a hidden, finite process through local Windows WMI. It verifies
 that the worker is outside the parent's process job before reporting armed. This
 matters because merely detaching a console can leave a child in a job that dies
 with Desktop. No service, scheduled task or recurring process is installed.
 
-The worker checks the original main process identity, verifies the target window
-and foreground state, then invokes the installed app's native Ctrl+Q Quit command
-once. It refuses held keys, an ambiguous target, a changed process or denied
-foreground activation. Closing a window is not used: Windows can keep the app
-running in the tray. There is no force kill or process-name kill.
+After the helper reports armed, immediately use supported computer-use to invoke
+the verified Quit control. The agent performs this step; do not ask the user to
+open a terminal or quit the app. Handle a visible quit confirmation only within
+the existing restart authorization and settled work checkpoint. A confirmation
+that reveals unrelated active work requires reconciliation before proceeding.
+Arming is an intermediate result: do not end the turn before invoking Quit.
 
-After confirmed old-process exit, it launches the exact manifest executable with
-the selected CODEX_HOME and waits for a new process. Refusal before Quit input
-stops the operation. Uncertain input delivery never repeats the keys; the helper
-reopens only if it observes actual exit. A launch failure remains in the receipt
-for recovery. Process observation alone does not prove UI readiness or loaded settings.
+The worker tracks the original main process separately from renderer turnover.
+After confirmed exit, it launches the exact manifest executable with the selected
+CODEX_HOME and waits for a new process. An external replacement or changed
+installation stops the operation. The worker sends no UI input. If the Quit action
+fails, its finite wait expires without launch or continuation. A launch failure
+remains in the receipt for recovery. Process observation alone does not prove UI
+readiness or loaded settings.
 
-The command returns a receipt path and worker PID. Once armed, end the current
-turn; do not start more edits or launch another restart. If readiness is uncertain,
-inspect the returned receipt before any retry. The original worker may already
-exist. The exclusive worker claim prevents the same operation from quitting twice.
+The command returns a receipt path, worker PID, target identity and exit deadline.
+Match that identity to the selected UI window. Once armed, do only the Quit
+interaction and its recovery; do not start more edits or another restart. If
+readiness or input delivery is uncertain, inspect the receipt before any retry.
+An existing receipt blocks another arm until its operation is reconciled and the
+receipt is removed. The original worker may still be waiting. The exclusive claim
+prevents repeated workers for the same operation.
 
 ## Continue and reconcile
 
@@ -125,11 +139,11 @@ close the owning work because package tests or mocked process checks passed.
 
 ## Mechanism sources
 
-The installed Windows app defines a native Quit role with Ctrl+Q in its application
-menu. Electron documents [Quit roles and accelerators](https://www.electronjs.org/docs/latest/tutorial/menus#roles).
-The adapter uses [SetForegroundWindow](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setforegroundwindow)
-and [SendInput](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput),
-then separately observes exit. Recheck the installed accelerator when app behavior changes.
+Electron documents [Quit roles](https://www.electronjs.org/docs/latest/tutorial/menus#roles)
+and [window menu removal](https://www.electronjs.org/docs/latest/api/browser-window#winremovemenu-linux-windows).
+The installed Windows app uses a custom menu after removing the native window
+menu. Inspect the exposed controls and their actual result; a menu definition or
+successful input injection alone does not establish that Quit ran.
 
 Microsoft documents [job inheritance](https://learn.microsoft.com/en-us/windows/win32/procthread/job-objects)
 and [local WMI process creation](https://learn.microsoft.com/en-us/windows/win32/wmisdk/creating-processes-remotely).

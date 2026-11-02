@@ -45,19 +45,24 @@ class DesktopRestartTests(unittest.TestCase):
             '</Applications></Package>', encoding='utf8')
 
     def state(self, processes):
-        return {'root': str(self.root), 'executable': str(self.exe), 'processes': processes}
+        normalized = [dict(parent_pid=0 if index == 0 else processes[0]['pid'],
+                           kind='main' if index == 0 else 'child', hwnd=100 if index == 0 else 0,
+                           title='ChatGPT' if index == 0 else '', **item)
+                      for index, item in enumerate(processes)]
+        original = {'pid': 4, 'started': '10', 'parent_pid': 0, 'kind': 'main', 'hwnd': 100, 'title': 'ChatGPT'}
+        return {'root': str(self.root), 'executable': str(self.exe), 'processes': normalized,
+                'main_process': normalized[0] if normalized else original}
 
     def args(self, **changes):
         fields = dict(thread=None, message=None, codex_home=None, timeout_seconds=1,
-                      delay_seconds=10, receipt=None)
+                      receipt=None)
         return argparse.Namespace(**(fields | changes))
 
-    def receipt(self, *, not_before=100):
+    def receipt(self):
         path = self.root / 'restart.json'
         target = self.state([{'pid': 4, 'started': '10'}])
-        target['quit_window'] = {'hwnd': 100, 'pid': 4, 'started': '10'}
         self.helper.write_receipt(path, {
-            'state': 'prepared', 'not_before': not_before, 'target': target,
+            'state': 'prepared', 'created_at': 100, 'target': target,
             'request': vars(self.args(codex_home=str(self.root))),
         })
         return path
@@ -86,7 +91,7 @@ class DesktopRestartTests(unittest.TestCase):
         with patch.object(self.helper, 'wait_for_exit', side_effect=TimeoutError('still running')):
             with patch.object(self.helper, 'queue_once', queue):
                 with self.assertRaises(TimeoutError):
-                    self.helper.restart(self.args(), inspect=lambda: state, launch=launch, quit_app=Mock())
+                    self.helper.watch_and_relaunch(self.args(), state, inspect=lambda: state, launch=launch)
         launch.assert_not_called()
         queue.assert_not_called()
 
@@ -94,7 +99,7 @@ class DesktopRestartTests(unittest.TestCase):
         before = self.state([{'pid': 4, 'started': '10'}])
         # PID reuse must not be mistaken for the original app still exiting.
         replacement = self.state([{'pid': 4, 'started': '11'}])
-        with self.assertRaisesRegex(RuntimeError, 'new Desktop processes'):
+        with self.assertRaisesRegex(RuntimeError, 'new Desktop main process'):
             self.helper.wait_for_exit(before, 1, inspect=lambda: replacement)
         changed = replacement | {'executable': 'another app'}
         with self.assertRaisesRegex(RuntimeError, 'installed Desktop changed'):
@@ -105,7 +110,7 @@ class DesktopRestartTests(unittest.TestCase):
         empty = self.state([])
         new = self.state([{'pid': 8, 'started': '20'}])
         events = []
-        states = iter([old, empty, new])
+        states = iter([empty, empty, new])
 
         def inspect():
             value = next(states)
@@ -116,8 +121,8 @@ class DesktopRestartTests(unittest.TestCase):
             events.append(('launch', command))
 
         with patch.object(self.helper, 'queue_once') as queue:
-            result = self.helper.restart(self.args(thread=self.thread), inspect=inspect, launch=launch, quit_app=lambda target: events.append(("quit", True)))
-        self.assertEqual(events, [('inspect', True), ('quit', True), ('inspect', False),
+            result = self.helper.watch_and_relaunch(self.args(thread=self.thread), old, inspect=inspect, launch=launch)
+        self.assertEqual(events, [('inspect', False), ('inspect', False),
                                  ('launch', [str(self.exe), f'codex://threads/{self.thread}']),
                                  ('inspect', True)])
         self.assertEqual(result['state'], 'new_process_observed')
@@ -125,24 +130,24 @@ class DesktopRestartTests(unittest.TestCase):
         queue.assert_not_called()
 
     def test_continuation_is_queued_once_after_new_process_observation(self):
-        states = iter([self.state([{'pid': 4, 'started': '10'}]), self.state([]),
+        states = iter([self.state([]), self.state([]),
                        self.state([{'pid': 8, 'started': '20'}])])
         cli = self.app / 'resources/codex.exe'
         with patch.object(self.helper, 'prepare_continuation', return_value=cli):
             with patch.object(self.helper, 'queue_once', return_value={'state': 'accepted'}) as queue:
-                result = self.helper.restart(self.args(thread=self.thread, message='Run required checks',
+                result = self.helper.watch_and_relaunch(self.args(thread=self.thread, message='Run required checks',
                                                       codex_home=str(self.root)),
-                                             inspect=lambda: next(states), launch=Mock(), quit_app=Mock())
+                                             self.state([]), inspect=lambda: next(states), launch=Mock())
         queue.assert_called_once_with(cli, self.root.resolve(), self.thread, 'Run required checks')
         self.assertEqual(result['continuation']['state'], 'accepted')
 
     def test_launch_failure_does_not_queue(self):
-        states = iter([self.state([{'pid': 4, 'started': '10'}]), self.state([])])
+        states = iter([self.state([]), self.state([])])
         with patch.object(self.helper, 'prepare_continuation', return_value=self.exe):
             with patch.object(self.helper, 'queue_once') as queue:
                 with self.assertRaises(OSError):
-                    self.helper.restart(self.args(), inspect=lambda: next(states),
-                                        launch=Mock(side_effect=OSError('launch failed')), quit_app=Mock())
+                    self.helper.watch_and_relaunch(self.args(), self.state([]), inspect=lambda: next(states),
+                                        launch=Mock(side_effect=OSError('launch failed')))
         queue.assert_not_called()
 
     def test_missing_new_process_has_bounded_failure(self):
@@ -179,62 +184,17 @@ class DesktopRestartTests(unittest.TestCase):
                 self.helper.prepare_continuation(self.state([]), self.args(
                     message='Continue', thread=self.thread, codex_home=str(self.root)))
 
-    def test_quit_refusal_stops_before_exit_wait_launch_or_queue(self):
-        state = self.state([{'pid': 4, 'started': '10'}])
-        quit_app = Mock(side_effect=RuntimeError('Windows refused foreground activation'))
-        launch = Mock()
-        with patch.object(self.helper, 'prepare_continuation', return_value=self.exe):
-            with patch.object(self.helper, 'queue_once') as queue:
-                with patch.object(self.helper, 'wait_for_exit') as wait:
-                    with self.assertRaisesRegex(RuntimeError, 'refused foreground'):
-                        self.helper.restart(self.args(thread=self.thread, message='Continue',
-                                                      codex_home=str(self.root)),
-                                            inspect=lambda: state, launch=launch, quit_app=quit_app)
-        quit_app.assert_called_once_with(state)
-        wait.assert_not_called()
-        launch.assert_not_called()
-        queue.assert_not_called()
-
-    def test_uncertain_quit_with_observed_exit_reopens_once(self):
-        details = {'state': 'quit_input_uncertain', 'events_sent': 2,
-                   'cleanup_expected': 2, 'cleanup_sent': 2}
-        quit_app = Mock(side_effect=self.helper.QuitInputError('partial input', details))
-        states = iter([self.state([{'pid': 4, 'started': '10'}]), self.state([]),
-                       self.state([{'pid': 8, 'started': '20'}])])
-        launch, report = Mock(), Mock()
-        result = self.helper.restart(self.args(), inspect=lambda: next(states),
-                                     quit_app=quit_app, launch=launch, report=report)
-        quit_app.assert_called_once()
-        launch.assert_called_once()
-        self.assertEqual(result['state'], 'new_process_observed')
-        self.assertEqual(result['quit_result'], details)
-        report.assert_any_call(state='waiting_for_exit', quit_result=details)
-
-    def test_uncertain_quit_without_exit_does_not_launch_or_continue(self):
-        state = self.state([{'pid': 4, 'started': '10'}])
-        quit_app = Mock(side_effect=self.helper.QuitInputError(
-            'partial input', {'state': 'quit_input_uncertain', 'events_sent': 2}))
-        launch = Mock()
-        with patch.object(self.helper, 'wait_for_exit', side_effect=TimeoutError('Desktop did not exit')):
-            with patch.object(self.helper, 'queue_once') as queue:
-                with self.assertRaisesRegex(TimeoutError, 'did not exit'):
-                    self.helper.restart(self.args(), inspect=lambda: state,
-                                        quit_app=quit_app, launch=launch)
-        quit_app.assert_called_once()
-        launch.assert_not_called()
-        queue.assert_not_called()
-
     def test_selected_home_is_shared_by_ui_launch_and_continuation(self):
-        states = iter([self.state([{'pid': 4, 'started': '10'}]), self.state([]),
+        states = iter([self.state([]), self.state([]),
                        self.state([{'pid': 8, 'started': '20'}])])
         launch = Mock()
         with patch.dict(self.helper.os.environ, {'CODEX_HOME': 'unrelated ambient home'}):
             with patch.object(self.helper, 'prepare_continuation', return_value=self.app / 'resources/codex.exe'):
                 with patch.object(self.helper.subprocess, 'run',
                                   return_value=subprocess.CompletedProcess([], 0, 'queued', '')) as queue_process:
-                    result = self.helper.restart(self.args(thread=self.thread, message='Run authorized checks',
+                    result = self.helper.watch_and_relaunch(self.args(thread=self.thread, message='Run authorized checks',
                                                           codex_home=str(self.root)),
-                                                 inspect=lambda: next(states), quit_app=Mock(), launch=launch)
+                                                 self.state([]), inspect=lambda: next(states), launch=launch)
         launch.assert_called_once()
         queue_process.assert_called_once()
         selected_home = str(self.root.resolve())
@@ -247,7 +207,7 @@ class DesktopRestartTests(unittest.TestCase):
     def test_worker_in_parent_job_records_failure_without_quit(self):
         receipt = self.receipt()
         with patch.object(self.helper, 'independent_process', return_value=False):
-            with patch.object(self.helper, 'restart') as restart:
+            with patch.object(self.helper, 'watch_and_relaunch') as restart:
                 with self.assertRaisesRegex(RuntimeError, 'parent job'):
                     self.helper.worker(receipt)
         restart.assert_not_called()
@@ -258,9 +218,9 @@ class DesktopRestartTests(unittest.TestCase):
 
     def test_exclusive_worker_claim_prevents_second_restart(self):
         receipt = self.receipt()
-        with patch.object(self.helper, 'independent_process', return_value=True):
+        with patch.object(self.helper, 'inspect_desktop', return_value=self.state([{'pid': 4, 'started': '10'}])), patch.object(self.helper, 'independent_process', return_value=True):
             with patch.object(self.helper.time, 'time', return_value=100):
-                with patch.object(self.helper, 'restart', return_value={'state': 'new_process_observed'}) as restart:
+                with patch.object(self.helper, 'watch_and_relaunch', return_value={'state': 'new_process_observed'}) as restart:
                     self.helper.worker(receipt)
                     before = receipt.read_bytes()
                     with self.assertRaises(FileExistsError):
@@ -273,26 +233,14 @@ class DesktopRestartTests(unittest.TestCase):
         receipt = self.receipt()
         result = {'state': 'new_process_observed',
                   'continuation': {'state': 'unknown', 'error': 'queue timed out', 'retry': False}}
-        with patch.object(self.helper, 'independent_process', return_value=True):
+        with patch.object(self.helper, 'inspect_desktop', return_value=self.state([{'pid': 4, 'started': '10'}])), patch.object(self.helper, 'independent_process', return_value=True):
             with patch.object(self.helper.time, 'time', return_value=100):
-                with patch.object(self.helper, 'restart', return_value=result) as restart:
+                with patch.object(self.helper, 'watch_and_relaunch', return_value=result) as restart:
                     self.helper.worker(receipt)
         restart.assert_called_once()
         record = json.loads(receipt.read_text(encoding='utf8'))
         self.assertEqual(record['result'], result)
         self.assertTrue(receipt.with_suffix('.claimed').is_file())
-
-    def test_expired_delayed_worker_does_not_restart(self):
-        receipt = self.receipt(not_before=10)
-        with patch.object(self.helper, 'independent_process', return_value=True):
-            with patch.object(self.helper.time, 'time', return_value=100):
-                with patch.object(self.helper, 'restart') as restart:
-                    with patch.object(self.helper.time, 'sleep') as sleep:
-                        with self.assertRaisesRegex(RuntimeError, 'launch expired'):
-                            self.helper.worker(receipt)
-        restart.assert_not_called()
-        sleep.assert_not_called()
-        self.assertEqual(json.loads(receipt.read_text(encoding='utf8'))['state'], 'failed')
 
     def test_uncertain_launcher_keeps_each_receipt_and_never_retries(self):
         errors = [subprocess.TimeoutExpired('launcher', 20),
@@ -302,58 +250,118 @@ class DesktopRestartTests(unittest.TestCase):
         directory = self.root / 'onepersonlabs/desktop-restarts'
         for outcome in errors:
             with self.subTest(outcome=outcome):
+                for old_receipt in directory.glob('*.json'):
+                    old_receipt.unlink()
                 existing = set(directory.glob('*.json'))
                 run = Mock(side_effect=outcome) if isinstance(outcome, Exception) else Mock(return_value=outcome)
-                with patch.object(self.helper, 'inspect_quit_target', return_value={'hwnd': 100, 'pid': 4, 'started': '10'}):
-                    with patch.object(self.helper, 'prepare_continuation', return_value=None):
-                        with patch.object(self.helper.subprocess, 'run', run):
-                            with self.assertRaisesRegex(RuntimeError, 'restart receipt:'):
-                                self.helper.arm_restart(self.args(codex_home=str(self.root)),
-                                                        inspect=lambda: self.state([{'pid': 4, 'started': '10'}]))
+                with patch.object(self.helper, 'prepare_continuation', return_value=None):
+                    with patch.object(self.helper.subprocess, 'run', run):
+                        with self.assertRaisesRegex(RuntimeError, 'restart receipt:'):
+                            self.helper.arm_restart(self.args(codex_home=str(self.root)),
+                                                    inspect=lambda: self.state([{'pid': 4, 'started': '10'}]))
                 run.assert_called_once()
                 created = set(directory.glob('*.json')) - existing
                 self.assertEqual(len(created), 1)
                 record = json.loads(created.pop().read_text(encoding='utf8'))
                 self.assertEqual(record['state'], 'prepared')
-                self.assertEqual(record['target']['quit_window']['pid'], 4)
+                self.assertEqual(record['target']['main_process']['pid'], 4)
 
     def test_missing_helper_readiness_retains_receipt_without_second_launch(self):
         run = Mock(return_value=subprocess.CompletedProcess([], 0, '{"ReturnValue":0,"ProcessId":44}', ''))
-        with patch.object(self.helper, 'inspect_quit_target', return_value={'hwnd': 100, 'pid': 4, 'started': '10'}):
-            with patch.object(self.helper, 'prepare_continuation', return_value=None):
-                with patch.object(self.helper.subprocess, 'run', run):
-                    with patch.object(self.helper.time, 'monotonic', side_effect=[0, 0, 6]):
-                        with patch.object(self.helper.time, 'sleep'):
-                            with self.assertRaisesRegex(RuntimeError, 'readiness is uncertain'):
-                                self.helper.arm_restart(self.args(codex_home=str(self.root)),
-                                                        inspect=lambda: self.state([{'pid': 4, 'started': '10'}]))
+        with patch.object(self.helper, 'prepare_continuation', return_value=None):
+            with patch.object(self.helper.subprocess, 'run', run):
+                with patch.object(self.helper.time, 'monotonic', side_effect=[0, 0, 6]):
+                    with patch.object(self.helper.time, 'sleep'):
+                        with self.assertRaisesRegex(RuntimeError, 'readiness is uncertain'):
+                            self.helper.arm_restart(self.args(codex_home=str(self.root)),
+                                                    inspect=lambda: self.state([{'pid': 4, 'started': '10'}]))
         run.assert_called_once()
         receipts = list((self.root / 'onepersonlabs/desktop-restarts').glob('*.json'))
         self.assertEqual(len(receipts), 1)
         self.assertEqual(json.loads(receipts[0].read_text(encoding='utf8'))['state'], 'prepared')
 
-    def test_prepared_restart_requires_original_main_identity(self):
+    def test_renderer_turnover_does_not_end_original_main_lifetime(self):
+        saved = self.state([{'pid': 4, 'started': '10'}, {'pid': 5, 'started': '12'}])
+        refreshed = self.state([{'pid': 4, 'started': '10'}, {'pid': 6, 'started': '14'}])
+        states = iter([refreshed, self.state([])])
+        sleep = Mock()
+        self.helper.wait_for_exit(saved, 1, inspect=lambda: next(states),
+                                  clock=Mock(side_effect=[0, 0, 0]), sleep=sleep)
+        sleep.assert_called_once()
+
+    def test_remaining_renderer_is_not_a_new_main(self):
+        saved = self.state([{'pid': 4, 'started': '10'}, {'pid': 5, 'started': '12'}])
+        orphan = self.state([])
+        orphan['processes'] = [saved['processes'][1]]
+        self.helper.wait_for_exit(saved, 1, inspect=lambda: orphan)
+
+    def test_replacement_main_in_final_prelaunch_check_refuses_launch(self):
         saved = self.state([{'pid': 4, 'started': '10'}])
-        saved['quit_window'] = {'hwnd': 100, 'pid': 4, 'started': '10'}
-        reused = self.state([{'pid': 4, 'started': '11'}])
-        quit_app, launch = Mock(), Mock()
-        with self.assertRaisesRegex(RuntimeError, 'changed after preparation'):
-            self.helper.restart(self.args(), target=saved, inspect=lambda: reused,
-                                quit_app=quit_app, launch=launch)
-        quit_app.assert_not_called()
+        states = iter([self.state([]), self.state([{'pid': 8, 'started': '20'}])])
+        launch = Mock()
+        with self.assertRaisesRegex(RuntimeError, 'new Desktop main'):
+            self.helper.watch_and_relaunch(self.args(), saved, inspect=lambda: next(states), launch=launch)
         launch.assert_not_called()
 
-    def test_prepared_restart_refreshes_renderer_set_before_quit(self):
-        saved = self.state([{'pid': 4, 'started': '10'}, {'pid': 5, 'started': '12'}])
-        saved['quit_window'] = {'hwnd': 100, 'pid': 4, 'started': '10'}
-        refreshed = self.state([{'pid': 4, 'started': '10'}, {'pid': 6, 'started': '14'}])
-        states = iter([refreshed, self.state([]), self.state([{'pid': 8, 'started': '20'}])])
-        quit_app, launch = Mock(), Mock()
-        result = self.helper.restart(self.args(), target=saved, inspect=lambda: next(states),
-                                     quit_app=quit_app, launch=launch)
-        quit_app.assert_called_once_with(refreshed)
-        launch.assert_called_once()
-        self.assertEqual(result['state'], 'new_process_observed')
+    def test_worker_refuses_exit_before_readiness(self):
+        receipt = self.receipt()
+        with patch.object(self.helper.time, 'time', return_value=100), \
+             patch.object(self.helper, 'independent_process', return_value=True), \
+             patch.object(self.helper, 'inspect_desktop', return_value=self.state([])), \
+             patch.object(self.helper, 'watch_and_relaunch') as watcher:
+            with self.assertRaisesRegex(RuntimeError, 'before watcher readiness'):
+                self.helper.worker(receipt)
+        watcher.assert_not_called()
+        self.assertEqual(json.loads(receipt.read_text())['state'], 'failed')
+
+    def test_expired_worker_does_not_observe_or_launch(self):
+        receipt = self.receipt()
+        with patch.object(self.helper.time, 'time', return_value=131), \
+             patch.object(self.helper, 'independent_process', return_value=True), \
+             patch.object(self.helper, 'inspect_desktop') as inspect, \
+             patch.object(self.helper, 'watch_and_relaunch') as watcher:
+            with self.assertRaisesRegex(RuntimeError, 'preparation expired'):
+                self.helper.worker(receipt)
+        inspect.assert_not_called()
+        watcher.assert_not_called()
+
+    def test_arm_returns_only_ready_worker_and_exact_gui_identity(self):
+        target = self.state([{'pid': 4, 'started': '10'}])
+
+        def spawn(*args, **kwargs):
+            receipt = next((self.root / 'onepersonlabs/desktop-restarts').glob('*.json'))
+            record = json.loads(receipt.read_text())
+            record.update(state='waiting_for_exit', independent=True, helper_pid=44, exit_deadline=160)
+            self.helper.write_receipt(receipt, record)
+            return subprocess.CompletedProcess([], 0, '{"ReturnValue":0,"ProcessId":44}', '')
+
+        with patch.object(self.helper.subprocess, 'run', side_effect=spawn) as run:
+            result = self.helper.arm_restart(self.args(codex_home=str(self.root)), inspect=lambda: target)
+        run.assert_called_once()
+        self.assertEqual(result['state'], 'armed')
+        self.assertEqual(result['target']['main_process'], target['main_process'])
+        self.assertEqual(result['exit_deadline'], 160)
+
+    def test_unreconciled_finished_receipt_blocks_another_arm(self):
+        directory = self.root / 'onepersonlabs/desktop-restarts'
+        directory.mkdir(parents=True)
+        self.helper.write_receipt(directory / 'previous.json', {'state': 'finished'})
+        with patch.object(self.helper.subprocess, 'run') as run:
+            with self.assertRaisesRegex(RuntimeError, 'Reconcile the existing restart receipt'):
+                self.helper.arm_restart(self.args(codex_home=str(self.root)),
+                                        inspect=lambda: self.state([{'pid': 4, 'started': '10'}]))
+        run.assert_not_called()
+
+    def test_ambiguous_main_or_missing_visible_window_refuses_arm(self):
+        original = self.state([{'pid': 4, 'started': '10'}])
+        another = original['main_process'] | {'pid': 8, 'started': '20'}
+        ambiguous = original | {'processes': [original['main_process'], another]}
+        hidden = original | {'processes': [original['main_process'] | {'hwnd': 0}]}
+        for target in [ambiguous, hidden, self.state([])]:
+            with self.subTest(target=target), patch.object(self.helper.subprocess, 'run') as run:
+                with self.assertRaises(RuntimeError):
+                    self.helper.arm_restart(self.args(codex_home=str(self.root)), inspect=lambda: target)
+                run.assert_not_called()
 
 
 if __name__ == '__main__':
