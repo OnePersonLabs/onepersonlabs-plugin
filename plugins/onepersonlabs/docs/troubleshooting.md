@@ -59,17 +59,16 @@ Policy or inventory changes can require another acknowledgment. `warn` mode
 reports without requesting a pause. The checker is cooperative guidance, not a
 security boundary.
 
-## A refresh failed or only one environment updated
+## A local plugin refresh failed
 
-Read the per-environment report. A Windows failure does not undo a successful
-WSL refresh, or vice versa. Resolve the reported source, preparation, inventory,
-or installer error before retrying the failed route. A same-name marketplace
-pointing elsewhere requires a deliberate mapping decision.
+Use the installer error to identify the failing stage. Resolve any source,
+preparation, or installation error before retrying. If the marketplace name
+points to a different checkout, refresh from the registered checkout or resolve
+the registration before retrying.
 
-If automatic hook trust fails, finish the other reachable refreshes, then open
-a fresh session in each affected environment, review and trust the selected
-plugin's hooks with `/hooks`, and return to the agent for verification. Installation
-is incomplete until the failed trust check is reconciled.
+If automatic hook trust fails, open a fresh session in the selected Codex home.
+Review and trust the affected plugins' hooks with `/hooks`, then return to the
+agent for verification.
 
 Run `resume-after-refresh` even after a failed installer attempt if the service
 was paused. Use the source helper if the installed helper is unavailable. A

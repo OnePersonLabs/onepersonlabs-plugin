@@ -151,4 +151,4 @@ Show the user:
 
 Apply instruction changes only within the authorized scope. If approval is
 required, present the concrete change and evidence first. Additional replay
-requires the same host permission and budget as the first comparison.
+follows the shared task-specific verification policy and any explicit user budget.

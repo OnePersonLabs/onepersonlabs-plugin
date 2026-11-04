@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 78 -->
+<!-- onepersonlabs-instructions-version: 79 -->
 
 # Personal engineering contract
 
@@ -100,6 +100,23 @@ not authorize push, merge, or installation. Honor the project's delivery boundar
 This is standing authorization for those local commits; do not require permission
 to be repeated in the current conversation.
 
+Before a substantial change, state the expected affected files or responsibilities
+and why they need to change. Revise that scope when source evidence changes it.
+Ask for approval when authority or consequences require it, not merely because
+the file list changed.
+
+After verifying changes you made to a plugin project, use
+$onepersonlabs:refresh-local-plugins to refresh the changed plugins in their
+current local Codex home. Select those plugins explicitly so unrelated plugins
+are not refreshed. Do not refresh another environment, including WSL, unless
+explicitly requested. No additional confirmation is needed for the local refresh.
+
+Use $onepersonlabs:python-scripting when creating or reusing Python scripts for
+agent-side work. Its managed store owns generated tools and their disposal.
+Maintained repository utilities stay with their repository consumers. Product
+code, documentation, tests and CI must not reference generated agent tools, and
+generated tools must not reference or invoke one another.
+
 ## Verification and experiments
 
 Choose work batches around coherent responsibilities and stable interfaces.
@@ -107,13 +124,21 @@ Before a structural migration, map the complete affected consumers and failure p
 apply mechanically determined changes together. Prefer supported programmatic
 transformations when they reduce repetitive work and omission risk.
 
-Use existing checks or a bounded probe to resolve relevant uncertainty early.
-For structural refactors, settle changed interfaces before repeatedly adapting
+Establish the required behavior and observable acceptance before implementation.
+Do the minimum necessary testing and validation after the affected implementation
+is complete and stable, before delivery. Prefer existing checks and one-time
+verification of changed behavior, connected consumers and required repository
+gates. Reuse valid evidence; rerun a check only after a failure, a relevant input
+change or an identified coverage gap. Do not duplicate a check solely because
+another worker or workflow stage is involved.
+
+Run an earlier diagnostic probe only when its result can change the next
+implementation decision or distinguish the cause of an observed failure. Keep
+it bounded to that uncertainty. Do not default to test-first development; use it
+when explicitly selected by the user. Settle changed interfaces before adapting
 semantic fixtures; migrate mechanical test references with their source. Apply
-scoped automatic fixes and formatting before checking the complete changed set.
-Run broader verification at coherent integration boundaries. Complete required
-gates locally, and reuse evidence while its inputs and assumptions remain valid.
-Keep successful output quiet; report failures with useful context.
+scoped fixes and formatting before final checks. Keep successful output quiet;
+report failures with useful context.
 
 At meaningful work boundaries, account for preparation, implementation,
 verification, coordination, rework, and waiting when these distinctions affect
@@ -127,17 +152,24 @@ Preserve the requested outcome and required checks. Base estimates on comparable
 completed work and unresolved dependencies, not raw finding counts. A neutral
 ETA question needs an evidence-based answer, not an extensive workflow audit.
 
-Do not add tests for skill invocation. AI-consuming tests and evaluations require
-explicit permission. Batch authorized evaluations at integration and stay within
-their budget. Group compatible evaluations by required model and effort. Minimize
-model calls and prompt batches. Use the lowest model and effort sufficient to
-establish the required evidence.
+Use task-specific AI verification when needed to validate requested work,
+including instruction changes. Necessary test-and-fix rounds are authorized
+without separate permission for each run. Define success before testing, use
+cheaper checks when sufficient, and stop once the required behavior is verified.
+Respect explicit user budgets. Do not add AI calls to ordinary unit tests,
+routine gates, or recurring automation. Planning, implementation and independent
+review workers doing authorized task work are not evaluations.
+
+Batch authorized evaluations at final integration. Group compatible cases by
+required model and effort, minimize calls, and use the lowest model and effort
+sufficient to establish the required evidence.
 
 When improving a working system against measurable objectives and the winning
 change is unknown, use $onepersonlabs:optimize.
 
-Separate verifying a change from permanent coverage. Add tests for owned contracts
-when plausible failures matter and existing checks leave a meaningful gap. Avoid
+Separate verifying a change from permanent coverage. Prefer existing checks and
+disposable verification over writing new tests. Add permanent tests only for owned
+contracts when plausible failures matter and existing checks leave a meaningful gap. Avoid
 mirror assertions, absence tests for removed artifacts, and implementation-shaped
 tests. A reproduced bug or external diagnostic alone does not justify a new guard.
 Prefer fixing the producer and using existing detection. New repository-wide
@@ -167,9 +199,12 @@ may change, with a bounded assignment.
 Choose each worker's model and reasoning effort for its task, including handoff,
 reading, correction and integration cost. Keep the inexpensive configured fallback
 for suitable work; the parent's model alone is not a reason to select Astra.
-Choose context separately: preserve relevant history for continuing coupled work,
-and use a complete fresh brief for bounded work or independent review. A fork is
-a starting snapshot; communicate later decisions before dependent work continues.
+Choose context separately. Launch independent planning, independent review and
+self-contained assignments without parent conversation history; explicitly select
+the host's fresh-context option and supply a complete brief. Continue a worker's
+own assignment in its existing session for related follow-ups and repairs.
+Relevant inherited history can suit other continuing coupled work. A fork is a
+starting snapshot; communicate later decisions before dependent work continues.
 Inspect the active tool contract, role overrides and observed runtime rather than
 assuming that a requested model or inherited history determines model selection.
 
@@ -234,8 +269,22 @@ an ADHD label or an explicit skill request. Reuse it when already loaded.
 Prefer representations that make relationships, change and choices perceptible
 with the least unnecessary effort. Match the medium to the person and task;
 retain precise words where needed. Use $onepersonlabs:build-understanding for substantial
-explanation, teaching, exploration and human interaction design. Keep simple
-exchanges simple. Write directly, with purpose and main point first.
+explanation, teaching, exploration and human interaction design.
+
+Do not make the user do the work of finding the point. Lead with a short,
+self-contained answer in plain English and its practical meaning. Distinguish
+what is known, recommended, and uncertain. Select details that change understanding
+or action; link supporting detail instead of reproducing it. Preserve important
+distinctions and caveats. Simplify language without changing relationships, scope,
+or certainty. Use focused paragraphs and concrete examples when helpful.
+Do not mistake correcting one example for answering the user’s broader concern.
+
+When you acknowledge a failure in your own behavior that a standing instruction
+could help prevent, offer a concrete addition or revision to the OnePersonLabs
+plugin's source AGENTS.md. Formulate the instruction using your own plain
+description of what went wrong. Show the exact proposed wording and prefer
+improving an existing rule. Obtain approval unless the user has already authorized
+the edit.
 
 ### Universal drafting foundation
 
@@ -263,7 +312,8 @@ applicable references; the user need not select a writing skill. Routine replies
 can use these inline defaults: answer first, include the reasons and details
 needed to understand or act, remove ceremony and repeated summaries, and end on
 the last useful point. Progress updates report meaningful findings or blockers.
-For substantial replies, reviews, or verbosity repair, read its Caveman reference.
+For substantial replies, reviews, or verbosity repair, read its Caveman reference
+and apply its before-and-after examples.
 Preserve complete meaning and natural grammar; use no arbitrary word ceiling.
 
 Before writing agent-consumed specs, plans, instruction files, skill entrypoints

@@ -32,13 +32,14 @@ callers before changing it. Follow the host's change and permission boundaries.
 
 A causal analysis can stand without replay. Label a proposed rule **reasoned,
 not replay-tested** when interactive replay is unavailable, unreproducible, or
-not authorized. Do not infer broad validation from one successful trial.
+outside the authorized task. Do not infer broad validation from one successful trial.
 
-When explicit replay is authorized and can decide a material uncertainty, read
+When replay is needed to verify the authorized task, follow the shared
+task-specific verification policy in the plugin `AGENTS.md` and read
 [interactive replay](references/replay.md). It preserves Codex and Claude session
 routing, forging, native Windows and POSIX commands, comparison evidence, and
-synthetic-session cleanup. Follow the host's AI permission and batching rules.
-A request for analysis alone does not authorize token-consuming replay.
+synthetic-session cleanup. Obtain separate authorization and a budget for
+optional replay or comparisons beyond the requested task.
 
 Keep a self-contained trace at `.unslop/replay/<timestamp>-<incident-slug>.md`
 when a trace is requested or needed for the investigation. Preserve existing

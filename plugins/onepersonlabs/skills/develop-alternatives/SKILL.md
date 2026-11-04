@@ -77,9 +77,11 @@ source evidence. Do not require a multi-agent panel for routine design work.
 
 Runtime behavior and subjective human experience need their real evidence paths.
 Use `$onepersonlabs:solve-novel-software` when a technical claim could change the
-choice. Use `$onepersonlabs:design-perceptual-interfaces` or `$onepersonlabs:prototype`
-when experience must settle it. A sketch does not prove runtime behavior. A
-model's preference does not prove human preference.
+choice. Use `$onepersonlabs:build-understanding` when an explorable example helps
+a person understand the concepts, relationships or state involved in the choice.
+Use `$onepersonlabs:design-perceptual-interfaces` for consequential rendered visual
+design and interaction. An explanation or sketch does not prove runtime behavior.
+A model's preference does not prove human preference.
 
 Return the common brief and criteria, at least two candidate mechanisms, their
 assumptions and tradeoffs, what they share, material exclusions, source evidence,

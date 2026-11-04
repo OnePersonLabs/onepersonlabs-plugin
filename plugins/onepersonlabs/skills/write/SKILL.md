@@ -1,6 +1,6 @@
 ---
 name: write
-description: Write or revise prose, emails, UI text, documentation, specifications, plans, GitHub issues, and agent instructions. Apply shared drafting rules and automatically add the relevant precision, documentation, editing, or concise-reply guidance.
+description: Write or revise prose, emails, questionnaires, UI text, documentation, specifications, plans, GitHub issues, and agent instructions. Apply shared drafting rules and automatically add the relevant precision, documentation, editing, or concise-reply guidance.
 ---
 
 # Write
@@ -45,7 +45,9 @@ result. Apply each relevant layer; selecting one never disables the foundation.
   drafting. Trace current behavior and finish the reader's journey. Add technical
   English for instructions. Prose editing does not replace this workflow.
 - **Prose rewrite or audit:** read [the signs catalogue](references/signs.md).
-  For local files, run `scripts/check_ai_signs.py` before and after the rewrite.
+  For local rewrites, run `scripts/check_ai_signs.py` on the completed changed
+  text during final validation. Use an earlier scan only for a requested audit
+  or comparison, or when its result will guide the revision. Reuse a valid scan.
   Drafting alone needs neither the catalogue nor a scanner run.
 - **Source refresh:** read [source maintenance](references/maintenance.md) when
   due or explicitly requested. Update the shared foundation and its consumers
@@ -68,8 +70,21 @@ consistent. Authored text must make sense without this conversation; keep the
 account of drafting and review in the conversation.
 
 For correspondence, preserve the relationship, author's voice, necessary context,
-and the request or response the recipient needs. For UI text, inspect the actual
-state, surrounding controls, available action, and recovery. Use concise labels
+and the request or response the recipient needs.
+
+For a requested questionnaire or question set for another person, separate
+preparation context the user can supply from facts or decisions the recipient
+must provide. Recover available context before asking the user about consequential
+gaps, such as audience, purpose, scope or confidentiality. Leave recipient-owned
+facts as questions in the deliverable. Give the recipient enough context to answer
+independently. Prioritize important questions and keep each independently answerable.
+Allow partial answers and explicit uncertainty. When using replies, keep unanswered
+questions unresolved if a decision depends on them. Use the requested medium and
+destination; do not invent deadlines or effort estimates. Drafting does not
+authorize sending or inbox operations.
+
+For UI text, inspect the actual state, surrounding controls, available action,
+and recovery. Use concise labels
 and fragments where the interface calls for them. Do not promise unsupported
 behavior. Check rendered fit and interaction through the existing design workflow
 when those affect meaning. Creative work retains intentional rhythm, repetition,
@@ -100,6 +115,7 @@ After editing, read the whole piece for generic structure, unnecessary summaries
 synonym cycling, and unwarranted contrasts. Keep scanner hits when quoted, literal,
 required by the context, or the clearest wording. Precision wins over compression.
 
-Lead with finished prose or edited files. For an audit, report before/after counts,
-representative changes, and deliberate remaining hits without adding another essay.
+Lead with finished prose or edited files. For an audit, report the relevant
+findings, representative changes and deliberate remaining hits. Include
+before/after counts only when that comparison was part of the audit.
 Distinguish source review, exercised behavior, and human comprehension.

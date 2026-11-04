@@ -64,7 +64,9 @@ change coherent and preserve the reason for any exceptional choice.
 
 The repository's [test instructions](../AGENTS.md#tests) own check selection,
 required gates, and test policy. Run the selected commands from the repository
-root. For a focused failure, `npm run test:focus -- --file <test-file>` runs an
+root after the affected implementation is stable. Reuse valid results instead
+of repeating them at each workflow stage. For a focused failure,
+`npm run test:focus -- --file <test-file>` runs an
 existing supported test file. Keep successful output quiet and retain useful
 diagnostics when something fails.
 
@@ -102,14 +104,12 @@ For an authorized refresh, use the installed `$onepersonlabs:refresh-local-plugi
 ```text
 Use $onepersonlabs:refresh-local-plugins to refresh onepersonlabs from this
 checkout. Follow this repository's collaboration-service pause/resume and
-post-refresh checks, and report each Windows/WSL result.
+post-refresh checks, and report the result for the selected Codex home.
 ```
 
-The skill's `--dry-run` mode previews per-home selection without installation.
-Normal refresh uses existing user homes and the other environment's installed
-inventory; disabled installed counterparts are eligible and become enabled.
-`--target-home` is for an explicit home or isolated test. Source publishing is
-separate from installation.
+The skill's `--dry-run` mode previews selection without installation. The
+default is the current user's existing `~/.codex`. Use `--target-home` for an
+explicit home or isolated test. Source publishing is separate from installation.
 
 The direct repository command is `npm run install:local -- --plugin onepersonlabs`.
 It only installs and establishes selected hook trust; it does not run tests or

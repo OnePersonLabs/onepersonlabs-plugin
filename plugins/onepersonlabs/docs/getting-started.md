@@ -90,6 +90,6 @@ codex plugin add onepersonlabs@onepersonlabs
 Start a fresh task afterward and review hook trust if the hooks changed.
 For a local source checkout, use `$onepersonlabs:refresh-local-plugins` instead;
 its [source-refresh procedure](../skills/refresh-local-plugins/SKILL.md) handles
-existing Windows/WSL installations and selected hook trust. Global instructions
+installation and selected hook trust in the current user’s default Codex home. Global instructions
 are a separate update, described in [configuration and hooks](configuration-and-hooks.md).
 Publishing source, installing it, and loading it in a task are distinct steps.

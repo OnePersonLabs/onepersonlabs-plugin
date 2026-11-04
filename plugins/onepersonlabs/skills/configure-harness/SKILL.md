@@ -29,8 +29,10 @@ For subagent model, effort, context, cache, cost or coordination decisions, read
 observed runtime separately. Use existing source and session evidence before a
 live probe; report unresolved selection rather than repeatedly launching workers.
 
-Use deterministic inventory and existing evidence first. Model evaluation is
-optional and requires an explicit finite budget and authorization for AI usage.
+Use deterministic inventory and existing evidence first. Task-specific AI
+verification follows the shared policy in the plugin `AGENTS.md`. Optional model
+evaluation for profile or routing measurement requires separate authorization
+and a finite manifest budget.
 For an explicitly requested live profile probe or interrupted instrumentation,
 read [profile probe and restoration](references/profile-probe.md). Discovery and
 restoration do not require running the model probe. For an observed host question

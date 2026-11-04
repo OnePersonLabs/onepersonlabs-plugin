@@ -12,7 +12,9 @@ proportionate; a neutral ETA question does not require an extensive audit.
 
 Preserve the requested outcome, accepted constraints, current work, and required
 checks. This skill changes execution order and work allocation; it does not grant
-permission for new services, model evaluations, publication, or reduced scope.
+permission for new services, optional broader model evaluations, publication, or
+reduced scope. Task-specific AI verification follows the shared policy in the
+plugin `AGENTS.md`.
 
 ## Account for the work
 
@@ -63,9 +65,10 @@ check for missed consumers. When the transformation supports a dry run, repeat i
 to check that no edits remain; otherwise inspect the affected consumers directly.
 
 Move mechanical test references with their source. Stabilize changed interfaces
-before repeatedly adapting semantic fixtures. Preserve useful reproduction checks
-early and maintain the assertions that protect the intended behavior. This order
-does not postpone every test or override an explicitly selected test-first method.
+before adapting semantic fixtures. Run an early reproduction or diagnostic check
+only when its result can change the next decision. Keep test-first development
+for an explicit user choice. Otherwise batch necessary validation after the
+affected implementation is complete, before delivery.
 
 Apply scoped automatic fixes and formatting before final type and lint checks.
 A tool's safe-fix classification does not prove compiler compatibility or correct
@@ -80,8 +83,9 @@ disjoint write ownership, reuse workers, and confirm that assignments started.
 Use the host's current tool contracts for starting, resuming, and waiting on work.
 
 After writers stop changing the reviewed scope, overlap independent review and
-verification when useful. Complete the required integration gates. Reuse results
-while their relevant inputs and assumptions remain valid; rerun invalidated checks.
+final verification when useful. Select the minimum checks covering changed
+behavior, connected consumers and required gates. Reuse valid results across
+workers and stages; rerun only invalidated checks or a newly identified gap.
 After verification, make targeted repairs rather than running broad mutating
 fixers. Check command success before a dependent mutation or completion claim.
 Follow the existing two-failed-repair reassessment rule when progress stops.
@@ -107,7 +111,7 @@ baseline; report unavailable measurements as unknown.
 
 Package checks establish structure and installation behavior. Reliable implicit
 invocation and improved future execution remain unverified until observed.
-AI evaluations require separate explicit authorization.
+Optional broader AI evaluations require separate explicit authorization.
 
 Stop reassessing when the next execution path is clear. This skill adds no
 recurring review loop, mandatory model escalation, scheduler, or generic codemod

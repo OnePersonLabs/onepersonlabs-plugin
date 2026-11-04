@@ -56,3 +56,15 @@ The message carries identifiers and a path, not the reply text. On timeout,
 inspect before an explicit `notify --retry`; do not start an agent polling loop.
 Without this option, feedback remains durably available to hooks and recovery.
 The server is not another chat model and does not impersonate the root.
+
+For an established web-question workflow that must resume an idle director, use
+`connect --wake-root`. A live shared listener with wake disabled rejects this
+request. Preserve its registered roots, pending submissions and bind settings;
+do not stop it merely to satisfy one caller. Report that automatic pickup is
+unavailable until an authorized listener restart enables wake notifications.
+After such a restart, use the new pairing URL. Do not use the refresh-only
+pause/resume commands as an unrelated service reconfiguration mechanism.
+
+An owner change requires the inbox's enrollment and explicit `bind` procedure.
+Changing a Conductor director binding alone does not retarget existing inbox
+contributions. Reconcile partly applied submissions before transferring ownership.

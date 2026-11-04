@@ -94,6 +94,18 @@
         "hooks": [
           {
             "type": "command",
+            "command": "python3 -B -X utf8 \"${PLUGIN_ROOT}/skills/python-scripting/scripts/agent_tools.py\" hook",
+            "commandWindows": "python -B -X utf8 \"${PLUGIN_ROOT}/skills/python-scripting/scripts/agent_tools.py\" hook",
+            "async": true,
+            "timeout": 20
+          }
+        ]
+      },
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
             "command": "python3 -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-config-check.py\" hook",
             "commandWindows": "python -B -X utf8 \"${PLUGIN_ROOT}/scripts/codex-config-check.py\" hook",
             "timeout": 20,

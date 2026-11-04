@@ -18,8 +18,9 @@ reassessment. Neither plugin is required for assignments, integration or review.
 | Situation | Starting choice | Tradeoff to inspect |
 | --- | --- | --- |
 | A collaborator continues an established design or investigation | Inherit relevant parent history | Preserves decisions and their reasons, but also inherits irrelevant material and the parent's assumptions |
+| Independent planning | Start fresh with requirements, accepted decisions and evidence pointers | The brief must preserve reasons and authority that the parent transcript would otherwise supply |
 | Independent review | Start fresh with requirements, baseline, stable diff and source pointers | Reduces anchoring on the builder's conclusions; omitted requirements can produce wrong findings |
-| A self-contained lookup or mechanical task | A fresh worker can be appropriate | Saves unnecessary context; the assignment must contain everything that changes the answer |
+| A self-contained lookup or mechanical task | Start fresh with a complete assignment | Saves unnecessary context; the assignment must contain everything that changes the answer |
 | A change depends on an unsettled shared interface | Keep one decision owner until that interface is settled | Adding writers before then increases incompatible decisions and repair work |
 | A worker repeatedly lacks facts or returns incorrect work | Diagnose the missing context, interface, evidence or capability | A larger model cannot repair a contradictory assignment; a smaller model is not cheaper when repeated corrections dominate |
 
@@ -35,6 +36,12 @@ condition. A fork avoids rewriting the entire discussion; it does not excuse a
 vague task. Workers should ask for a missing decisive fact instead of inventing
 it. Anthropic observed misinterpretation and duplicated searches from weak briefs.
 [Anthropic's research system](https://www.anthropic.com/research/multi-agent-research-system)
+
+Select `fork_turns: "none"` explicitly for a fresh native child; the current
+host defaults to inherited history. An App Server `thread/start` without a
+parent transcript supplies a fresh initial worker. Related follow-ups and
+repairs can resume that worker's own session. Calling an assignment independent
+does not itself change the host's context selection.
 
 ## Coordinate the complete change
 

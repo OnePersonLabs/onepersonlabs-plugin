@@ -64,8 +64,10 @@ state store or service. A component list does not prove that their contracts fit
 
 Test the decisive uncertainty with the smallest authorized source read or reversible
 experiment and an independent correctness basis. Use $onepersonlabs:solve-novel-software for
-difficult feasibility or oracle design. Establish explicit permission and a budget
-for AI evaluations or live-service qualification; research does not authorize
+difficult feasibility or oracle design. Task-specific AI verification follows the
+shared policy in the plugin `AGENTS.md`. Optional broader AI evaluations need
+separate authorization and a budget; live-service qualification or effects beyond
+the authorized task need separate authorization and a budget. Research does not authorize
 installation, purchases, deployment or upstream messages.
 
 ## Recommend and hand off

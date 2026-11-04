@@ -60,6 +60,13 @@ only the context missing from the existing work record.
 
 ## Request a useful human contribution
 
+To draft a questionnaire, correspondence, or review document for someone else,
+use [$onepersonlabs:write](../skills/write/SKILL.md). It uses available context and
+asks you for consequential missing preparation details. Facts only the recipient
+knows remain questions for that person. For example, ask it to draft questions for
+a hardware vendor about an undocumented panel interface; you do not need to supply
+the vendor's answers first. The draft does not send anything or open an inbox.
+
 Use [$onepersonlabs:human-collaboration](../skills/human-collaboration/SKILL.md)
 when a specific person can improve a consequential decision, supply missing
 context, review a technical choice, or give feedback on a running page. Ask for
@@ -71,10 +78,12 @@ without it:
 > why the decision matters now, what can continue without an answer, and where
 > to respond. Keep the open decision with the existing project owner.
 
-When you request substantive collaboration (such as a technical review or
-feedback on a running page), or explicitly invoke the skill, the root enrolls
-its own session and opens the inbox service when needed. A hook or ordinary chat
-does not enroll a session or start the service. The inbox is local to the
+When you request substantive collaboration beyond drafting (such as a technical
+review, feedback on a running page, or inbox management), or explicitly invoke
+`$onepersonlabs:human-collaboration`, the root enrolls its own session and opens
+the inbox service when needed. Explicit invocation retains this workflow even
+when the contribution is a questionnaire. A hook or ordinary chat does not enroll
+a session or start the service. The inbox is local to the
 workspace and workstation; it is not cross-clone sync. Published brief
 revisions and submitted replies stay with the inbox, along with any source
 snapshots captured for the brief.
@@ -108,8 +117,17 @@ If a brief is an invitation to comment, work continues while the person is
 absent. The root may make a reversible assumption for a nonblocking question
 only after independent authorized work is exhausted, and must record that
 assumption and a way to recover. Never infer approval, an exception, or consent
-to a destructive or consequential action from silence. Use the normal chat
-question channel for a real blocker or required permission.
+to a destructive or consequential action from silence. When you choose the web
+inbox, real blockers remain there until you explicitly submit an answer.
+Host-required permission controls still use their required interface.
+
+If a web reply should resume an idle agent, request wake notifications. The root
+uses `connect --wake-root` and ends its turn while waiting. Web Send then queues
+a notice to the contribution's recorded owner; it does not keep a model running.
+A running shared listener without this mode cannot silently gain it. Its pending
+submissions stay available until an authorized restart enables notifications, or
+the root resumes through an ordinary turn. Queue acceptance does not establish
+that the agent consumed or integrated the answer.
 
 When handing off work with an outstanding response, preserve its brief revision,
 submission ID, claim and outcome state, partly applied changes, and current

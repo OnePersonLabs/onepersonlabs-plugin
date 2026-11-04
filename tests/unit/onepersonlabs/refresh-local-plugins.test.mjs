@@ -5,7 +5,6 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import test from 'node:test'
 import { fileURLToPath } from 'node:url'
-import { counterpartInvocation, counterpartScriptForRepo } from '../../../plugins/onepersonlabs/skills/refresh-local-plugins/scripts/install-local.mjs'
 
 const scripts = fileURLToPath(new URL('../../../plugins/onepersonlabs/skills/refresh-local-plugins/scripts', import.meta.url))
 const onepersonlabsScripts = fileURLToPath(new URL('../../../plugins/onepersonlabs/scripts', import.meta.url))
@@ -56,8 +55,6 @@ if (args.join(' ') === 'app-server --stdio') {
     else if (message.method === 'hooks/list') out({ id: message.id, result: { data: [{ cwd: process.cwd(), errors: [], warnings: [], hooks: [] }] } }), process.stdout.write('\\n')
     else if (message.method !== 'initialized') process.exit(93)
   })
-} else if (JSON.stringify(args) === JSON.stringify(['plugin', 'list', '--json'])) {
-  out(JSON.parse(env.PLUGIN_INVENTORY || '{"installed":[{"pluginId":"alpha@example-market","installed":true,"enabled":false}]}'))
 } else if (JSON.stringify(args) === JSON.stringify(['plugin', 'marketplace', 'list', '--json'])) {
   out({ marketplaces: JSON.parse(readFileSync(env.REGISTRATION, 'utf8')) })
 } else if (args.length === 5 && args.slice(0, 3).join(' ') === 'plugin marketplace add' && args[4] === '--json') {
@@ -251,7 +248,7 @@ test('an explicit OnePersonLabs refresh dynamically reconciles added, removed, a
   assert.doesNotMatch(contents, /\[agents\.onepersonlabs-scout\]/u)
 })
 
-test('a version upgrade preserves owned roles across whole-cache deletion and routes the counterpart through source', (t) => {
+test('a version upgrade preserves owned roles across whole-cache deletion', (t) => {
   const f = onepersonlabsFixture(t)
   writeFileSync(f.config, [
     'model = "keep-me"',
@@ -273,14 +270,8 @@ test('a version upgrade preserves owned roles across whole-cache deletion and ro
   assert.match(contents, configFilePattern(f.rolePath('0.3.0', 'task')))
   assert.doesNotMatch(contents, /\[agents\.onepersonlabs-retired\]/u)
 
-  const sourceHelper = counterpartScriptForRepo(f.repo)
-  assert.equal(sourceHelper, join(realpathSync(f.source), 'skills', 'refresh-local-plugins', 'scripts', 'install-local.mjs'))
   assert.equal(existsSync(f.helper), false, 'the previous installed helper was removed with its cache')
-  const invocation = counterpartInvocation({
-    platform: 'win32', script: sourceHelper, repo: f.repo,
-    translate: (path) => path.replace(/^([A-Z]):\\/u, (_, drive) => `/mnt/${drive.toLowerCase()}/`).replaceAll('\\', '/'),
-  })
-  assert.match(invocation.args.at(-1), /\/plugins\/onepersonlabs\/skills\/refresh-local-plugins\/scripts\/install-local\.mjs/u)
+
 })
 
 test('modified selection prepares source before comparing an unchanged old bundle', (t) => {
@@ -392,22 +383,6 @@ test('a different checkout registered under the same name stops before any mutat
   assert.equal(existsSync(f.helper), true)
 })
 
-test('counterpart refresh uses its own registered checkout', (t) => {
-  const f = fixture(t)
-  const peer = join(f.root, 'peer checkout')
-  cpSync(f.repo, peer, { recursive: true })
-  prepareFixture({ ...f, repo: peer })
-  writeFileSync(join(peer, 'input.txt'), 'peer new bytes')
-  writeJson(f.registration, [{ name: 'example-market', root: peer }])
-  const result = f.invoke(['--plugin', 'alpha', '--local-only', '--registered-source', '--installed-only'], { MARKETPLACE_ROOT: peer }, false)
-  assert.equal(result.status, 0, result.stderr)
-  assert.equal(readFileSync(join(f.userProfile, '.codex', 'plugins', 'cache', 'example-market', 'alpha', '1.0.0', 'content.txt'), 'utf8'), 'peer new bytes')
-  assert.equal(f.calls()[0].cwd, f.repo)
-  assert.equal(f.calls()[1].cwd, peer)
-  assert.equal(existsSync(join(f.repo, 'prepared.txt')), false)
-  assert.equal(readFileSync(join(peer, 'prepared.txt'), 'utf8'), 'ran')
-})
-
 test('dry run validates and prints sources without invoking Codex or creating the target home', (t) => {
   const f = fixture(t)
   const absentHome = join(f.root, 'preview only')
@@ -474,49 +449,19 @@ test('modified selection does not install a plugin absent from that home', (t) =
   assert.deepEqual(JSON.parse(result.stdout).plugins.map(({ name }) => name), ['alpha'])
 })
 
-test('counterpart selection refreshes an installed disabled plugin and skips an absent plugin', (t) => {
-  const f = fixture(t)
-  const result = f.invoke(['--plugin', 'all', '--installed-only'])
-  assert.equal(result.status, 0, result.stderr)
-  assert.deepEqual(f.calls().filter(({ args }) => args[0] === 'plugin' && args[1] === 'add').map(({ args }) => args[2]), ['alpha@example-market'])
-  assert.equal(readFileSync(join(f.selected, 'content.txt'), 'utf8'), 'alpha new bytes')
-  assert.equal(existsSync(join(f.home, 'plugins/cache/example-market/beta')), false)
-})
-
-test('counterpart selection ignores stale caches and another marketplace without preparing or installing', (t) => {
-  const f = fixture(t)
-  prepareFixture(f)
-  const result = f.invoke(['--plugin', 'alpha', '--installed-only'], {
-    PLUGIN_INVENTORY: JSON.stringify({ installed: [{ pluginId: 'alpha@different-market', installed: true }, { pluginId: 'alpha@example-market', installed: false }] }),
-  })
-  assert.equal(result.status, 0, result.stderr)
-  assert.equal(existsSync(join(f.repo, 'prepared.txt')), false)
-  assert.deepEqual(f.calls().map(({ args }) => args), [['plugin', 'list', '--json']])
-  assert.equal(existsSync(f.helper), true)
-})
-
-test('counterpart preview reads installation inventory without mutating the home', (t) => {
-  const f = fixture(t)
-  const result = f.invoke(['--plugin', 'all', '--installed-only', '--dry-run'])
-  assert.equal(result.status, 0, result.stderr)
-  assert.deepEqual(JSON.parse(result.stdout).plugins.map(({ name }) => name), ['alpha'])
-  assert.deepEqual(f.calls().map(({ args }) => args), [['plugin', 'list', '--json']])
-})
-
-test('unverifiable counterpart installation inventory stops before mutation', (t) => {
-  const f = fixture(t)
-  const result = f.invoke(['--plugin', 'alpha', '--installed-only'], { PLUGIN_INVENTORY: '{}' })
-  assert.equal(result.status, 1)
-  assert.match(result.stderr, /valid installed array/u)
-  assert.deepEqual(f.calls().map(({ args }) => args), [['plugin', 'list', '--json']])
-})
-
 test('no target home uses an existing user-level Codex home', (t) => {
   const f = fixture(t)
-  const result = f.invoke(['--plugin', 'alpha', '--dry-run', '--local-only'], {}, false)
+  const result = f.invoke(['--plugin', 'alpha', '--dry-run'], {}, false)
   assert.equal(result.status, 0, result.stderr)
-  assert.equal(JSON.parse(result.stdout).home, join(f.userProfile, '.codex'))
+  const defaultHome = join(f.userProfile, '.codex')
+  assert.equal(JSON.parse(result.stdout).home, defaultHome)
   assert.deepEqual(f.calls(), [])
+
+  const refresh = f.invoke(['--plugin', 'alpha'], {}, false)
+  assert.equal(refresh.status, 0, refresh.stderr)
+  assert.ok(f.calls().length > 0)
+  assert.ok(f.calls().every(({ home }) => home === defaultHome))
+  assert.equal(readFileSync(join(defaultHome, 'plugins/cache/example-market/alpha/1.0.0/content.txt'), 'utf8'), 'alpha new bytes')
 })
 
 test('unchanged plugins require no marketplace registration or install', (t) => {
@@ -538,38 +483,10 @@ test('unchanged plugins require no marketplace registration or install', (t) => 
 
 test('an absent user-level Codex home stops before mutation', (t) => {
   const f = fixture(t)
-  const result = f.invoke(['--plugin', 'alpha', '--local-only'], { USERPROFILE: join(f.root, 'absent user'), HOME: join(f.root, 'absent user') }, false)
+  const result = f.invoke(['--plugin', 'alpha'], { USERPROFILE: join(f.root, 'absent user'), HOME: join(f.root, 'absent user') }, false)
   assert.equal(result.status, 1)
   assert.match(result.stderr, /User-level Codex home does not exist/u)
   assert.deepEqual(f.calls(), [])
-})
-
-test('one helper invocation routes Windows to WSL with translated paths and local-only recursion', () => {
-  const invocation = counterpartInvocation({
-    platform: 'win32', script: 'C:\\skill\\install-local.mjs', repo: 'C:\\source',
-    plugins: ['alpha', 'beta'], dryRun: true,
-    translate: (path) => path.replace('C:\\', '/mnt/c/').replaceAll('\\', '/'),
-  })
-  assert.deepEqual(invocation, {
-    executable: 'wsl.exe',
-    args: ['--exec', 'bash', '-lc', "node '/mnt/c/skill/install-local.mjs' '--repo' '/mnt/c/source' '--plugin' 'alpha' '--plugin' 'beta' '--dry-run' '--local-only' '--registered-source' '--installed-only'"],
-  })
-})
-
-test('one helper invocation routes WSL to Windows with safe quoted paths', () => {
-  const invocation = counterpartInvocation({
-    platform: 'linux', script: "/mnt/c/skill's helper/install-local.mjs", repo: '/mnt/c/source',
-    plugins: ['alpha'], translate: (path) => path.replace('/mnt/c/', 'C:\\').replaceAll('/', '\\'),
-  })
-  assert.equal(invocation.executable, 'powershell.exe')
-  assert.deepEqual(invocation.args.slice(0, 3), ['-NoProfile', '-NonInteractive', '-EncodedCommand'])
-  const decoded = Buffer.from(invocation.args[3], 'base64').toString('utf16le')
-  assert.equal(decoded, "& node 'C:\\skill''s helper\\install-local.mjs' '--repo' 'C:\\source' '--plugin' 'alpha' '--local-only' '--registered-source' '--installed-only'; exit $LASTEXITCODE")
-})
-
-test('counterpart helper discovery does not borrow OnePersonLabs from another marketplace', (t) => {
-  const f = fixture(t)
-  assert.equal(counterpartScriptForRepo(f.repo), undefined)
 })
 
 test('all preflights every selected source before installing any plugin', (t) => {

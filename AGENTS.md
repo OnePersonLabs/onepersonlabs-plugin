@@ -18,7 +18,7 @@ also trusts the selected installed plugins' current hooks through the shared
 installer; leave unrelated hooks and sandbox settings unchanged. Use
 `--plugin all` only when the user explicitly asks to install every marketplace
 plugin. For a normal `$onepersonlabs:refresh-local-plugins` invocation, use the current
-user's existing default Codex home or homes without asking for a path. Use an
+user's existing default Codex home without asking for a path. Use an
 explicit `--target-home` when the user names a home or the task clearly targets
 one, including isolated tests.
 
@@ -55,7 +55,8 @@ After a successful `$onepersonlabs:refresh-local-plugins` refresh targeting this
 Apply the shared [Verification and experiments](plugins/onepersonlabs/AGENTS.md#verification-and-experiments)
 policy to all repository work, including `tests/` and `tools/`.
 Run commands from the repository root. Select affected checks below and complete
-all required gates.
+the required gates once the affected implementation is stable, before delivery.
+Reuse valid results across stages; diagnostic probes follow the shared policy.
 
 | Change or checkpoint                           | Check                                                                                               |
 | ---------------------------------------------- | --------------------------------------------------------------------------------------------------- |
@@ -63,7 +64,7 @@ all required gates.
 | Skill instructions or activation metadata      | Review the changed package against its sources and validate its structure.                          |
 | MCP launcher or server metadata                | `npm run test:mcp -- --plugin <plugin-name>`                                                        |
 | UI code or resources                           | `npm run test:ui -- --plugin <plugin-name>`                                                         |
-| Package-visible files at a coherent checkpoint | `npm run test:installed -- --plugin <plugin-name>`                                                  |
+| Package-visible files at final integration     | `npm run test:installed -- --plugin <plugin-name>`                                                  |
 
 `test:installed` includes contract and unit checks. When it is required at the
 same checkpoint, use it instead of first running those suites separately.

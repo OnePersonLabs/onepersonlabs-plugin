@@ -17,6 +17,9 @@ host, or unusable for a particular task.
 
 ## Inspect or repair OnePersonLabs' managed Codex defaults
 
+For generated agent tools, use the separate [Python scripting skill](../skills/python-scripting/SKILL.md).
+Its settings do not belong in Codex's `config.toml`; see [agent-tool storage](#agent-tool-storage).
+
 The installed plugin provides a read-only check and an explicit repair command.
 Run them with Python 3.11 or newer and the
 [installed plugin directory](getting-started.md#find-the-installed-plugin-directory).
@@ -88,6 +91,55 @@ Each transition needs its own evidence. A source edit does not update an install
 copy, and plugin installation does not replace global instructions. Use the
 [refresh skill](../skills/refresh-local-plugins/SKILL.md) for source installations
 and the procedure below for the instruction file.
+
+## Agent-tool storage
+
+Generated Python tools for agent-side work live under the active Codex home's
+`agent-tools` directory. On a default Windows installation this is
+`C:\Users\<user>\.codex\agent-tools`; `CODEX_HOME` selects another home.
+The sibling directories are `hot`, `cold` and `temp`. Each Codex home has its
+own store, shared across its projects and separate from plugin installations.
+
+| Tier | Age threshold | Count threshold | Cleanup action |
+| --- | --- | --- | --- |
+| Hot | 60 days | More than 100 scripts | Move eligible oldest overflow to cold |
+| Cold | 180 days | More than 400 scripts | Delete eligible oldest overflow |
+| Temp | 14 days | None | Delete eligible scripts |
+
+Hot and cold cleanup require both age and count conditions. They remove only
+enough eligible scripts to reach the count threshold; a recent collection can
+remain above it, and an old small collection can remain indefinitely. Demotion
+starts a new cold-storage age. Running or editing a script refreshes its
+retention timestamp; browsing its name, description or keywords does not.
+These timestamps are a retention policy, not an exact execution history.
+
+Defaults need no configuration file. To override a policy, create
+`agent-tools/config.json` with only the needed keys: `hot_age_days`, `hot_count`,
+`cold_age_days`, `cold_count` or `temp_age_days`. Values are nonnegative integers.
+Invalid configuration prevents cleanup and produces an actionable error.
+The helper does not write a default config or create storage on an unused
+session's behalf.
+
+A native asynchronous `SessionStart` hook runs maintenance without holding up
+the session. It skips a busy store and retries on a later session event. Active
+managed scripts can run concurrently; cleanup waits for a later opportunity
+instead of moving a running tool. Codex may cancel an unfinished background hook
+at session end, so interrupted work is reconciled on the next pass. There is no
+separate cleanup service or schedule. Failures are reported; successful cleanup
+adds no conversation context.
+
+Use the skill's maintained manager for `find`, `run` and `maintain --dry-run`.
+Discovery searches purpose-bearing filenames and their `Description` and
+`Keywords` header comments, hot before cold, without executing code. Temp tools
+are selected explicitly. The dry run is an advisory snapshot and changes
+nothing. The skill documents invocation, output and recovery details.
+
+Generated tools are disposable. Product code, documentation, CI and tests must
+not reference them, and they must not call one another. If a maintained consumer
+needs a utility, implement it in that consumer's normal repository location.
+The maintained manager and commands used to operate the store may name stored
+tools. This script retention policy does not apply to authored documents, human
+submissions, rollback backups or unresolved recovery records.
 
 ## Update global instructions
 

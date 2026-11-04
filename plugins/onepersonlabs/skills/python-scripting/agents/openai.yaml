@@ -1,0 +1,6 @@
+interface:
+  display_name: "Python Scripting"
+  short_description: "Create and reuse disposable Python agent tools"
+  default_prompt: "Use $python-scripting to find or create a parameterized Python utility for this task."
+policy:
+  allow_implicit_invocation: true

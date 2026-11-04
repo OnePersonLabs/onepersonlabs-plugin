@@ -1,6 +1,6 @@
 ---
 name: human-collaboration
-description: Prepare and integrate requested human collaboration through the shared inbox, technical reviews, questions, and feedback pinned to a running page.
+description: Prepare and integrate requested human collaboration through the shared inbox, technical reviews, questions, and feedback pinned to a running page. Draft-only questionnaires and correspondence use write.
 ---
 
 # Human collaboration
@@ -10,6 +10,12 @@ integrates the responses. This is not an approval queue, a substitute for agent
 review, or a way to occupy the user while agents work.
 
 ## Enter and recover
+
+Requests only to draft questionnaires, correspondence, or review documents use
+`$onepersonlabs:write`. Obtaining answers from someone else does not by itself
+request inbox management. For these drafts, do not enroll a session or start the
+service unless the user explicitly invokes `$onepersonlabs:human-collaboration`
+or requests inbox management.
 
 Resolve this loaded skill directory. Use its `scripts/human.py` with Python 3.11
 or newer (`python` on Windows, `python3` on POSIX; honor `PYTHON_BIN`). Do not copy
@@ -23,9 +29,10 @@ Use the known root thread ID or `CODEX_THREAD_ID`; never guess it. If an inbox
 exists, read `INBOX.md` and use `pending` and `list` before creating more work.
 Inspect only the relevant full items with `show H006`.
 
-When the user requests substantive human collaboration, including feedback on a
-running product, or explicitly invokes `$onepersonlabs:human-collaboration`, the
-interactive root opens the inbox before preparing contributions:
+When the user requests substantive human collaboration beyond drafting, including
+feedback on a running product or inbox management, or explicitly invokes
+`$onepersonlabs:human-collaboration`, the interactive root opens the inbox before
+preparing contributions:
 
 1. Run `init --title <readable-title>` for this root. It creates or reuses the
    project inbox, enrolls the session, and registers the project in the local
@@ -123,11 +130,21 @@ human can correct it. Preserve the assumption and recovery point in the existing
 task checkpoint. A human correction requires reassessing dependent work.
 
 Do not assume approval, a rule exception, a destructive action, or a decision
-whose consequential ambiguity requires input. Use the host's inline
-`request_user_input` for legitimate blockers and consequential ambiguity when
-the host permits it, at the required time. Otherwise use the required chat
-channel. The inbox cannot replace that channel. Do not wait for a review
+whose consequential ambiguity requires input. Honor the user's selected question
+surface. When they choose the web inbox, use it for blocking questions as well
+as review invitations; leave dependent work blocked until a submitted answer
+resolves it. Host-required permission or approval controls still use their
+required interface. Without an established surface preference, use the host's
+inline question tool when available or ordinary chat. Do not wait for a review
 invitation or manufacture more work after the authorized task is complete.
+
+When the user expects a web reply to resume an idle root, enable the existing
+`connect --wake-root` delivery path and finish the current turn after independent
+work. Read [delivery](references/delivery.md) first. A queued notice identifies
+pending input; it is not the answer, an approval, or proof of integration. Do not
+keep an agent polling for a reply. If a shared listener cannot provide the
+requested notification mode, report that limitation without stopping other
+sessions or silently promising automatic pickup.
 
 Saving a file or phone draft is not submission. The human explicitly uses Send
 or `submit H006` for the Markdown reply. `submit --revision` targets an older

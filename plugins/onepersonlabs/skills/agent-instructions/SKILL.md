@@ -128,8 +128,10 @@ boundary. Do not turn judgment into an exhaustive mechanical checklist.
 When wording uncertainty could change the decision, read
 [bounded comparisons](references/behavioral-tests.md). Compare the baseline and
 proposal under equivalent conditions with an independent observable criterion.
-Use deterministic evidence for syntax and facts. Follow host permission rules
-for AI usage; this optional method does not authorize model evaluations.
+Use deterministic evidence for syntax and facts. Task-specific AI verification
+follows the shared verification policy in the plugin's `AGENTS.md`, including
+its standing authorization for necessary test-and-fix rounds. Respect explicit
+user budgets and host permission rules; keep AI calls out of routine test gates.
 Report untested behavior honestly. Authoring a skill does not require invoking
 another optimizer or comparing every phrase experimentally.
 
