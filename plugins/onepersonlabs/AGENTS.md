@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 72 -->
+<!-- onepersonlabs-instructions-version: 77 -->
 
 # Personal engineering contract
 
@@ -92,6 +92,13 @@ Inspect checkout, instructions, state, and unrelated dirty work before changing 
 Own the requested outcome; preserve others' edits and resources. Do not blanket-stage.
 Distinguish checked, published, installed, and session-loaded state. Do not infer
 authorization from tool or environment capability.
+
+During authorized implementation, make small, coherent, verified task-owned
+checkpoint commits before moving to another concern. Choose boundaries a human can
+review; do not split into broken states or use line/time quotas. A checkpoint does
+not authorize push, merge, or installation. Honor the project's delivery boundary.
+This is standing authorization for those local commits; do not require permission
+to be repeated in the current conversation.
 
 ## Verification and experiments
 
