@@ -43,16 +43,9 @@ preparing contributions:
    use `connect --host 127.0.0.1` for local-only access. Read
    [phone and notification delivery](references/delivery.md) for network and notification options.
 3. After authenticated readiness succeeds, whether `connect` starts or reuses the
-   service, open its returned pairing URL in the host browser and report it. This
-   URL contains the current GUID and bearer token. Report the host's `lan_ip` and
-   render `lan_url` as a clickable Markdown
-   link, such as `[Open human inbox](<returned-url>)`. For `local-only`
-   access, link `url` and state that a phone cannot reach this listener. Report
-   that the service remains running after the turn. On Windows, its terminal
-   shows request activity; closing that window stops the server. Keep its bearer token
-   private. If connection fails, report the error and evidence
-   path; enrollment remains saved. Reconcile a possibly running process before
-   retrying startup.
+   service, deliver the pairing link as described below. If connection fails,
+   report the error and evidence path; enrollment remains saved. Reconcile a
+   possibly running process before retrying startup.
 
 If the explicit request is to pause or restore the server around a local plugin
 refresh, follow Local plugin refresh below instead of enrolling or connecting.
@@ -73,6 +66,24 @@ propose contributions to their parent; they do not register independent roots.
 root must already be enrolled, inspect ownership, and use
 `bind --from-thread <old-root> --reason` for an explicit handoff. Binding does
 not enroll the receiving root, reset claims, or replay effects.
+
+### Deliver the pairing link
+
+After successful connection or restart, open the returned pairing URL in the
+host browser and include a clickable Markdown link in the user-facing reply:
+`[Open human inbox](<returned-url>)`. Use `lan_url` when present; otherwise use
+`url`. Copy the complete returned URL, including its scheme, host, port, path,
+`?guid=...` query and `#token=...` fragment. Do not reconstruct it from `lan_ip`,
+redact its token, or replace the link with a listening-status message. A bare IP
+address cannot open the inbox. Opening the browser does not replace the link in
+the reply.
+
+The pairing link grants inbox access. Give the full link to the requesting user
+in this chat; keep it out of repository files, shared documents, and activity
+logs. Report `lan_ip` alongside the link when present. For `local-only` access,
+state that a phone cannot reach this listener. Report that the service remains
+running after the turn. On Windows, its terminal shows request activity;
+closing that window stops the server.
 
 ## Select and prepare
 
@@ -205,8 +216,8 @@ running. It uses an already-registered workspace from the shared catalog, so the
 workspace being refreshed does not need its own human inbox. If the service was
 initially down or there is no pause record, it does not start one. A failed
 restart leaves the record in place so the same command can retry. A successful
-restart returns a new pairing URL; open and report it, because the previous GUID
-and pairing link stop working after restart. If the installed helper could not
+restart returns a new pairing URL; [deliver the complete clickable link](#deliver-the-pairing-link),
+because the previous GUID and pairing link stop working after restart. If the installed helper could not
 be updated, the source helper can consume the same record to restore service
 availability.
 

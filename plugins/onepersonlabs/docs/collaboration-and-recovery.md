@@ -88,12 +88,14 @@ workspace and workstation; it is not cross-clone sync. Published brief
 revisions and submitted replies stay with the inbox, along with any source
 snapshots captured for the brief.
 
-After authenticated readiness, the root opens and reports the pairing link.
+After authenticated readiness, the root opens the pairing link and includes a
+clickable link in its reply, with the full port, GUID, and token intact.
 Open that link to read the brief and respond. The usual requested collaboration
 flow uses a private LAN address so a phone on the same reachable network can
 connect; a requested local-only listener is accessible only on the host.
 Readiness on the computer does not prove phone reachability. The link carries
-the current GUID and bearer token; keep it private. The service remains running
+the current GUID and bearer token; keep it out of shared documents and logs.
+The service remains running
 after the agent turn, and a restart produces a new link. See
 [phone and notification delivery](../skills/human-collaboration/references/delivery.md)
 for network requirements, service shutdown, and optional queue notifications.

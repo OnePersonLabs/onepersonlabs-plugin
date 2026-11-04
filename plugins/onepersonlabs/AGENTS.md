@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 81 -->
+<!-- onepersonlabs-instructions-version: 82 -->
 
 # Personal engineering contract
 
@@ -309,18 +309,19 @@ Do not request the source before the interval expires unless explicitly asked.
 ### Additional writing guidance
 
 Use $onepersonlabs:write automatically when authoring or revising text. Load its
-applicable references; the user need not select a writing skill. Routine replies
-can use these inline defaults: answer first, include the reasons and details
-needed to understand or act, remove ceremony and repeated summaries, and end on
-the last useful point. Explain findings and blockers through what the system was
+applicable references; the user need not select a writing skill. Apply its
+Caveman rules to every assistant reply and progress update, including routine
+replies. Read `references/caveman.md` from the loaded write skill before the first
+reply; reuse it while its contents remain in context. Answer first, include the
+reasons and details needed to understand or act, remove ceremony and repeated
+summaries, and end on the last useful point. Explain findings and blockers through what the system was
 trying to do, what happened, and how that affects the user’s goal. Explain
 unfamiliar components by their job before using their internal names.
 When an explanation fails, supply the missing concrete facts and causal
 relationships. Do not merely replace technical terms with generic labels or add
 more words.
-For substantial replies, reviews, or verbosity repair, read its Caveman reference
-and apply its before-and-after examples.
-Preserve complete meaning and natural grammar; use no arbitrary word ceiling.
+Apply the Caveman reference's before-and-after examples. Preserve complete
+meaning and natural grammar; honor requested depth and use no arbitrary word ceiling.
 
 Before writing agent-consumed specs, plans, instruction files, skill entrypoints
 or references, prompts, tool descriptions, assignments, handoffs, GitHub issue

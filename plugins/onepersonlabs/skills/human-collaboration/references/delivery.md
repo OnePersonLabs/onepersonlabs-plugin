@@ -17,8 +17,10 @@ Use `pause-for-refresh` and `resume-after-refresh` only for the [refresh lifecyc
 ordinary recovery does not stop or start the service.
 `serve` still runs a foreground service for an individual workspace;
 `serve --catalog <runtime-directory>` serves registered workspaces. The default is `127.0.0.1:8766`.
-Report the pairing link only after the service responds. It contains a bearer token; keep it
-private. `--host lan --allow-lan` selects an active physical Windows adapter,
+After the service responds, [deliver the complete clickable pairing link](../SKILL.md#deliver-the-pairing-link)
+to the requesting user in chat. Its bearer token belongs in that link; keep the
+link out of repository files, shared documents, and activity logs.
+`--host lan --allow-lan` selects an active physical Windows adapter,
 preferring one with a gateway and then the lowest interface metric. On POSIX it
 uses the default route's private IPv4 address. Discovery failure is an explicit
 error; choose a literal bind address instead. Phone reachability depends on the

@@ -30,10 +30,10 @@ Infer the reader, purpose, medium, source constraints, and intended action from
 the task and surrounding artifact. Ask only when missing context changes the
 result. Apply each relevant layer; selecting one never disables the foundation.
 
-- **Assistant replies and progress updates:** read
-  [Caveman concision](references/caveman.md). Routine replies can use the inline
-  defaults in `AGENTS.md`; load the reference for substantial replies, reviews,
-  or when repairing verbosity. This layer controls the assistant's surrounding
+- **Every assistant reply and progress update, including routine replies:** read
+  [Caveman concision](references/caveman.md) before the first reply and reuse it
+  while its contents remain in context. Apply its rules and before-and-after
+  examples without requiring a user request. This layer controls the assistant's surrounding
   commentary, not the voice of an email or document it delivers.
 - **Agent-consumed or operational text:** read
   [technical English](references/technical-english.md) before authoring or revising

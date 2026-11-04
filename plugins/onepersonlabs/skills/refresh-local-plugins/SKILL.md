@@ -33,7 +33,9 @@ blocks refresh. Do not add repeated service probes.
 After the installation attempt, run installed `resume-after-refresh` from the
 same workspace even if installation failed. Use the source helper if the
 installed helper is unavailable. It restarts only a previously running service;
-retain its pause record on failure. Open and report a returned new pairing URL.
+retain its pause record on failure. When it returns a new pairing URL, follow
+[the pairing-link delivery instructions](../human-collaboration/SKILL.md#deliver-the-pairing-link)
+to open it and give the user the complete clickable link.
 
 ## Run the bundled helper
 
