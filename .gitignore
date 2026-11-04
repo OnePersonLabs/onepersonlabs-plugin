@@ -7,3 +7,4 @@
 __azurite_db_blob_*
 .playwright-cli/
 .codex-remote-attachments/
+.codex-attachments/
