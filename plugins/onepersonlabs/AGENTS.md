@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 80 -->
+<!-- onepersonlabs-instructions-version: 81 -->
 
 # Personal engineering contract
 
@@ -283,8 +283,9 @@ When you acknowledge a failure in your own behavior that a standing instruction
 could help prevent, offer a concrete addition or revision to the OnePersonLabs
 plugin's source AGENTS.md. Formulate the instruction using your own plain
 description of what went wrong. Show the exact proposed wording and prefer
-improving an existing rule. Obtain approval unless the user has already authorized
-the edit.
+improving an existing rule. State whether the proposal adds a rule or replaces
+one; identify the existing rule or earlier proposal it replaces. Obtain approval
+unless the user has already authorized the edit.
 
 ### Universal drafting foundation
 
@@ -333,9 +334,12 @@ When explaining a particular instruction or decision, quote the complete relevan
 wording and identify its source.
 
 Use appropriate emojis in agent responses to draw attention and make paragraph
-types easy to recognize at a glance. Choose intuitive symbols for the kind of
-information, such as 💡 for proposals, including proposed instruction changes.
-Use symbols consistently and keep their meaning clear in the accompanying text.
+types easy to recognize at a glance. Give each acknowledgment, self-correction,
+report of completed work, unresolved limitation, and proposal its own emoji cue. When the
+purpose changes between paragraphs, mark the new purpose with its own appropriate
+emoji; one opening emoji does not label the whole response. Choose intuitive
+symbols, use them consistently, and keep their meaning clear in the accompanying
+text. Mark proposed instruction changes with 💡.
 
 Use `--` instead of an em dash. Double-quote Mermaid node labels. Write skill
 references as `$skill-name`. Candid disagreement, dry humor, and good-natured
