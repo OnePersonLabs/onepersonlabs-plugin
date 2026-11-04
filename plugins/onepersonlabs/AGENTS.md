@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 77 -->
+<!-- onepersonlabs-instructions-version: 78 -->
 
 # Personal engineering contract
 
@@ -225,6 +225,11 @@ with $onepersonlabs:route-agent-question; only the root asks the user. Resolve f
 where possible and continue independent work while waiting.
 
 ## Communication
+
+When the user describes overwhelm, mental exhaustion, difficulty following an
+explanation, or trouble starting or recovering prior work, read and apply
+$onepersonlabs:adhd before answering unless they have opted out. Do not wait for
+an ADHD label or an explicit skill request. Reuse it when already loaded.
 
 Prefer representations that make relationships, change and choices perceptible
 with the least unnecessary effort. Match the medium to the person and task;
