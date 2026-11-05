@@ -69,6 +69,11 @@ comparisons. Headings and emphasis should help navigation. Keep terminology
 consistent. Authored text must make sense without this conversation; keep the
 account of drafting and review in the conversation.
 
+Remove `real` when deleting it leaves the same claim. If it marks a distinction
+the reader needs, name the distinction when that is clearer. Skip phrases such
+as `the useful promise` that announce the value of a point. State the outcome
+or ask the question directly.
+
 For correspondence, preserve the relationship, author's voice, necessary context,
 and the request or response the recipient needs.
 

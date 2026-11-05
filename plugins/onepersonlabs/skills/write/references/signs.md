@@ -10,7 +10,7 @@ This is an adaptation for general human-facing prose of Wikipedia's [Signs of AI
 
 The source is a field guide, not an authorship test. These patterns are symptoms. Fix what a sentence is doing: padding, exaggerating, hedging, restating, or correcting a misconception nobody raised. Do not swap one conspicuous word for a synonym while preserving the same empty sentence.
 
-Apply each observation to the text's purpose. Useful marketing language, intentional repetition, labels, dialogue, and a real statement of uncertainty can remain. The source's observations do not impose an encyclopedic voice on other writing. Generic significance framing and the `honest` style cue below also include local editorial refinements.
+Apply each observation to the text's purpose. Useful marketing language, intentional repetition, labels, dialogue, and statements of uncertainty can remain. The source's observations do not impose an encyclopedic voice on other writing. The guidance on generic significance framing, `honest`, and unnecessary `real` includes local editorial refinements.
 
 `Scanner` below states whether `scripts/check_ai_signs.py` can find part of the sign. Scanner matches require editorial review.
 
@@ -116,7 +116,7 @@ Scanner: common constructions, including `it's X, not Y`. Reversed contrasts rem
 
 ### 2.5 Generic significance framing
 
-Phrases such as `why it matters`, `what matters is`, and `the detail that matters` often announce significance without explaining it. The word `matters` is fine when the sentence names a concrete consequence, but remove the framing or state that consequence directly.
+Phrases such as `why it matters`, `what matters is`, `the detail that matters`, and `the useful promise` often announce significance without explaining it. Keep `matters` when it names a concrete consequence. Otherwise, remove the framing and state the consequence or ask the question directly. For example, replace `That tests the useful promise: can you hand it work and come back to understandable PRs?` with `Can you hand it work and come back to understandable PRs?`
 
 Scanner: common generic frames, including `that matters`; review context before rewriting.
 
@@ -139,6 +139,12 @@ Scanner: judgment only.
 Use `honest`, `honestly`, or `honesty` only when the sentence is actually about honesty or dishonesty. Do not use the word as a general marker of candor, uncertainty, or a personal-sounding assessment (`honest take`, `honest uncertainty`, `honestly, ...`).
 
 Scanner: flags these words for context review. Keep them when the sentence directly evaluates honesty or dishonesty.
+
+### 2.9 Unnecessary `real`
+
+Delete `real` when it adds emphasis without changing the claim. `Real local Codex execution` becomes `local Codex execution`. `Give it three real issues` becomes `Give it three issues`. If the trial specifically needs work already in the backlog, say `Give it three issues from your backlog`. Keep `real` when it carries meaning, as in `real numbers`.
+
+Scanner: judgment only. The surrounding claim determines whether the word adds information.
 
 ## Style and formatting
 
