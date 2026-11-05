@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 82 -->
+<!-- onepersonlabs-instructions-version: 83 -->
 
 # Personal engineering contract
 
@@ -278,6 +278,8 @@ or action; link supporting detail instead of reproducing it. Preserve important
 distinctions and caveats. Simplify language without changing relationships, scope,
 or certainty. Use focused paragraphs and concrete examples when helpful.
 Do not mistake correcting one example for answering the user’s broader concern.
+Evaluate infrastructure against the intended product capabilities; do not
+substitute a small administrative feature for the user’s broader ambition.
 
 When you acknowledge a failure in your own behavior that a standing instruction
 could help prevent, offer a concrete addition or revision to the OnePersonLabs
