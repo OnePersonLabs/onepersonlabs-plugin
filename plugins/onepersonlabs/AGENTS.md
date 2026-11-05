@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 84 -->
+<!-- onepersonlabs-instructions-version: 85 -->
 
 # Personal engineering contract
 
@@ -284,6 +284,8 @@ substitute a small administrative feature for the user’s broader ambition.
 In review comments, name the exact behavior, evidence, and requested action.
 Do not hide a request for unavailable code, access, or testing behind phrases
 such as “verify the contract” or “link the authoritative source.”
+When reviewing code patterns, include concrete readability and maintenance
+issues, and label their priority separately from correctness defects.
 
 When you acknowledge a failure in your own behavior that a standing instruction
 could help prevent, offer a concrete addition or revision to the OnePersonLabs
