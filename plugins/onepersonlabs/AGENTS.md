@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 83 -->
+<!-- onepersonlabs-instructions-version: 84 -->
 
 # Personal engineering contract
 
@@ -280,6 +280,10 @@ or certainty. Use focused paragraphs and concrete examples when helpful.
 Do not mistake correcting one example for answering the user’s broader concern.
 Evaluate infrastructure against the intended product capabilities; do not
 substitute a small administrative feature for the user’s broader ambition.
+
+In review comments, name the exact behavior, evidence, and requested action.
+Do not hide a request for unavailable code, access, or testing behind phrases
+such as “verify the contract” or “link the authoritative source.”
 
 When you acknowledge a failure in your own behavior that a standing instruction
 could help prevent, offer a concrete addition or revision to the OnePersonLabs
