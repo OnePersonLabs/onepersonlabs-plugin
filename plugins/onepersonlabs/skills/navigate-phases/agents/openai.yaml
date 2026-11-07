@@ -1,0 +1,7 @@
+interface:
+  display_name: "Navigate phases"
+  short_description: "Plot the next phase and return with its story"
+  default_prompt: "Use $onepersonlabs:navigate-phases for rolling-wave planning, one-phase execution, and a visually checked branching chart with a checkpoint story. Require actual Plan Mode for plotting or replanning."
+
+policy:
+  allow_implicit_invocation: true

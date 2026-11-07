@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>Phase navigation</title>
+  <style>
+    :root { color-scheme: dark; --bg: #0b1420; --panel: #131f2e; --line: #344459; --text: #edf4fc; --muted: #b1c0d2; --accent: #80c5ff; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, sans-serif; }
+    main { max-width: 1540px; margin: auto; padding: 38px 36px 70px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: clamp(2rem, 4vw, 3.4rem); line-height: 1.12; max-width: 900px; margin-bottom: 18px; }
+    h2 { font-size: 1.3rem; line-height: 1.3; }
+    h3 { font-size: 1.05rem; line-height: 1.4; }
+    a { color: var(--accent); text-underline-offset: 3px; overflow-wrap: anywhere; }
+    button { font: inherit; color: inherit; cursor: pointer; }
+    button, a { touch-action: manipulation; }
+    :focus-visible { outline: 3px solid #f6cd71; outline-offset: 4px; }
+    .eyebrow { color: var(--accent); font-size: .8rem; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+    .intro { max-width: 880px; color: var(--muted); font-size: 1.12rem; }
+    .notice { border-left: 3px solid #f6cd71; padding: 12px 18px; background: #30291b; margin: 22px 0; }
+    .bar { display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; margin: 20px 0; }
+    .bar a { min-height: 44px; display: inline-flex; align-items: center; }
+    .roadmap { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 24px 0 34px; padding: 0; list-style: none; }
+    .roadmap li { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+    .roadmap .current { border: 2px solid var(--accent); }
+    .state { color: var(--muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; }
+    .roadmap strong { display: block; margin-top: 5px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 10px 22px; color: var(--muted); font-size: .88rem; margin-bottom: 14px; }
+    .key { display: inline-flex; gap: 8px; align-items: center; }
+    .swatch { width: 24px; height: 4px; background: var(--actor); display: inline-block; }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr); gap: 22px; align-items: start; }
+    .map-panel, .detail, .next { border: 1px solid var(--line); border-radius: 16px; background: var(--panel); }
+    .map-panel { overflow: hidden; }
+    .map-heading { padding: 18px 20px 12px; }
+    .map-heading p { margin-bottom: 0; color: var(--muted); font-size: .85rem; }
+    .map-scroll { overflow: auto; height: 650px; background: #0d1825; overscroll-behavior: contain; }
+    .map-canvas { position: relative; }
+    .lane { position: absolute; top: 10px; width: 250px; font-size: .8rem; color: var(--actor); font-weight: 700; }
+    svg { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
+    .node { position: absolute; width: 250px; min-height: 112px; padding: 12px 14px; border: 1px solid var(--actor); border-left: 4px solid var(--actor); border-radius: 12px; background: #152334; text-align: left; overflow-wrap: anywhere; }
+    .node strong { display: block; font-size: .92rem; line-height: 1.4; margin-top: 4px; }
+    .node[aria-pressed="true"] { background: #223950; box-shadow: 0 0 0 2px var(--text); }
+    .node[data-state="abandoned"], .node[data-state="interrupted"] { border-style: dashed; }
+    .node[data-state="proposed"] { border-style: dashed; background: #18202b; }
+    .symbol { font-size: .78rem; color: var(--muted); }
+    .detail { padding: 25px; position: sticky; top: 20px; }
+    .detail h2 { font-size: 1.65rem; margin: 12px 0; }
+    .detail p { color: var(--muted); }
+    .detail .lead { color: var(--text); }
+    .detail-nav { display: flex; gap: 10px; margin-top: 22px; }
+    .detail-nav button { border: 1px solid var(--line); border-radius: 8px; padding: 10px 15px; background: #21344a; min-height: 44px; }
+    button:disabled { opacity: .45; cursor: default; }
+    .detail ul { padding-left: 22px; }
+    .connections { border-top: 1px solid var(--line); padding-top: 14px; font-size: .9rem; }
+    .connections a { display: block; padding: 4px 0; }
+    .reading { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr); gap: 34px; margin-top: 42px; }
+    .story { margin: 0; padding-left: 28px; }
+    .story > li { padding: 0 0 28px 12px; scroll-margin-top: 20px; }
+    .story p { color: var(--muted); }
+    .story h3 button { background: none; border: 0; text-align: left; padding: 6px 0; font-weight: 700; font-size: 1.05rem; }
+    .story .story-state { color: var(--actor); font-size: .8rem; }
+    .accounting div { border-bottom: 1px solid var(--line); padding: 0 0 16px; margin-bottom: 16px; }
+    .accounting dt { font-weight: 700; }
+    .accounting dd { margin: 4px 0 0; color: var(--muted); }
+    .next { margin-top: 24px; padding: 24px; border-color: #887348; }
+    .next p { margin-bottom: 0; color: var(--muted); }
+    .error { color: #ffb6b6; border: 1px solid; padding: 20px; }
+    footer { color: var(--muted); font-size: .85rem; margin-top: 35px; }
+    @media (max-width: 900px) {
+      main { padding: 25px 18px 45px; }
+      .workspace, .reading { grid-template-columns: minmax(0, 1fr); }
+      .map-scroll { height: 390px; }
+      .detail { position: static; padding: 22px; }
+      .roadmap { grid-template-columns: minmax(0, 1fr); }
+      .roadmap li { padding: 11px 14px; }
+    }
+    @media print {
+      :root { color-scheme: light; --bg: white; --panel: white; --text: #101820; --muted: #334155; --line: #aaa; --accent: #164f80; }
+      .workspace, .bar { display: none; }
+      .reading { display: block; }
+      .story > li { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow" id="eyebrow"></p><h1 id="title"></h1><p class="intro" id="summary"></p>
+    <p class="notice" id="checkpoint"></p>
+    <nav class="bar" aria-label="Presentation"><a href="#route">Explore the route</a><a href="#story">Read the whole story</a><a href="#next">At this checkpoint</a></nav>
+  </header>
+  <section aria-labelledby="course-title"><h2 id="course-title">The broad course</h2><ol class="roadmap" id="roadmap"></ol></section>
+  <section id="route" aria-labelledby="route-title">
+    <h2 id="route-title">How we got here</h2><div class="legend" id="legend"></div>
+    <p class="state">✓ Completed · ↺ Repaired · × Abandoned · ! Interrupted · ◇ Proposed · arrows show direction</p>
+    <div class="workspace">
+      <div class="map-panel"><div class="map-heading"><strong>Branching route</strong><p>Rows show story order, not elapsed time. Scroll the map in either direction; the full story is below.</p></div><div class="map-scroll" tabindex="0" role="region" aria-label="Scrollable branching route"><div class="map-canvas" id="map"></div></div></div>
+      <article class="detail" aria-labelledby="detail-title"><div class="state" id="detail-state"></div><h2 id="detail-title" tabindex="-1"></h2><p class="lead" id="detail-summary"></p><div id="detail-story"></div><div id="detail-evidence"></div><div class="connections" id="connections"></div><div class="detail-nav"><button id="previous" type="button">← Previous beat</button><button id="following" type="button">Next beat →</button></div><p class="state" id="position" aria-live="polite"></p><a id="story-link" href="#story">This beat in the whole story</a></article>
+    </div>
+  </section>
+  <div class="reading"><section aria-labelledby="story"><h2 id="story">The phase, beat by beat</h2><ol class="story" id="story-list"></ol></section><aside><h2>What the work cost us</h2><dl class="accounting" id="accounting"></dl><section class="next" id="next" aria-labelledby="next-title"><p class="eyebrow" id="next-mode"></p><h2 id="next-title"></h2><p id="next-text"></p></section></aside></div>
+  <footer id="footer">This chart presents the work. Linked project records retain their authority.</footer>
+  <noscript><p class="error">JavaScript is required for this interactive chart. Read the checkpoint in the accompanying conversation.</p></noscript>
+</main>
+<!-- Replace only this data block. Escape < as \u003c in serialized JSON. -->
+<script id="navigation-data" type="application/json">
+{
+  "title": "A route, a wrong turn, a better question",
+  "eyebrow": "Illustrative template -- not project history",
+  "summary": "Example data demonstrates a fork, a repair, a worker reunion, and an interrupted review. Replace it with source-supported work before delivering a checkpoint.",
+  "checkpoint": "Example checkpoint. Implementation stops here; plotting the next phase requires actual Plan Mode.",
+  "actors": [{"id":"root","label":"Root route","color":"#80c5ff"},{"id":"worker","label":"Worker sidequest","color":"#c5a0ff"},{"id":"review","label":"Independent review","color":"#70dbc1"}],
+  "roadmap": [{"label":"Understand the behavior","state":"completed"},{"label":"Complete one connected phase","state":"current"},{"label":"Replot from evidence","state":"proposed"}],
+  "nodes": [
+    {"id":"intent","actor":"root","row":0,"label":"Pick an observable outcome","state":"completed","summary":"Agree what the phase must deliver.","story":["This illustrative phase begins with one connected behavior and its observable result."]},
+    {"id":"try","actor":"root","row":1,"label":"Try the initial approach","state":"completed","summary":"A concrete attempt supplies evidence.","story":["The initial implementation reveals a wrong assumption."]},
+    {"id":"dead","actor":"worker","row":2,"label":"A tempting shortcut changes the result","state":"abandoned","summary":"Reject this path because it loses required behavior.","story":["The shortcut fails the acceptance case. This branch ends here; it does not rejoin as successful work."]},
+    {"id":"repair","actor":"root","row":3,"label":"Correct the owning assumption","state":"repaired","summary":"Repair the cause while preserving the outcome.","story":["A repair inside the agreed phase resolves the observed problem."]},
+    {"id":"side","actor":"worker","row":3,"label":"Check an independent consumer with a deliberately long descriptive label","state":"completed","summary":"The worker tests the connected contract.","story":["The worker follows its own bounded route and returns evidence to the root."]},
+    {"id":"join","actor":"root","row":4,"label":"Integrate the complete behavior","state":"completed","summary":"The useful sidequest rejoins here.","story":["The root integrates the repair and the worker result."]},
+    {"id":"review","actor":"review","row":5,"label":"Review could not finish","state":"interrupted","summary":"Keep the review incomplete.","story":["An interrupted review supplies no final approval. Its branch remains visibly unfinished."]},
+    {"id":"stop","actor":"root","row":6,"label":"Return to the human","state":"completed","summary":"Deliver the result with its limits.","story":["The checkpoint distinguishes delivered behavior from unfinished review and future work."]}
+  ],
+  "edges": [{"from":"intent","to":"try"},{"from":"try","to":"dead","kind":"abandoned"},{"from":"try","to":"repair","kind":"repair"},{"from":"try","to":"side"},{"from":"repair","to":"join","kind":"repair"},{"from":"side","to":"join"},{"from":"join","to":"review"},{"from":"join","to":"stop"}],
+  "accounting": [{"label":"Preparation","detail":"Use observed evidence; do not invent durations."},{"label":"Implementation and rework","detail":"Explain which discovery changed the work."},{"label":"Verification and coordination","detail":"Parallel time overlaps. Unknown usage remains unknown."}],
+  "next": {"mode":"Plan Mode required","title":"Replot before departure","text":"Request actual Plan Mode before detailing a new phase. This example supplies no new implementation authority."}
+}
+</script>
+<script>
+(() => {
+  'use strict';
+  const element = id => document.getElementById(id);
+  const make = (tag, text, className) => {
+    const node = document.createElement(tag);
+    if (text !== undefined) node.textContent = text;
+    if (className) node.className = className;
+    return node;
+  };
+  const states = {completed:'✓ Completed', repaired:'↺ Repaired', abandoned:'× Abandoned', interrupted:'! Interrupted', proposed:'◇ Proposed'};
+  // Story content is text. Only explicit local or web evidence URLs become links.
+  const safeHref = href => {
+    const url = new URL(href, location.href);
+    if (!['http:', 'https:', 'file:'].includes(url.protocol)) throw new Error('Unsupported evidence link protocol');
+    return url.href;
+  };
+  try {
+    const data = JSON.parse(element('navigation-data').textContent);
+    const actors = new Map(data.actors.map((actor, lane) => [actor.id, {...actor, lane}]));
+    const nodes = new Map(data.nodes.map(node => [node.id, node]));
+    if (!data.nodes.length || nodes.size !== data.nodes.length || actors.size !== data.actors.length) throw new Error('Node and actor IDs must be unique and nonempty');
+    const cells = new Set();
+    for (const actor of actors.values()) {
+      if (!/^[a-z][a-z0-9-]*$/.test(actor.id) || !/^#[0-9a-f]{6}$/i.test(actor.color)) throw new Error('Invalid actor ID or color');
+    }
+    for (const node of data.nodes) {
+      if (!/^[a-z][a-z0-9-]*$/.test(node.id) || !actors.has(node.actor) || !Number.isInteger(node.row) || node.row < 0 || !states[node.state] || !Array.isArray(node.story)) throw new Error('Invalid node: ' + node.id);
+      const cell = node.actor + ':' + node.row;
+      if (cells.has(cell)) throw new Error('Two nodes occupy the same lane and row');
+      cells.add(cell);
+      for (const evidence of node.evidence || []) safeHref(evidence.href);
+    }
+    for (const edge of data.edges) {
+      if (!nodes.has(edge.from) || !nodes.has(edge.to) || edge.from === edge.to) throw new Error('An edge has an invalid endpoint');
+      if (edge.kind && !['repair','abandoned','proposed'].includes(edge.kind)) throw new Error('Invalid edge kind');
+    }
+    document.title = data.title;
+    for (const key of ['title','eyebrow','summary','checkpoint']) element(key).textContent = data[key];
+    for (const phase of data.roadmap) {
+      const li = make('li');
+      if (phase.state === 'current') { li.className = 'current'; li.setAttribute('aria-current', 'step'); }
+      li.append(make('span', phase.state === 'current' ? '● You are here' : phase.state, 'state'), make('strong', phase.label));
+      element('roadmap').append(li);
+    }
+    const map = element('map');
+    for (const actor of actors.values()) {
+      const key = make('span', undefined, 'key'); key.style.setProperty('--actor', actor.color);
+      key.append(make('span', undefined, 'swatch'), make('span', actor.label)); element('legend').append(key);
+      const label = make('div', actor.label, 'lane'); label.style.left = (actor.lane * 300 + 24) + 'px'; label.style.setProperty('--actor', actor.color); map.append(label);
+    }
+    const buttons = new Map();
+    const addEvidence = (target, node) => {
+      if (!node.evidence?.length) return;
+      target.append(make('strong', 'Supporting artifacts'));
+      const list = make('ul');
+      for (const entry of node.evidence) { const li = make('li'); const a = make('a', entry.label); a.href = safeHref(entry.href); li.append(a); list.append(li); }
+      target.append(list);
+    };
+    data.nodes.forEach((node, index) => {
+      const actor = actors.get(node.actor);
+      const button = make('button', undefined, 'node'); button.type = 'button'; button.dataset.state = node.state;
+      button.style.left = (actor.lane * 300 + 24) + 'px'; button.style.setProperty('--actor', actor.color);
+      button.setAttribute('aria-pressed', 'false'); button.setAttribute('aria-controls', 'detail-title');
+      button.append(make('span', states[node.state], 'symbol'), make('strong', node.label));
+      button.addEventListener('click', () => select(index, false)); map.append(button); buttons.set(node.id, button);
+      const li = make('li'); li.id = 'beat-' + node.id; li.style.setProperty('--actor', actor.color);
+      li.append(make('div', actor.label + ' · ' + states[node.state], 'story-state'));
+      const title = make('h3'); const storyButton = make('button', node.label); storyButton.type = 'button';
+      storyButton.addEventListener('click', () => { select(index, true); element('detail-title').scrollIntoView({block:'center'}); element('detail-title').focus({preventScroll:true}); });
+      title.append(storyButton); li.append(title, make('p', node.summary));
+      node.story.forEach(paragraph => li.append(make('p', paragraph)));
+      addEvidence(li, node); element('story-list').append(li);
+    });
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('aria-hidden', 'true'); map.prepend(svg);
+    function layout() {
+      const rowHeights = new Map();
+      data.nodes.forEach(node => rowHeights.set(node.row, Math.max(rowHeights.get(node.row) || 0, buttons.get(node.id).offsetHeight)));
+      const rowPositions = new Map(); let y = 46;
+      for (let row = 0; row <= Math.max(...data.nodes.map(n => n.row)); row++) { rowPositions.set(row, y); y += (rowHeights.get(row) || 90) + 66; }
+      data.nodes.forEach(node => { buttons.get(node.id).style.top = rowPositions.get(node.row) + 'px'; });
+      map.style.width = Math.max(600, actors.size * 300 + 4) + 'px'; map.style.height = (y - 25) + 'px';
+      svg.setAttribute('width', map.style.width); svg.setAttribute('height', map.style.height); svg.replaceChildren();
+      const defs = document.createElementNS(ns, 'defs'); svg.append(defs);
+      for (const actor of actors.values()) {
+        const marker = document.createElementNS(ns, 'marker'); marker.id = 'arrow-' + actor.id;
+        marker.setAttribute('viewBox','0 0 10 10'); marker.setAttribute('refX','9'); marker.setAttribute('refY','5'); marker.setAttribute('markerWidth','7'); marker.setAttribute('markerHeight','7'); marker.setAttribute('orient','auto');
+        const tip = document.createElementNS(ns, 'path'); tip.setAttribute('d','M 0 0 L 10 5 L 0 10 z'); tip.setAttribute('fill',actor.color); marker.append(tip); defs.append(marker);
+      }
+      data.edges.forEach(edge => {
+        const source = buttons.get(edge.from), target = buttons.get(edge.to);
+        const actor = actors.get(nodes.get(edge.to).actor === 'root' ? nodes.get(edge.from).actor : nodes.get(edge.to).actor);
+        const x1 = source.offsetLeft + source.offsetWidth / 2, y1 = source.offsetTop + source.offsetHeight + 3;
+        const x2 = target.offsetLeft + target.offsetWidth / 2, y2 = target.offsetTop - 8;
+        // Long edges travel through row gaps and lane gutters, never through cards.
+        const departure = rowPositions.get(nodes.get(edge.from).row) + rowHeights.get(nodes.get(edge.from).row) + 24;
+        const arrival = target.offsetTop - 24;
+        const gutter = target.offsetLeft < source.offsetLeft ? source.offsetLeft - 16 : source.offsetLeft + source.offsetWidth + 16;
+        const path = document.createElementNS(ns, 'path');
+        path.setAttribute('d', `M ${x1} ${y1} V ${departure} H ${gutter} V ${arrival} H ${x2} V ${y2}`);
+        path.setAttribute('fill','none'); path.setAttribute('stroke',actor.color); path.setAttribute('stroke-width', edge.kind === 'repair' ? '3' : '2');
+        if (['abandoned','proposed'].includes(edge.kind)) path.setAttribute('stroke-dasharray','7 6');
+        path.setAttribute('marker-end','url(#arrow-' + actor.id + ')');
+        const title = document.createElementNS(ns, 'title'); title.textContent = nodes.get(edge.from).label + ' → ' + nodes.get(edge.to).label; path.append(title); svg.append(path);
+      });
+    }
+    let selected = 0;
+    function select(index, reveal) {
+      selected = index; const node = data.nodes[index]; const actor = actors.get(node.actor);
+      for (const [id, button] of buttons) button.setAttribute('aria-pressed', String(id === node.id));
+      element('detail-state').textContent = actor.label + ' · ' + states[node.state];
+      element('detail-title').textContent = node.label; element('detail-summary').textContent = node.summary;
+      element('detail-story').replaceChildren(...node.story.map(paragraph => make('p', paragraph)));
+      element('detail-evidence').replaceChildren(); addEvidence(element('detail-evidence'), node);
+      const connections = element('connections'); connections.replaceChildren();
+      data.edges.filter(edge => edge.from === node.id || edge.to === node.id).forEach(edge => {
+        const outgoing = edge.from === node.id; const other = nodes.get(outgoing ? edge.to : edge.from);
+        const a = make('a', (outgoing ? 'Leads to: ' : 'From: ') + other.label); a.href = '#beat-' + other.id;
+        a.addEventListener('click', () => select(data.nodes.indexOf(other), true)); connections.append(a);
+      });
+      element('previous').disabled = index === 0; element('following').disabled = index === data.nodes.length - 1;
+      element('position').textContent = 'Beat ' + (index + 1) + ' of ' + data.nodes.length;
+      element('story-link').href = '#beat-' + node.id;
+      if (reveal) {
+        // Reveal within the map without moving a phone reader away from the story.
+        const button = buttons.get(node.id), scroller = map.parentElement;
+        scroller.scrollTo({top: button.offsetTop - (scroller.clientHeight - button.offsetHeight) / 2,
+          left: button.offsetLeft - (scroller.clientWidth - button.offsetWidth) / 2});
+      }
+    }
+    element('previous').addEventListener('click', () => select(selected - 1, true));
+    element('following').addEventListener('click', () => select(selected + 1, true));
+    for (const item of data.accounting) { const div = make('div'); div.append(make('dt',item.label),make('dd',item.detail)); element('accounting').append(div); }
+    element('next-mode').textContent = data.next.mode; element('next-title').textContent = data.next.title; element('next-text').textContent = data.next.text;
+    if (location.protocol !== 'file:' && data.nodes.some(node => node.evidence?.some(entry => entry.href.startsWith('file:')))) {
+      element('footer').append(' Local evidence links require opening this saved HTML file locally; an HTTP preview cannot open local files.');
+    }
+    layout(); select(0, false);
+    window.addEventListener('resize', layout);
+    if (document.fonts) document.fonts.ready.then(layout);
+  } catch (error) {
+    const message = make('p', 'Chart could not load: ' + error.message, 'error'); message.setAttribute('role','alert'); document.querySelector('main').prepend(message);
+    console.error(error);
+  }
+})();
+</script>
+</body>
+</html>
