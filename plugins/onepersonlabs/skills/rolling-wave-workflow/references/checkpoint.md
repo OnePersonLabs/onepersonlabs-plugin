@@ -57,7 +57,8 @@ raw logs into project documentation.
 
 ## Inspect before delivery
 
-Open the rendered file in the available browser. Check desktop and phone sizes,
+Open the saved HTML file directly in the available browser. Do not start a web
+server to preview or deliver the checkpoint. Check desktop and phone sizes,
 long labels, branch directions and reunion points. Exercise node selection,
 previous/next controls, keyboard focus, story links, and evidence links. Check
 that the map scrolls without clipping the page and that the phone story remains
@@ -65,6 +66,7 @@ readable without interpreting the wide map. Fix observed defects and recheck
 the affected behavior. Report rendered legibility separately from unobserved
 human comprehension.
 
-Deliver the chart link, a concise story, verified state, and the next review
+Deliver a clickable Markdown link to the saved HTML file using its absolute
+filesystem path, followed by the concise story, verified state, and next review
 action. Return control at the checkpoint. Plot the next leg only through the
 entrypoint's actual Plan Mode gate.
