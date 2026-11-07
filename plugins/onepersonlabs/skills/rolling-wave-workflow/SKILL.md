@@ -1,14 +1,51 @@
 ---
-name: navigate-phases
-description: Navigate multi-phase work with rolling-wave planning, a branching course chart, and checkpoint stories. Use when the user requests phase-by-phase execution, replanning checkpoints, or a retrospective that leads into the next phase.
+name: rolling-wave-workflow
+description: Use when multi-phase work needs a broad roadmap, detailed next-phase planning, and human review or replanning checkpoints. Coordinate phase cadence and checkpoint stories alongside available implementation and GitHub workflow skills.
 ---
 
-# Navigate phases
+# Rolling Wave Workflow
 
 Keep the destination visible, plan the next leg, and return to the human at each
 agreed checkpoint. Use rolling-wave planning: distant phases retain only the
 detail needed to show the route and consequential dependencies. Make the next
 phase executable. A phase boundary does not reduce the intended capability.
+
+This is a process skill: plot, implement, review and repair, report, then replot.
+Use the applicable step skills for the work inside that process. A routine edit
+or issue update alone does not need this workflow.
+
+## Compose the steps
+
+Use only companion skills exposed as available in this session. Installation or
+a source checkout does not establish that a disabled plugin is available. If
+Conductor is available for the target repository, load its applicable step skill
+and pass its repository setup gate before doing Conductor work:
+
+| Activity | Conductor step |
+| --- | --- |
+| Investigate and plan the next phase | `$conductor:plan` |
+| Implement the authorized phase | `$conductor:implement` |
+| Independently review the assigned scope | `$conductor:review` |
+| Change GitHub issue scope, status, or relationships | `$conductor:manage-issues` |
+
+Conductor owns its repository gate, issue and delivery rules, review ownership,
+and runtime controls. This skill owns phase cadence, actual Plan Mode for course
+plotting, the checkpoint story, and the return to the human. Produce one plan
+and reuse the existing acceptance and work records. Load each applicable skill
+once and reuse it; reciprocal pointers are not recursive dispatch instructions.
+
+When Conductor is unavailable or its implicit setup gate fails, continue under
+the host and repository instructions without Conductor. Do not require its
+installation, enable it, or repair setup merely to use this workflow. An explicit
+Conductor invocation still reports its own setup failure. Conductor also works
+without this skill; the optional companion does not change standalone behavior.
+
+The coordinating root owns the phase boundary. Delegated builders and reviewers
+complete their assigned step and return to that root; they do not initiate a
+second roadmap, mode switch, or human checkpoint. Ordinary planning is not a
+director request. With existing automation, use its current owner and controls
+to honor an agreed boundary; do not start, stop, adopt, or reconfigure it through
+this skill. Full automation alone does not select a human-checkpoint process.
 
 ## Plot in actual Plan Mode
 
@@ -47,6 +84,10 @@ Read [checkpoint delivery](references/checkpoint.md) when preparing the story an
 chart. Present what happened, what now works, the evidence limits, and what the
 experience changes. Keep unknown time and usage unknown. Compare phases only
 when their measurements are comparable.
+
+Distinguish the phase result from issue delivery. Outstanding required review,
+publication, or delivery work remains unfinished under its existing owner; a
+checkpoint does not close an issue or override a hold.
 
 Stop at the agreed human checkpoint. Do not treat a proposed next phase as
 authorization to execute it. If Plan Mode is inactive, request it before plotting

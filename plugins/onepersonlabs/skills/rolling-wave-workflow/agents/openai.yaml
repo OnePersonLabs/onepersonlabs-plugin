@@ -1,0 +1,7 @@
+interface:
+  display_name: "Rolling Wave Workflow"
+  short_description: "Plot the next phase and return with its story"
+  default_prompt: "Use $onepersonlabs:rolling-wave-workflow to plot in actual Plan Mode, execute one agreed phase with applicable step skills, and return with its checkpoint story and branching chart. Compose with Conductor when available and configured; retain each workflow's ownership."
+
+policy:
+  allow_implicit_invocation: true
