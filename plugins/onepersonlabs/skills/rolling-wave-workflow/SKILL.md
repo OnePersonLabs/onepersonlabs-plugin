@@ -82,7 +82,10 @@ the work and change the next batch where evidence supports it. Use
 mode for phase reports, including retrospectives of existing work.
 
 Read [checkpoint delivery](references/checkpoint.md) when preparing the report
-and chart. Explain what the change does, whether it worked, and what remains
+and chart. Deliver a static, JavaScript-free HTML chart with responsive CSS,
+an inline SVG branching graph, and native links to the full story. Use ordinary
+document scrolling without scrollable panels. Preserve the graph on phones
+and in print. Explain what the change does, whether it worked, and what remains
 unfinished. Include only context and evidence that affect the takeaway or next
 decision. Keep unknown time and usage unknown. Compare phases only when their
 measurements are comparable.

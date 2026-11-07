@@ -29,19 +29,33 @@ $onepersonlabs:optimize-workflow rather than creating a separate ledger.
 ## Draw the route
 
 Copy [the standalone template](../assets/navigation.html) into the current
-task's existing presentation location. Replace its illustrative `application/json`
-data block with the task's observed story. The file has no external dependencies.
-Serialize data as JSON and escape `<` as `\u003c` before inserting it into HTML.
-Do not insert untrusted story text as HTML. Retain the renderer and its validation.
+task's existing presentation location. Deliver static, JavaScript-free HTML with
+embedded CSS and an authored inline SVG graph. Do not include scripts, event
+handlers, JavaScript URLs, runtime data blocks, or external dependencies.
+Replace the illustrative content directly in the HTML and SVG before delivery.
+Escape story text and attribute values for their HTML context. Evidence links
+may use local files, HTTP, or HTTPS; reject executable link schemes.
 
 Show only route details needed to explain the result, unfinished work, or the
 next decision. Do not turn the chart into a command history or worker diary.
-The data contains title, summary, checkpoint, actors, roadmap, nodes, edges,
-accounting, and next. Each node has a stable ID, actor, grid row, label, state,
-summary, story paragraphs, and optional evidence links. Actor order selects lanes.
+Update the title, summary, checkpoint, actor lanes, roadmap, graph, numbered key,
+story, accounting, and next action together. Give each beat a stable story anchor,
+actor, label, state, summary, story paragraphs, and available evidence links.
+Match graph numbers to the numbered key and story headings. Update SVG paths,
+arrowheads, accessible descriptions, and the viewBox to fit the actual graph.
 Rows express narrative order, not measured time. Edges identify their source,
-destination, and outcome; include only supported connections. The example shows
-the complete shape. Add only fields the renderer consumes.
+destination, and outcome; include only supported connections. Route edges through
+lane gutters and row gaps so they do not cross unrelated nodes.
+
+Use CSS for responsive layout. Allow ordinary document scrolling only; do not
+create scrollable panels, fixed-height graph viewports, or horizontal page
+overflow. Let content determine section height. Fit the entire graph to the
+available width with a proportional SVG viewBox and CSS width of 100% and height
+of auto. Keep graph numbers readable on phones and full labels in the adjacent
+key and story. If the graph becomes too dense, split it into connected figures
+with explicit continuation labels and stable beat numbers. Preserve every
+supported branch and reunion; do not hide or discard the graph on narrow screens
+or in print, shrink its text beyond legibility, or clip overflow to conceal it.
 
 Use actor colors for the root and worker paths. Labels, symbols, and line styles
 carry meaning independently of color. Mark abandoned and interrupted branches
@@ -50,8 +64,10 @@ did not finish cannot rejoin as approval. Label planned routes as proposed.
 Do not fabricate branches to make the chart more interesting.
 
 Give the broad roadmap a current position and direction. Expand only the
-selected phase. Include selectable beats, their evidence, and an equivalent
-linear story. If Plan Mode is inactive, `next` requests the mode switch and names
+selected phase. Use native anchor links from graph nodes and the numbered key
+to each beat's full story and evidence. Include outgoing connections as text
+links so the route remains understandable without the drawing. If Plan Mode is
+inactive, the next action requests the mode switch and names
 only an already accepted direction; it must not contain a newly detailed plan.
 
 Keep one chart for the review consumer and update it in place. Preserve authored
@@ -64,10 +80,13 @@ raw logs into project documentation.
 
 Open the saved HTML file directly in the available browser. Do not start a web
 server to preview or deliver the checkpoint. Check desktop and phone sizes,
-long labels, branch directions and reunion points. Exercise node selection,
-previous/next controls, keyboard focus, story links, and evidence links. Check
-that the map scrolls without clipping the page and that the phone story remains
-readable without interpreting the wide map. Fix observed defects and recheck
+long labels, branch directions and reunion points. With JavaScript disabled,
+confirm that all content and the graph render. Exercise graph-to-story links,
+return links, keyboard focus, story connections, and evidence links. Check that
+the page has no horizontal overflow or nested scroll containers at either size.
+Check that graph numbers, arrowheads, branch endpoints, and reunion points remain
+legible on phones and in print. Confirm that long labels wrap and the story
+remains complete. Fix observed defects and recheck
 the affected behavior. Report rendered legibility separately from unobserved
 human comprehension.
 
