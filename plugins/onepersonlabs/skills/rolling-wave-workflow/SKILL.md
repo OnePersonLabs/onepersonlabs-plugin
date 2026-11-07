@@ -1,6 +1,6 @@
 ---
 name: rolling-wave-workflow
-description: Use when multi-phase work needs a broad roadmap, detailed next-phase planning, and human review or replanning checkpoints. Coordinate phase cadence and checkpoint stories alongside available implementation and GitHub workflow skills.
+description: Use when multi-phase work needs a broad roadmap, detailed next-phase planning, and human review or replanning checkpoints. Coordinate phase cadence and concise checkpoint reports alongside available implementation and GitHub workflow skills.
 ---
 
 # Rolling Wave Workflow
@@ -30,7 +30,7 @@ and pass its repository setup gate before doing Conductor work:
 
 Conductor owns its repository gate, issue and delivery rules, review ownership,
 and runtime controls. This skill owns phase cadence, actual Plan Mode for course
-plotting, the checkpoint story, and the return to the human. Produce one plan
+plotting, the checkpoint report, and the return to the human. Produce one plan
 and reuse the existing acceptance and work records. Load each applicable skill
 once and reuse it; reciprocal pointers are not recursive dispatch instructions.
 
@@ -73,17 +73,19 @@ Keep tightly coupled work with one owner. Use existing delegation and review
 guidance when independent work helps. Preserve the selected root model; escalate
 only for a concrete unresolved decision under the current authorization.
 
-## Return with the story
+## Report the phase result
 
 After verification and review repairs, use
 [$onepersonlabs:optimize-workflow](../optimize-workflow/SKILL.md) to account for
 the work and change the next batch where evidence supports it. Use
-[$onepersonlabs:write](../write/SKILL.md) for the explanation.
+[$onepersonlabs:write](../write/SKILL.md#concise-report-mode)'s concise-report
+mode for phase reports, including retrospectives of existing work.
 
-Read [checkpoint delivery](references/checkpoint.md) when preparing the story and
-chart. Present what happened, what now works, the evidence limits, and what the
-experience changes. Keep unknown time and usage unknown. Compare phases only
-when their measurements are comparable.
+Read [checkpoint delivery](references/checkpoint.md) when preparing the report
+and chart. Explain what the change does, whether it worked, and what remains
+unfinished. Include only context and evidence that affect the takeaway or next
+decision. Keep unknown time and usage unknown. Compare phases only when their
+measurements are comparable.
 
 Distinguish the phase result from issue delivery. Outstanding required review,
 publication, or delivery work remains unfinished under its existing owner; a

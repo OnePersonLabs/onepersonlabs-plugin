@@ -40,6 +40,9 @@ result. Apply each relevant layer; selecting one never disables the foundation.
   specs, implementation plans, `AGENTS.md`, skill entrypoints and references,
   prompts, tool descriptions, assignments, handoffs, GitHub issue requirements,
   decisions, acceptance criteria, procedures, or recovery instructions.
+- **Short work reports, including rolling-wave checkpoints:** use
+  [concise-report mode](#concise-report-mode). Also select it when the user or
+  another skill explicitly requests this mode.
 - **Documentation creation or substantive updates:** read
   [the complete documentation workflow](references/documentation.md) before
   drafting. Trace current behavior and finish the reader's journey. Add technical
@@ -101,6 +104,18 @@ Commits and PRs describe the net change and reason; PRs include relevant validat
 and limits. Issues distinguish observed from expected behavior and facts from
 suspected causes. Plans distinguish decisions from assumptions and open questions.
 Reports develop claims from evidence and keep limits beside the claims they qualify.
+
+## Concise-report mode
+
+Write short, plain reports that make sense without your internal context.
+Explain what you built or changed in terms of what it does, then say whether
+it worked and what remains unfinished. Do not substitute unexplained labels
+for explanations. Cut jargon, storytelling, workflow details, repetition, and
+caveats that do not affect the takeaway. Preserve essential context.
+
+State the evidence needed to support the result and any limitation that changes
+its meaning or the reader's next action. Link supporting detail when available.
+Do not turn an untested change or unfinished check into a success claim.
 
 ## Preserve and review
 
