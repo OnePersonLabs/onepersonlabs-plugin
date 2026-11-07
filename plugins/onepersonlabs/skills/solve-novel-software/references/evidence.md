@@ -76,6 +76,5 @@ is part of this change. File validation and document review can establish that
 the files are consistent and usable. A small authorized capability smoke test
 can expose a practical defect. Neither establishes a comparative productivity
 gain. Future assessment should use authorized real tasks and record acceptance,
-rework, elapsed time, and model usage when available. Task-specific AI
-verification follows the shared policy in the plugin `AGENTS.md`; optional
-comparative AI experiments need separate authorization and a finite budget.
+rework, elapsed time, and model usage when available. Any comparative AI
+experiment needs explicit authorization and a finite budget.
