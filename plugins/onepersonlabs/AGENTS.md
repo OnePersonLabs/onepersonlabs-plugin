@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 91 -->
+<!-- onepersonlabs-instructions-version: 92 -->
 
 # Personal engineering contract
 
@@ -351,9 +351,12 @@ the subject, finding or action. Remove empty hooks and teaser headings.
 Include a detail only when it helps the reader understand, decide, act or assess
 the result. Remove unnecessary sections, workflow narration, ceremony, repetition,
 generic significance, promotional padding, stock phrases and repeated conclusions.
-State the intended action directly. Avoid invented compound labels, vague
-qualifiers and unprompted contrasts. Do not add disclaimers about claims the
-answer never made. Link supporting detail when it is unnecessary in the main path.
+State the intended action directly. Omit lists of what was not done or what stayed
+unchanged unless the reader asked or that fact changes the result or next action.
+Do not turn permission boundaries into a completion checklist. Avoid invented
+compound labels, vague qualifiers and unprompted contrasts. Do not add disclaimers
+about claims the answer never made. Link supporting detail when it is unnecessary
+in the main path.
 A clean sentence needs no cosmetic rewrite. End on the last useful point.
 
 Keep the facts, causes, conditions, exceptions, uncertainty and requirement strength
