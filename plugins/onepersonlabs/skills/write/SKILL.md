@@ -7,22 +7,39 @@ description: Write or revise prose, emails, questionnaires, UI text, documentati
 
 ## Universal drafting foundation
 
-Write like a knowledgeable person with something specific to say. Prefer concrete
-facts, ordinary verbs, varied rhythm, and the voice appropriate to the reader.
-Remove generic significance, promotional padding, canned contrasts, vague
-attribution, and chatbot residue instead of replacing flagged words with synonyms.
-Apply this foundation to all writing, including chat, UI text, correspondence,
-documentation, specifications, plans, and agent instructions. Preserve facts,
-conditions, exceptions, uncertainty, requirement strength, and exact technical
-strings. Keep useful nuance, the author's voice, and the requested language,
-format, spelling convention, and length. A clean sentence needs no cosmetic rewrite.
-Avoid needless corrective framing and uniform clipped rhythm; retain corrections
-and qualifications that change the meaning or the reader's decision.
+Start with what the reader is trying to understand or do. Lead with the answer,
+useful action, or result and its practical meaning. Explain concrete behavior and
+relationships before introducing unfamiliar internal names. Omit implementation
+and test vocabulary unless it changes the reader's understanding or next action.
+When needed, explain what happens or what was checked and why it matters to their
+goal. Generic substitutes for technical names do not supply that explanation.
+If the facts are insufficient, omit nonessential detail or inspect its source;
+do not invent a concrete explanation. Use informative
+headings that reveal the section's point or task; remove empty teasers. Select
+facts, examples, and structure for the reader's goal, not the writer's inventory.
+Apply this foundation to all writing, including chat, UI and page text, reports,
+correspondence, documentation, specifications, plans, and agent instructions.
+
+Cut content that does not help the reader understand, decide, or act. Remove
+ceremony, repetition, generic significance, promotional padding, canned contrasts,
+vague attribution, and chatbot residue instead of swapping words for synonyms.
+Link supporting detail when the reader does not need it in the main path. Prefer
+concrete facts, ordinary verbs, natural grammar, varied rhythm, and the voice
+appropriate to the reader. A clean sentence needs no cosmetic rewrite.
+
+Keep the facts, causal relationships, conditions, exceptions, uncertainty,
+requirement strength, and exact technical strings that make a claim true. Distinguish
+current capability, verified results, recommendations, and unfinished work. Do not
+turn a limited result into a finished capability by shortening it. Retain useful
+nuance, meaningful qualifications, the author's voice, and the requested language,
+format, spelling convention, length, and depth. Clarity must preserve technical precision.
 
 Last source review: `2026-10-31`. On the first use 30 or more days after that date,
 read [source maintenance](references/maintenance.md) and complete its due-check
 workflow before drafting. Do not make a source request before the interval expires.
-The same maintained foundation appears in the plugin `AGENTS.md`.
+The same maintained foundation appears in the plugin `AGENTS.md`. Its additional
+clarity sources and the limits of mechanical checking are recorded in
+[clarity evidence](references/clarity.md).
 
 ## Select additional guidance automatically
 
@@ -65,10 +82,12 @@ Choose vocabulary, depth, tone, and structure for what the reader knows and need
 Build from familiar information to the new point. Keep related words together,
 subjects near verbs, and one developed point per paragraph. Use concrete subjects
 and active verbs; keep passive voice when the affected object or unknown actor
-is what matters. Introduce unfamiliar concepts before relying on their names.
+is what matters. Use established technical terms when the reader knows them and
+they carry precise meaning; explain unfamiliar concepts through what they do.
 
 Use prose for reasoning, lists for parallel items or steps, and tables for
-comparisons. Headings and emphasis should help navigation. Keep terminology
+comparisons. Use headings that identify an answer, action, or specific subject;
+do not make the reader open a section to discover what it is about. Keep terminology
 consistent. Authored text must make sense without this conversation; keep the
 account of drafting and review in the conversation.
 
@@ -91,10 +110,17 @@ questions unresolved if a decision depends on them. Use the requested medium and
 destination; do not invent deadlines or effort estimates. Drafting does not
 authorize sending or inbox operations.
 
-For UI text, inspect the actual state, surrounding controls, available action,
-and recovery. Use concise labels
-and fragments where the interface calls for them. Do not promise unsupported
-behavior. Check rendered fit and interaction through the existing design workflow
+For UI and page text, start with the user's task and inspect the actual state,
+surrounding controls, available action, and recovery. Name the action or outcome
+before product architecture or internal names. Use concise labels and fragments
+where the interface calls for them. Remove sections, sentences, or labels that
+do not help the user complete the task; do not hide necessary limits to make a
+page sound simpler. Describe available behavior accurately, including partial
+or unavailable capability. Distinguish edits retained in the current view from
+edits durably saved; use "saved" only when persistence is established. For errors,
+state what failed, its effect on the user's work, and the known recovery action.
+If recovery is unknown, say so rather than inventing a step or guarantee.
+Check rendered fit and interaction through the existing design workflow
 when those affect meaning. Creative work retains intentional rhythm, repetition,
 ambiguity, and character voice; generic editing rules do not override its purpose.
 
@@ -107,11 +133,17 @@ Reports develop claims from evidence and keep limits beside the claims they qual
 
 ## Concise-report mode
 
-Write short, plain reports that make sense without your internal context.
-Explain what you built or changed in terms of what it does, then say whether
-it worked and what remains unfinished. Do not substitute unexplained labels
-for explanations. Cut jargon, storytelling, workflow details, repetition, and
-caveats that do not affect the takeaway. Preserve essential context.
+Answer the reader's current question about the work. State what changed for
+their goal, explain what it does, and distinguish what worked from what remains
+unfinished. Lead with what the evidence establishes about the user's goal, rather
+than the technical checks themselves. Include preparation, workflow, implementation,
+or test details only when they change the conclusion or next action. When a check
+matters, say what behavior was checked or what results were compared and why that
+supports the claim. Do not replace internal names with vague phrases such as
+"numerical setup" or "candidate values." Omit nonessential detail that the supplied
+facts cannot explain, or inspect its source; do not infer an explanation from its
+name. If headings help, make them carry the finding or task; omit them when a short
+paragraph is enough.
 
 State the evidence needed to support the result and any limitation that changes
 its meaning or the reader's next action. Link supporting detail when available.

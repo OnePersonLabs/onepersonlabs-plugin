@@ -42,6 +42,12 @@ owning guide instead of duplicating a long procedure. Retain a historical receip
 only when a named consumer still needs its exact claim and version. Keep its
 validity conditions, disposal boundary, and cleanup owner with that consumer.
 
+Explain what the user can accomplish before introducing unfamiliar component
+names. Organize headings around specific tasks, questions, or facts, so a reader
+can find the right path by scanning them. Remove sections that do not serve that
+journey. Keep limitations beside the affected step or capability: a successful
+setup check does not establish that the user's complete task works.
+
 Write steps as actions in the order the reader performs them. State prerequisites
 before they block progress. Use the actual control names and copyable command
 blocks with the appropriate shell. Explain how to recognize completion and what
@@ -76,4 +82,7 @@ links, labels, expected results, and the consequential failure path against thei
 sources. Use existing validators and safe, proportionate observations where they
 resolve uncertainty. Report which claims were source-reviewed or exercised and
 which remain unverified. Agent review does not establish human comprehension.
+Read the page as someone who lacks the writer's internal names and unstated
+steps. Check that its opening, headings, and instructions explain what to do and
+that shortening has not overstated readiness or removed a required condition.
 Stop when the scoped reader journey is complete and its limits are explicit.

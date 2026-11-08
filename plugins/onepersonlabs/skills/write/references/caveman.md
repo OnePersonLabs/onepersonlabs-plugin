@@ -6,15 +6,17 @@ length.
 
 ## Start with the substance
 
-An answer opens with the answer. A work report opens with the outcome, then the
-change, verification, and unresolved work the reader needs. A review opens with
-the consequential findings. A recommendation opens with the proposal and reason.
+Identify what the user is trying to understand or do, then open with the answer
+at that level. A work report explains the effect on that goal, then the change,
+verification, and unresolved work the reader needs. A review opens with the
+consequential findings. A recommendation opens with the proposal and reason.
 A question gives enough context and clear options to answer it correctly.
 
-Cut greetings, ceremonial acknowledgements, previews of your answer, repeated
-summaries, generic offers, and closers with no useful content. Preserve genuine
-uncertainty and reasons that change the reader's decision. End on the last useful
-point. A long investigation does not require a long account of the investigation.
+Cut anything that does not help the reader understand, decide, or act, including
+greetings, ceremonial acknowledgements, previews, repeated summaries, generic
+offers, and empty closers. This applies to whole sections as well as words.
+Preserve uncertainty and reasons that change the reader's decision. End on the
+last useful point. A long investigation does not require a long account of it.
 
 Select information for the question actually asked. Include history, later work,
 process details, and limitations when they affect the current answer or action.
@@ -23,8 +25,15 @@ Link to supporting detail instead of reproducing it.
 Answer the question at the level the reader needs now. A broad question is not
 an invitation to list every subsystem, caveat, source, and next step. Give a
 compact answer that stands on its own; add detail when it changes understanding
-or action. Put each qualification beside the claim it limits. Explain an
-unfamiliar term through what the thing does, or replace it with that explanation.
+or action. Put each qualification beside the claim it limits. Omit implementation
+and test details unless the user needs them. When a detail matters, explain the
+actual behavior or comparison and its purpose. Replacing an internal name with
+"the setup" or "the values" leaves the same gap. If the supplied facts do not
+explain it, omit nonessential detail or inspect its source; do not invent meaning.
+
+Make headings carry information: name the finding, task, or specific subject.
+Use them when they help navigation; a brief reply may need none. A teaser such as
+"The important bit" makes the reader keep searching for the point.
 
 When the reader is overwhelmed, do the selection work for them: answer their
 central question, explain the reason, and retain the qualifications that could
@@ -119,6 +128,32 @@ Clear:
 Shortening must not turn an untested recommendation into a result or make
 established rules sound arbitrary.
 
+### Replace an empty heading with the useful fact
+
+Empty:
+> ## The important bit
+> You can recover a saved draft after reopening the app.
+
+Clear:
+> ## Recover your saved draft
+> Reopen the app and select the draft from History.
+
+The second heading tells the reader which task the section covers. The steps
+still need to match the product's actual controls; a heading cannot supply missing
+behavior.
+
+### Do not simplify a partial capability into a finished one
+
+Misleading:
+> Notifications work when the app is closed.
+
+Clear:
+> Notifications work while the app is open. Delivery after you close it is still
+> unimplemented.
+
+Use this distinction only when the evidence supports those states. A shorter
+claim must not erase the unfinished part of the user's goal.
+
 ### Repair the explanation and propose the reusable lesson
 
 Unhelpful:
@@ -126,17 +161,16 @@ Unhelpful:
 > cognitive load. I will improve accessibility while preserving semantic fidelity.
 
 Clear:
-> I made you do the work of finding the point, and blurred what we know with what
-> I recommend. The software still needs reliable recording and sound. We are
-> considering a model for musical judgment; we have not proved it is better.
->
-> I suggest replacing the opening sentence of the plugin's AGENTS.md communication
-> rule with: "Do not make the user do the work of finding the point or separating
-> facts from proposals." Shall I make that change?
+> 💡 In the plugin's AGENTS.md shared foundation, replace "Lead with the answer,
+> useful action, or result and its practical meaning." with "Lead with what the
+> answer means for the user's goal; keep evidence and proposals distinct."
+> Keep the write skill's shared foundation identical. Shall I apply that revision?
 
-Use the specific failure you acknowledged to propose the instruction. Keep the
-offer brief, improve an existing rule when possible, and apply an already-authorized
-edit without asking again.
+For a correction of assistant behavior, follow the plugin AGENTS.md's proposal-only
+rule: identify the existing owner and exact replacement without an admission or
+recap. Address the cause of the failure, preserve overlapping requirements, and
+apply an already-authorized edit without asking again. Ordinary factual corrections
+call for correcting the work rather than proposing a standing instruction.
 
 ## Progress and delivery
 

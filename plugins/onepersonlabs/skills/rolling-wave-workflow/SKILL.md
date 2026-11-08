@@ -83,7 +83,10 @@ mode for phase reports, including retrospectives of existing work.
 
 Read [checkpoint delivery](references/checkpoint.md) when preparing the report
 and chart. Deliver a static, JavaScript-free HTML chart with responsive CSS,
-an inline SVG branching graph, and native links to the full story. Use ordinary
+linked cards with SVG branch edges, and native links to the full story. Show
+each card's numbered name, description, owner, and status directly in the graph.
+Stack graph and supporting report on phones; at 768 pixels and wider, use roughly
+equal columns with a 24-pixel gap. Use ordinary
 document scrolling without scrollable panels. Preserve the graph on phones
 and in print. Explain what the change does, whether it worked, and what remains
 unfinished. Include only context and evidence that affect the takeaway or next

@@ -30,7 +30,7 @@ $onepersonlabs:optimize-workflow rather than creating a separate ledger.
 
 Copy [the standalone template](../assets/navigation.html) into the current
 task's existing presentation location. Deliver static, JavaScript-free HTML with
-embedded CSS and an authored inline SVG graph. Do not include scripts, event
+embedded CSS, linked HTML cards, and authored inline SVG edges. Do not include scripts, event
 handlers, JavaScript URLs, runtime data blocks, or external dependencies.
 Replace the illustrative content directly in the HTML and SVG before delivery.
 Escape story text and attribute values for their HTML context. Evidence links
@@ -38,21 +38,29 @@ may use local files, HTTP, or HTTPS; reject executable link schemes.
 
 Show only route details needed to explain the result, unfinished work, or the
 next decision. Do not turn the chart into a command history or worker diary.
-Update the title, summary, checkpoint, actor lanes, roadmap, graph, numbered key,
+Update the title, summary, checkpoint, actor labels, roadmap, graph cards,
 story, accounting, and next action together. Give each beat a stable story anchor,
 actor, label, state, summary, story paragraphs, and available evidence links.
-Match graph numbers to the numbered key and story headings. Update SVG paths,
-arrowheads, accessible descriptions, and the viewBox to fit the actual graph.
+Show a bold numbered name, a short description below it, and a visible owner and
+status on each linked card. Match card numbers and names to story headings.
+Do not add a separate key that repeats the card names. Use concrete names and
+descriptions that explain the actual goal, attempt, result, or limitation.
+Update SVG paths, arrowheads, accessible descriptions, and grid placement to fit
+the actual graph. The template places edges in a gutter and spans the grid gaps
+between their source and destination cards, so card heights can follow content.
 Rows express narrative order, not measured time. Edges identify their source,
 destination, and outcome; include only supported connections. Route edges through
 lane gutters and row gaps so they do not cross unrelated nodes.
 
 Use CSS for responsive layout. Allow ordinary document scrolling only; do not
 create scrollable panels, fixed-height graph viewports, or horizontal page
-overflow. Let content determine section height. Fit the entire graph to the
-available width with a proportional SVG viewBox and CSS width of 100% and height
-of auto. Keep graph numbers readable on phones and full labels in the adjacent
-key and story. If the graph becomes too dense, split it into connected figures
+overflow. Let content determine section height. On viewports below 768 pixels,
+stack the full-width graph above the supporting result, unfinished work, next
+action, and details. At 768 pixels and wider, place the graph beside that support
+in roughly equal columns with a 24-pixel gap. Keep card names and descriptions
+readable at a 360-pixel viewport and in the half-width column at 768 pixels.
+Wrap card text instead of scaling it with SVG geometry.
+If the graph becomes too dense, split it into connected figures
 with explicit continuation labels and stable beat numbers. Preserve every
 supported branch and reunion; do not hide or discard the graph on narrow screens
 or in print, shrink its text beyond legibility, or clip overflow to conceal it.
@@ -64,7 +72,7 @@ did not finish cannot rejoin as approval. Label planned routes as proposed.
 Do not fabricate branches to make the chart more interesting.
 
 Give the broad roadmap a current position and direction. Expand only the
-selected phase. Use native anchor links from graph nodes and the numbered key
+selected phase. Use native anchor links from graph cards
 to each beat's full story and evidence. Include outgoing connections as text
 links so the route remains understandable without the drawing. If Plan Mode is
 inactive, the next action requests the mode switch and names
@@ -84,8 +92,10 @@ long labels, branch directions and reunion points. With JavaScript disabled,
 confirm that all content and the graph render. Exercise graph-to-story links,
 return links, keyboard focus, story connections, and evidence links. Check that
 the page has no horizontal overflow or nested scroll containers at either size.
-Check that graph numbers, arrowheads, branch endpoints, and reunion points remain
-legible on phones and in print. Confirm that long labels wrap and the story
+Check at 360 pixels, at the 768-pixel layout transition, and at desktop width.
+Check that numbered card names, descriptions, statuses, arrowheads, branch
+endpoints, and reunion points remain legible on phones and in print.
+Confirm that long labels wrap and the story
 remains complete. Fix observed defects and recheck
 the affected behavior. Report rendered legibility separately from unobserved
 human comprehension.

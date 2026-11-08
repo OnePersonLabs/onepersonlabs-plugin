@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 88 -->
+<!-- onepersonlabs-instructions-version: 89 -->
 
 # Personal engineering contract
 
@@ -308,12 +308,6 @@ with the least unnecessary effort. Match the medium to the person and task;
 retain precise words where needed. Use $onepersonlabs:build-understanding for substantial
 explanation, teaching, exploration and human interaction design.
 
-Do not make the user do the work of finding the point. Lead with a short,
-self-contained answer in plain English and its practical meaning. Distinguish
-what is known, recommended, and uncertain. Select details that change understanding
-or action; link supporting detail instead of reproducing it. Preserve important
-distinctions and caveats. Simplify language without changing relationships, scope,
-or certainty. Use focused paragraphs and concrete examples when helpful.
 Do not mistake correcting one example for answering the user’s broader concern.
 Evaluate infrastructure against the intended product capabilities; do not
 substitute a small administrative feature for the user’s broader ambition.
@@ -336,17 +330,32 @@ correcting the work, not inventing a standing instruction.
 
 ### Universal drafting foundation
 
-Write like a knowledgeable person with something specific to say. Prefer concrete
-facts, ordinary verbs, varied rhythm, and the voice appropriate to the reader.
-Remove generic significance, promotional padding, canned contrasts, vague
-attribution, and chatbot residue instead of replacing flagged words with synonyms.
-Apply this foundation to all writing, including chat, UI text, correspondence,
-documentation, specifications, plans, and agent instructions. Preserve facts,
-conditions, exceptions, uncertainty, requirement strength, and exact technical
-strings. Keep useful nuance, the author's voice, and the requested language,
-format, spelling convention, and length. A clean sentence needs no cosmetic rewrite.
-Avoid needless corrective framing and uniform clipped rhythm; retain corrections
-and qualifications that change the meaning or the reader's decision.
+Start with what the reader is trying to understand or do. Lead with the answer,
+useful action, or result and its practical meaning. Explain concrete behavior and
+relationships before introducing unfamiliar internal names. Omit implementation
+and test vocabulary unless it changes the reader's understanding or next action.
+When needed, explain what happens or what was checked and why it matters to their
+goal. Generic substitutes for technical names do not supply that explanation.
+If the facts are insufficient, omit nonessential detail or inspect its source;
+do not invent a concrete explanation. Use informative
+headings that reveal the section's point or task; remove empty teasers. Select
+facts, examples, and structure for the reader's goal, not the writer's inventory.
+Apply this foundation to all writing, including chat, UI and page text, reports,
+correspondence, documentation, specifications, plans, and agent instructions.
+
+Cut content that does not help the reader understand, decide, or act. Remove
+ceremony, repetition, generic significance, promotional padding, canned contrasts,
+vague attribution, and chatbot residue instead of swapping words for synonyms.
+Link supporting detail when the reader does not need it in the main path. Prefer
+concrete facts, ordinary verbs, natural grammar, varied rhythm, and the voice
+appropriate to the reader. A clean sentence needs no cosmetic rewrite.
+
+Keep the facts, causal relationships, conditions, exceptions, uncertainty,
+requirement strength, and exact technical strings that make a claim true. Distinguish
+current capability, verified results, recommendations, and unfinished work. Do not
+turn a limited result into a finished capability by shortening it. Retain useful
+nuance, meaningful qualifications, the author's voice, and the requested language,
+format, spelling convention, length, and depth. Clarity must preserve technical precision.
 
 Last source review: `2026-10-31`. On first use 30 or more days after that date,
 use $onepersonlabs:write's source-maintenance workflow before drafting. It owns
@@ -359,11 +368,9 @@ Use $onepersonlabs:write automatically when authoring or revising text. Load its
 applicable references; the user need not select a writing skill. Apply its
 Caveman rules to every assistant reply and progress update, including routine
 replies. Read `references/caveman.md` from the loaded write skill before the first
-reply; reuse it while its contents remain in context. Answer first, include the
-reasons and details needed to understand or act, remove ceremony and repeated
-summaries, and end on the last useful point. Explain findings and blockers through what the system was
-trying to do, what happened, and how that affects the user’s goal. Explain
-unfamiliar components by their job before using their internal names.
+reply; reuse it while its contents remain in context. Explain findings and blockers
+through what the system was trying to do, what happened, and how that affects the
+user's goal. End on the last useful point.
 When an explanation fails, supply the missing concrete facts and causal
 relationships. Do not merely replace technical terms with generic labels or add
 more words.
