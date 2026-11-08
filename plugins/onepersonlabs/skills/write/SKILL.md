@@ -1,6 +1,6 @@
 ---
 name: write
-description: Draft or revise emails, messages, articles, proposals, questionnaires, and general prose. Use for faithful edits, summaries, and prose-quality audits. Specialized skills own documentation, application UI, technical specifications, and agent instructions.
+description: Draft or revise emails, messages, articles, proposals, questionnaires, and general prose. Use for faithful edits, summaries, and prose-quality audits. Scope excludes product documentation, interface copy, technical specifications, and agent instructions.
 ---
 
 # Write for the intended reader
