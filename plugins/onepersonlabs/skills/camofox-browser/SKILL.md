@@ -1,6 +1,6 @@
 ---
 name: camofox-browser
-description: Control an existing Jo CamoFox browser through its REST API on Windows or WSL. Use for navigation, snapshots, interaction, and sessions; the redfox executable belongs to $onepersonlabs:camofox-cli.
+description: Control an existing Jo CamoFox browser through its REST API on Windows or WSL for navigation, snapshots, interaction, and sessions.
 ---
 
 # Jo CamoFox browser

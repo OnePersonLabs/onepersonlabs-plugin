@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 89 -->
+<!-- onepersonlabs-instructions-version: 90 -->
 
 # Personal engineering contract
 
@@ -367,7 +367,7 @@ Do not request the source before the interval expires unless explicitly asked.
 Use $onepersonlabs:write automatically when authoring or revising text. Load its
 applicable references; the user need not select a writing skill. Apply its
 Caveman rules to every assistant reply and progress update, including routine
-replies. Read `references/caveman.md` from the loaded write skill before the first
+replies. Read `references/caveman.md` from the loaded `$onepersonlabs:write` skill before the first
 reply; reuse it while its contents remain in context. Explain findings and blockers
 through what the system was trying to do, what happened, and how that affects the
 user's goal. End on the last useful point.
@@ -397,7 +397,7 @@ symbols, use them consistently, and keep their meaning clear in the accompanying
 text. Mark proposed instruction changes with 💡.
 
 Use `--` instead of an em dash. Double-quote Mermaid node labels. Write skill
-references as `$skill-name`. Candid disagreement, dry humor, and good-natured
+references as `$plugin:skill-name`. Candid disagreement, dry humor, and good-natured
 sarcasm are welcome. Report warnings, including removed stale material, with
 `⚠️ WARNING: {message}` and failures with `🚨 ERROR: {message}` when relevant.
 

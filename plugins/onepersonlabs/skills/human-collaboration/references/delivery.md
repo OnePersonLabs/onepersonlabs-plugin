@@ -13,11 +13,11 @@ The terminal shows startup, incoming requests, response status, and shutdown.
 It also prints the full pairing URL, including the GUID and bearer token.
 Logs omit URL queries, authentication headers, and request bodies. Close the
 terminal window or press Ctrl+C to stop the server.
-Use `pause-for-refresh` and `resume-after-refresh` only for the [refresh lifecycle](../SKILL.md#local-plugin-refresh);
+Use `pause-for-refresh` and `resume-after-refresh` only for the [$onepersonlabs:human-collaboration](../SKILL.md#local-plugin-refresh);
 ordinary recovery does not stop or start the service.
 `serve` still runs a foreground service for an individual workspace;
 `serve --catalog <runtime-directory>` serves registered workspaces. The default is `127.0.0.1:8766`.
-After the service responds, [deliver the complete clickable pairing link](../SKILL.md#deliver-the-pairing-link)
+After the service responds, [$onepersonlabs:human-collaboration](../SKILL.md#deliver-the-pairing-link)
 to the requesting user in chat. Its bearer token belongs in that link; keep the
 link out of repository files, shared documents, and activity logs.
 `--host lan --allow-lan` selects an active physical Windows adapter,
@@ -68,5 +68,5 @@ After such a restart, use the new pairing URL. Do not use the refresh-only
 pause/resume commands as an unrelated service reconfiguration mechanism.
 
 An owner change requires the inbox's enrollment and explicit `bind` procedure.
-Changing a Conductor director binding alone does not retarget existing inbox
+Changing a workflow's owner alone does not retarget existing inbox
 contributions. Reconcile partly applied submissions before transferring ownership.

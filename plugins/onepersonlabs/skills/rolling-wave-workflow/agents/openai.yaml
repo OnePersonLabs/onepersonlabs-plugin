@@ -1,7 +1,0 @@
-interface:
-  display_name: "Rolling Wave Workflow"
-  short_description: "Plan phases and report what works and what remains"
-  default_prompt: "Use $onepersonlabs:rolling-wave-workflow to plot in actual Plan Mode, execute one agreed phase with applicable step skills, and return with a checkpoint report in $onepersonlabs:write's concise-report mode and static, JavaScript-free HTML. Use linked cards with bold numbered names, descriptions, owners and statuses, authored SVG branch edges, native story links, and no scrollable panels or redundant key. Stack graph and support on phones; at 768 pixels and wider, use roughly equal columns with a 24-pixel gap. Preserve the graph in print. Compose with Conductor when available and configured; retain each workflow's ownership."
-
-policy:
-  allow_implicit_invocation: true

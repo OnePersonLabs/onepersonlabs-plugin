@@ -7,7 +7,7 @@ description: Automatically quit and relaunch Codex Desktop when a restart is req
 
 Perform the restart, including graceful Quit, independent relaunch and any
 authorized continuation. The agent runs the helper; the user does not need to
-open a terminal or close the app. OnePersonLabs works without Conductor.
+open a terminal or close the app.
 
 ## Choose what needs to restart
 

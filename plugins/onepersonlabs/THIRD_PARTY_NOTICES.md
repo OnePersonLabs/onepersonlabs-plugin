@@ -75,14 +75,14 @@ SOFTWARE.
 Source: https://github.com/sdi2200262/elements-of-style-for-agents/tree/8317879ad0270a4a687eab7fffe570d26024cf25
 
 AGENTS.md and the elements-of-style skill inform the shared drafting guidance,
-reader-oriented composition, artifact guidance, and concise replies in `write`.
+reader-oriented composition, artifact guidance, and concise replies in `$onepersonlabs:write`.
 Adapted for automatic layered routing, semantic preservation, and flexible length.
 The source is dedicated to the public domain under CC0 1.0 Universal:
 https://creativecommons.org/publicdomain/zero/1.0/
 
 ## Wikipedia: Signs of AI writing
 
-The `write` drafting foundation and signs catalogue adapt Wikipedia's Signs of AI
+The `$onepersonlabs:write` drafting foundation and signs catalogue adapt Wikipedia's Signs of AI
 writing. Its pinned revision, review date, changes, and CC BY-SA 4.0 attribution
 are retained in `skills/write/references/signs.md`. These adapted materials remain
 under CC BY-SA 4.0: https://creativecommons.org/licenses/by-sa/4.0/

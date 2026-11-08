@@ -8,10 +8,9 @@ contract, and the sources below.
 Recheck affected claims after a host, model, tool-contract or configuration change.
 No source establishes one universally fastest or cheapest agent arrangement.
 
-Use the existing conversation and project work owner. When Conductor is installed
-and in use, it can own project job coordination; this guidance does not start its
-runner. When Conceptor is installed and in use, it owns accepted meaning and
-reassessment. Neither plugin is required for assignments, integration or review.
+Use the existing conversation and project work owner for assignments, integration,
+review, and reassessment. Preserve accepted decisions in the project's existing
+records. This guidance does not start a runner or create another work owner.
 
 ## Choose the work and context together
 
@@ -218,7 +217,7 @@ Use the existing conversation or project issue for decisions, sources and unfini
 a transcript archive, recurring benchmark or new task ledger for this policy.
 
 Configuration changes and rollback files remain with their existing owner.
-Use configure-harness transactions only within their supported scope; root model
+Use $onepersonlabs:configure-harness transactions only within their supported scope; root model
 preferences remain outside the startup-baseline transaction. Retire temporary
 probes after their verification consumer finishes. Preserve unresolved recovery
 state until reconciled, then use its owning cleanup operation.

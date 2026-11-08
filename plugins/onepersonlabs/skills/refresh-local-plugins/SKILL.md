@@ -34,7 +34,7 @@ After the installation attempt, run installed `resume-after-refresh` from the
 same workspace even if installation failed. Use the source helper if the
 installed helper is unavailable. It restarts only a previously running service;
 retain its pause record on failure. When it returns a new pairing URL, follow
-[the pairing-link delivery instructions](../human-collaboration/SKILL.md#deliver-the-pairing-link)
+[$onepersonlabs:human-collaboration](../human-collaboration/SKILL.md#deliver-the-pairing-link)
 to open it and give the user the complete clickable link.
 
 ## Run the bundled helper

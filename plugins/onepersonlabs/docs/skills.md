@@ -14,7 +14,6 @@ specialized tool.
 
 - **[$onepersonlabs:python-scripting](../skills/python-scripting/SKILL.md)** -- Discoverable. Find, reuse and organize Python tools for agent-side work. Descriptive names and header keywords support lookup before creating another script. A shared store in the active Codex home handles hot, cold and temporary scripts; maintained repository utilities remain with their consumers.
 - **[$onepersonlabs:optimize-workflow](../skills/optimize-workflow/SKILL.md)** -- Discoverable. Respond to the first concern about workflow speed, cost, or rework by accounting for effort and improving the next work batch. Result: an evidence-based bottleneck finding and revised execution sequence that preserves scope and required checks. A neutral ETA question does not require an extensive audit; controlled performance comparisons use `$onepersonlabs:optimize`.
-- **[$onepersonlabs:rolling-wave-workflow](../skills/rolling-wave-workflow/SKILL.md)** -- Discoverable. Coordinate multi-phase work with rolling-wave planning and human checkpoints. Plot in actual Plan Mode, use applicable step skills to execute and review one agreed phase, then return with its story and branching chart. Conductor can supply GitHub workflow steps when available and configured; either plugin also works independently.
 - **[$onepersonlabs:write](../skills/write/SKILL.md)** -- Discoverable. Write or revise text with universal drafting rules and automatically selected guidance for concise replies, technical precision, documentation, and editing. Prepare questionnaires for facts or decisions another person must supply, using the user for missing preparation context. Drafting does not send the questions or open an inbox. Documentation uses the full source-grounded reader workflow.
 - **[$onepersonlabs:debug](../skills/debug/SKILL.md)** -- Explicit. Diagnose a concrete failure and, when requested, verify a causal fix. Result: a supported cause, counterevidence, and original-scenario verification. A symptom or passing test alone does not establish the cause.
 - **[$onepersonlabs:adversarial-review](../skills/adversarial-review/SKILL.md)** -- Explicit. Audit a plan, architecture, instruction system, or agent workflow for concrete failure paths. Result: prioritized findings tied to evidence and a plausible failure scenario. Routine code diffs use the native review path.
@@ -36,10 +35,10 @@ specialized tool.
 
 ## Collaborate and resume
 
-- **[$onepersonlabs:human-collaboration](../skills/human-collaboration/SKILL.md)** -- Discoverable. Prepare and integrate requested human contributions, questions, reviews, or feedback on a running page. Result: a retained submission integrated by its owner with an explicit outcome. Substantive participation uses the shared authenticated inbox service; saving a draft does not submit it. Draft-only requests use `write`; explicit invocation of this skill retains its inbox workflow.
+- **[$onepersonlabs:human-collaboration](../skills/human-collaboration/SKILL.md)** -- Discoverable. Prepare and integrate requested human contributions, questions, reviews, or feedback on a running page. Result: a retained submission integrated by its owner with an explicit outcome. Substantive participation uses the shared authenticated inbox service; saving a draft does not submit it. Draft-only requests use `$onepersonlabs:write`; explicit invocation of this skill retains its inbox workflow.
 - **[$onepersonlabs:adhd](../skills/adhd/SKILL.md)** -- Discoverable. Applies automatically when the user describes overwhelm, mental exhaustion, difficulty following explanations, or trouble starting or resuming work. No ADHD label or explicit skill request is needed. Recover available context, answer the central question, and keep one useful active path without reducing the requested scope. The user can opt out with `normal mode` or `stop ADHD mode`.
 - **[$onepersonlabs:session-reader](../skills/session-reader/SKILL.md)** -- Discoverable. Find prior Codex messages or extract a focused transcript range. Result: bounded history evidence with its source and location. Requires accessible canonical Codex session history; it does not rebuild a repository's complete history.
-- **[$onepersonlabs:session-history-rebuild](../skills/session-history-rebuild/SKILL.md)** -- Explicit. Reconstruct a complete, auditable repository conversation and evolving design history. Result: a source-anchored chronology with evidence limits. Requires the canonical session sources and an explicit reconstruction request; focused lookups use `session-reader`.
+- **[$onepersonlabs:session-history-rebuild](../skills/session-history-rebuild/SKILL.md)** -- Explicit. Reconstruct a complete, auditable repository conversation and evolving design history. Result: a source-anchored chronology with evidence limits. Requires the canonical session sources and an explicit reconstruction request; focused lookups use `$onepersonlabs:session-reader`.
 
 ## Configure Codex and diagnose integrations
 
@@ -58,9 +57,9 @@ specialized tool.
 
 ## Invocation notes
 
-The explicit skills are `adversarial-review`, `debug`, `handoff`,
-`session-history-rebuild`, `slop-buster`,
-`unslop` and `update-instructions`. Name them in
+The explicit skills are `$onepersonlabs:adversarial-review`, `$onepersonlabs:debug`, `$onepersonlabs:handoff`,
+`$onepersonlabs:session-history-rebuild`, `$onepersonlabs:slop-buster`,
+`$onepersonlabs:unslop` and `$onepersonlabs:update-instructions`. Name them in
 the request.
 
 All other listed skills are marked discoverable in their package metadata.

@@ -1,6 +1,6 @@
 ---
 name: camofox-cli
-description: Use the redfox CamoFox CLI for terminal browser control and command lookup. Applies to the camofox executable shipped by the camofox-browser package, including navigation, snapshots, interaction, and saved sessions.
+description: Control the redfox CamoFox executable from the terminal, including command lookup, navigation, snapshots, interaction, and saved sessions.
 ---
 
 # CamoFox CLI

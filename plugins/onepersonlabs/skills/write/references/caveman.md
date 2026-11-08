@@ -164,7 +164,7 @@ Clear:
 > 💡 In the plugin's AGENTS.md shared foundation, replace "Lead with the answer,
 > useful action, or result and its practical meaning." with "Lead with what the
 > answer means for the user's goal; keep evidence and proposals distinct."
-> Keep the write skill's shared foundation identical. Shall I apply that revision?
+> Keep the `$onepersonlabs:write` skill's shared foundation identical. Shall I apply that revision?
 
 For a correction of assistant behavior, follow the plugin AGENTS.md's proposal-only
 rule: identify the existing owner and exact replacement without an admission or

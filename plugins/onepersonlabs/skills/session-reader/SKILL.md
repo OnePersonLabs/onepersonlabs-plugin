@@ -1,6 +1,6 @@
 ---
 name: session-reader
-description: Find prior Codex messages, browse sessions, or extract focused transcript ranges through the canonical bounded index. Use for active or archived history lookup and rollout metadata; full repository history reconstruction belongs to $onepersonlabs:session-history-rebuild.
+description: Find prior Codex messages, browse active or archived sessions, and extract focused transcript ranges or rollout metadata through the canonical bounded index.
 ---
 
 # Session Reader

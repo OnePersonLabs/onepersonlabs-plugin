@@ -129,7 +129,7 @@ alone do not establish better reasoning or generalization.
 Stop when evidence decides the change or further replay no longer earns its cost.
 An inconclusive comparison does not establish that a hook is needed.
 
-After the unslop workflow concludes and the final trace contains the evidence
+After the `$onepersonlabs:unslop` workflow concludes and the final trace contains the evidence
 needed to assess the result, the forged session files (including copies in
 `.unslop/replay/`) and replay-generated sessions may be deleted. Keep them while
 replays or comparisons are still in progress. Before deleting, identify the

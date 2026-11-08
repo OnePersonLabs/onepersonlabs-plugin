@@ -13,7 +13,7 @@ Keep the amount of work proportional to the uncertainty in the request.
 
 | Request | Work |
 | --- | --- |
-| Change `bleep` to `bloop`; adjust a known spacing or color token without changing meaning | Make the edit and use the existing relevant check. Stop. Create no design packet, images, comparison, episode, or Conceptor record. |
+| Change `bleep` to `bloop`; adjust a known spacing or color token without changing meaning | Make the edit and use the existing relevant check. Stop. Create no design packet, images, comparison, episode, or decision record. |
 | Repair a local hierarchy, legibility, affordance, or transition problem | Inspect the affected state, make one explicit hypothesis, change it, and inspect the result. Load only the relevant reference below. |
 | Establish a visual direction or change consequential representation, relationships, uncertainty, or interaction | Use the evidence loop below. Expand only the parts that can change a design decision. |
 
@@ -24,9 +24,9 @@ procedure for every frontend change or create a task just to classify the reques
 ## Work inside the current workflow
 
 The native root owns scope, planning, assignments, accepted meaning, and completion.
-Read the existing design context and reuse its evidence. When Conceptor is active,
-follow the installed Conceptor skills. Return proposed meaning or
-Lens changes to their owner. This skill creates design evidence, not another
+Read the existing design context and reuse its evidence. Return proposed changes
+to accepted meaning or evaluation criteria to their existing owner.
+This skill creates design evidence, not another
 scheduler, task registry, approval gate, or acceptance authority.
 
 ## Close the design loop

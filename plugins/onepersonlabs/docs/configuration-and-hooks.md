@@ -17,7 +17,7 @@ host, or unusable for a particular task.
 
 ## Inspect or repair OnePersonLabs' managed Codex defaults
 
-For generated agent tools, use the separate [Python scripting skill](../skills/python-scripting/SKILL.md).
+For generated agent tools, use the separate [$onepersonlabs:python-scripting](../skills/python-scripting/SKILL.md).
 Its settings do not belong in Codex's `config.toml`; see [agent-tool storage](#agent-tool-storage).
 
 The installed plugin provides a read-only check and an explicit repair command.
@@ -89,7 +89,7 @@ that changed afterward and reports a conflict for inspection.
 
 Each transition needs its own evidence. A source edit does not update an installed
 copy, and plugin installation does not replace global instructions. Use the
-[refresh skill](../skills/refresh-local-plugins/SKILL.md) for source installations
+[$onepersonlabs:refresh-local-plugins](../skills/refresh-local-plugins/SKILL.md) for source installations
 and the procedure below for the instruction file.
 
 ## Agent-tool storage
@@ -196,7 +196,7 @@ Review and trust the plugin's current hook definitions in Codex before relying
 on hook behavior. A trust record alone does not prove that a particular event
 matched or that a hook produced the intended result. For diagnosis, preserve
 the event, triggering action, host, Codex version, and relevant output, then
-use `codex-hook-debug` to trace the active definition and handler.
+use `$onepersonlabs:codex-hook-debug` to trace the active definition and handler.
 
 ## Run optional task-watch notifications
 

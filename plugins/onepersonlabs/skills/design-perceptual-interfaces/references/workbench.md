@@ -2,7 +2,7 @@
 
 Use the application's current capture/test tooling first. The optional helper
 `scripts/design_evidence.py` provides portable artifact operations when needed.
-It creates no service, workflow database, Conceptor records, or global settings.
+It creates no service, workflow database, decision records, or global settings.
 Use `python` on Windows and `python3` where that is the installed interpreter.
 Run `--help` and the relevant subcommand's help for the current interface.
 
@@ -50,8 +50,8 @@ python scripts/design_evidence.py capture --manifest capture.json --out run-01
 python scripts/design_evidence.py verify --evidence run-01/evidence.json
 ```
 
-Capture artifacts before running a check that verifies them. If a Conceptor Lens
-uses this evidence, its check should run `verify` against the frozen capture
+Capture artifacts before running a check that verifies them. If a project check
+uses this evidence, it should run `verify` against the frozen capture
 without rewriting its declared inputs. Keep capture outside that check so the
 check evaluates the existing evidence instead of replacing it.
 

@@ -1,6 +1,6 @@
 ---
 name: develop-alternatives
-description: Develop independent, concrete approaches to a defined problem when choosing well requires design work. Use when consequential work still has competing mechanisms whose assumptions and tradeoffs are not yet clear. Return developed options for a project-grounded `$onepersonlabs:pov`; return unsettled goals or open opportunity fields to the current workflow owner.
+description: Develop independent, concrete approaches to a defined consequential problem with competing mechanisms, assumptions, and tradeoffs. Return developed options and unresolved decisions to the current work owner.
 ---
 
 # Develop competing approaches
@@ -19,7 +19,7 @@ result and resumes only after the decision has an owner.
 
 Recover the requested outcome, constraints, settled decisions, unresolved goals,
 project evidence, and the cost of choosing incorrectly. Read applicable accepted
-Conceptor meaning and project instructions. Use `$onepersonlabs:research-solutions`
+decisions and project instructions. Use `$onepersonlabs:research-solutions`
 when current implementations, external constraints, or technical integration
 facts could change which approaches are viable. Reuse relevant research instead
 of repeating it. Load applicable [project knowledge](../agent-instructions/references/project-knowledge.md)

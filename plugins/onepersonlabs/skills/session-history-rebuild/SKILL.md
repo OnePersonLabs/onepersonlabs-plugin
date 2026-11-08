@@ -1,6 +1,6 @@
 ---
 name: session-history-rebuild
-description: Reconstruct a complete, auditable repository conversation and evolving design history from canonical Codex sessions. Explicit reconstruction only; focused history lookup belongs to $onepersonlabs:session-reader.
+description: Reconstruct a complete, auditable repository conversation and evolving design history from canonical Codex sessions. Applies to an explicit request for full historical reconstruction.
 ---
 
 # Session History Rebuild

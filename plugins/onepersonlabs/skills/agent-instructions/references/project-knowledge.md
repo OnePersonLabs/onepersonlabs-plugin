@@ -2,8 +2,8 @@
 
 Read this reference when a judgment, design, investigation, or review depends on
 project rules or previously learned constraints. Use the project's existing
-instructions, decision records, and accepted meaning. Conceptor remains the owner
-of accepted meaning when active. This procedure creates no parallel knowledge store.
+instructions, decision records, and accepted meaning. Keep accepted decisions with
+their existing owner. This procedure creates no parallel knowledge store.
 
 ## Find the declared sources
 

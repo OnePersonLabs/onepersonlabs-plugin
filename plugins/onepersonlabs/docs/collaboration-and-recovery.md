@@ -9,8 +9,8 @@ the existing owner. Routine chat does not require an inbox service.
 Start with the existing work records and the conversation that owns the task.
 Reconcile the project's chosen status record, any existing repository checkpoint,
 current checkout and dirty files, and any unfinished external action before
-repeating it. If a project uses Conceptor or another meaning owner, recover accepted
-decisions and evidence there too. The project's chosen work record holds active
+repeating it. Recover accepted decisions and evidence from the project's existing
+records. The project's chosen work record holds active
 decisions, failed hypotheses, budgets, permissions, and the next safe action;
 do not create a second task ledger. That record can be the owning issue;
 a local checkpoint file is not required when the project uses its issue for recovery.
@@ -107,7 +107,7 @@ drift, and records what happened. A submission can inform a decision but does
 not grant new permissions or prove code correctness. Agreement is not a test
 result. The root keeps accepted meaning and evidence with the project owner.
 
-From the installed human-collaboration skill's `scripts` directory, the human
+From the installed `$onepersonlabs:human-collaboration` skill's `scripts` directory, the human
 can submit a response with this command. Use `python` on Windows or `python3`
 on POSIX, and pass the item ID shown by the inbox:
 
@@ -136,7 +136,7 @@ submission ID, claim and outcome state, partly applied changes, and current
 owner in the existing work record. Inspect before applying a repeated response;
 an inbox receipt cannot guarantee exactly-once effects in code. If ownership
 needs to move to another root, use the explicit session handoff procedure in the
-human-collaboration skill.
+`$onepersonlabs:human-collaboration` skill.
 
 ## Wait for a genuinely long local command
 
@@ -173,12 +173,12 @@ remain at the reported path if queue submission fails.
 
 This procedure applies only when an authorized local plugin refresh is actually
 being performed. From the workspace being refreshed, use the
-human-collaboration skill's `pause-for-refresh` before the installer and
+`$onepersonlabs:human-collaboration` skill's `pause-for-refresh` before the installer and
 `resume-after-refresh` after the attempt, even if installation fails. Continue
 only after the pause confirms shutdown or reports no running service. Resume
 restores a previously running service and returns a replacement pairing URL.
 Keep a failed restart's recovery record for retry. Follow the exact
-[refresh procedure](../skills/human-collaboration/SKILL.md#local-plugin-refresh).
+[$onepersonlabs:human-collaboration](../skills/human-collaboration/SKILL.md#local-plugin-refresh).
 
 This service recovery does not change which plugin was installed or prove its
 hooks are trusted. Follow the target repository's own instructions for its
@@ -188,9 +188,9 @@ skill documents the plugin refresh helper and its delivery limits.
 
 ## Related skills
 
-- [Human collaboration](../skills/human-collaboration/SKILL.md) -- explicit contribution, inbox ownership, service lifecycle, and submission recovery.
-- [Handoff](../skills/handoff/SKILL.md) -- continuation file for a fresh conversation.
-- [Long command wakeup](../skills/long-command-wakeup/SKILL.md) -- bounded completion notification for unattended local commands.
-- [Session reader](../skills/session-reader/SKILL.md) -- focused, bounded history lookup.
-- [Session history rebuild](../skills/session-history-rebuild/SKILL.md) -- explicit full-history provenance and reconstruction.
-- [Local plugin refresh](../skills/refresh-local-plugins/SKILL.md) -- refresh selection, recovery lifecycle, and installed state.
+- [$onepersonlabs:human-collaboration](../skills/human-collaboration/SKILL.md) -- explicit contribution, inbox ownership, service lifecycle, and submission recovery.
+- [$onepersonlabs:handoff](../skills/handoff/SKILL.md) -- continuation file for a fresh conversation.
+- [$onepersonlabs:long-command-wakeup](../skills/long-command-wakeup/SKILL.md) -- bounded completion notification for unattended local commands.
+- [$onepersonlabs:session-reader](../skills/session-reader/SKILL.md) -- focused, bounded history lookup.
+- [$onepersonlabs:session-history-rebuild](../skills/session-history-rebuild/SKILL.md) -- explicit full-history provenance and reconstruction.
+- [$onepersonlabs:refresh-local-plugins](../skills/refresh-local-plugins/SKILL.md) -- refresh selection, recovery lifecycle, and installed state.

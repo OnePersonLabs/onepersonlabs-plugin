@@ -13,7 +13,7 @@ You do not need to clone or develop the plugin to use its skills.
 - Keep Windows and WSL paths and interpreters separate. Installing into one
   Codex home does not establish the state of the other home.
 
-Additional requirements belong to the selected task. For example, `last30days`
+Additional requirements belong to the selected task. For example, `$onepersonlabs:last30days`
 uses Python 3.12 or later, GitHub operations need authenticated GitHub tools or
 `gh`, and the CamoFox skills need their respective external browser runtimes.
 The [skill catalog](skills.md) identifies these requirements. Contributor tools
@@ -89,7 +89,7 @@ codex plugin add onepersonlabs@onepersonlabs
 
 Start a fresh task afterward and review hook trust if the hooks changed.
 For a local source checkout, use `$onepersonlabs:refresh-local-plugins` instead;
-its [source-refresh procedure](../skills/refresh-local-plugins/SKILL.md) handles
+its [$onepersonlabs:refresh-local-plugins](../skills/refresh-local-plugins/SKILL.md) handles
 installation and selected hook trust in the current user’s default Codex home. Global instructions
 are a separate update, described in [configuration and hooks](configuration-and-hooks.md).
 Publishing source, installing it, and loading it in a task are distinct steps.

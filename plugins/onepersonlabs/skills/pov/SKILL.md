@@ -1,6 +1,6 @@
 ---
 name: pov
-description: Form a source-grounded position on a supplied decision, document direction, or set of approaches. Use when the user asks what we should choose, adopt, change, or believe, or when a consequential unresolved decision determines active work. Use develop-alternatives when a defined choice needs real competing designs first; use research-solutions for current implementation evidence.
+description: Form a source-grounded position on a supplied decision, document direction, or set of approaches. Assess what to choose, adopt, change, or believe when a consequential unresolved decision determines active work.
 ---
 
 # Form a grounded position
@@ -14,10 +14,10 @@ create another decision ledger.
 This skill is selected by the agent when the user's request asks for a judgment,
 or when dependent work hinges on an unsettled consequential choice. A routine
 choice with clear project precedent does not need a POV. A request to understand
-behavior goes to `build-understanding` or `debug`; an explicit audit goes to
-`adversarial-review`; external implementation research goes to
-`research-solutions`. A decision with a concrete brief but undeveloped competing
-mechanisms goes to `develop-alternatives`, which returns here to judge the result.
+behavior goes to `$onepersonlabs:build-understanding` or `$onepersonlabs:debug`; an explicit audit goes to
+`$onepersonlabs:adversarial-review`; external implementation research goes to
+`$onepersonlabs:research-solutions`. A decision with a concrete brief but undeveloped competing
+mechanisms goes to `$onepersonlabs:develop-alternatives`, which returns here to judge the result.
 
 ## Frame the decision
 
@@ -42,8 +42,8 @@ also verify the outside claims that make the recommendation viable. These are
 separate evidence requirements: strong outside evidence cannot establish local
 fit, and local fit cannot establish an external capability.
 
-Read relevant accepted Conceptor meaning and current project decisions when the
-project uses them. Check that they still apply. Inspect authoritative source for
+Read relevant accepted meaning and current project decisions from their existing
+records. Check that they still apply. Inspect authoritative source for
 any claim borrowed from conversation, prior work, or an agent. Conversation gives
 useful hypotheses; it does not establish a project fact. Search for disconfirming
 evidence before relying on a premise that raises the recommended commitment.

@@ -21,8 +21,4 @@ refreshing active installations are separate delivery steps.
 | [`docs/`](docs/contributing.md) | Contributor guidance. |
 | [`tools/`](tools/) and [`tests/`](tests/) | Repository drivers, checks, and fixtures; these do not ship. |
 
-For optional GitHub issue-to-PR automation, see the separate
-[Conductor plugin](https://github.com/OnePersonLabs/conductor-plugin). It is
-maintained independently and does not ship with OnePersonLabs.
-
 OnePersonLabs is [MIT licensed](LICENSE). Bundled third-party code retains its own notices.
