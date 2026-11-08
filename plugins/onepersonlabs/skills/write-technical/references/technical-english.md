@@ -22,7 +22,26 @@ consistent terminology does not mean merging different operations into one word.
 
 ## Preserve meaning
 
-Read the source and its governing schema or instructions before rewriting. Keep all conditions, exceptions, numbers, units, references, defined terms, and the force of requirement words such as `MUST`, `SHOULD`, and `MAY`. When drafting from a sparse request, state only claims that follow from it. Do not add behavior, exceptions, guarantees, implementation constraints, error details, or ancillary test requirements merely to make a requirement sound more testable. Ask for a missing decision when it changes the required behavior. Keep domain terms when a plain substitute would change meaning; define an unfamiliar term when that helps the intended reader. Do not rewrite code, identifiers, command syntax, or quotations. When a shorter sentence would lose precision, keep the longer one.
+Read the source and its governing schema or instructions before rewriting. For a
+faithful rewrite or requested complete specification, keep the supplied conditions,
+exceptions, numbers, units, references, defined terms and requirement strength,
+including `MUST`, `SHOULD` and `MAY`.
+
+For an answer, explanation or summary, first select the facts needed to answer the
+reader's question. Preserve the accuracy and consequential conditions of those
+facts; this does not require reproducing every source metric or qualification.
+A request for exact detail in one artifact does not make adjacent commentary a
+complete inventory. State the limits of the claims made, rather than listing
+every untested property. Link measurements that support the answer when the
+reader does not need their values to understand it.
+
+When drafting from a sparse request, state only claims that follow from it. Do
+not add behavior, exceptions, guarantees, implementation constraints, error details
+or ancillary test requirements merely to make a requirement sound more testable.
+Ask for a missing decision when it changes the required behavior. Keep domain
+terms when a plain substitute would change meaning; define an unfamiliar term
+when useful. Do not rewrite code, identifiers, command syntax or quotations.
+When a shorter sentence would lose precision, keep the longer one.
 
 For example, if the only source says, "Reject expired tokens without changing stored data," a complete requirement is: "If a token is expired, the service MUST reject the request and MUST NOT change stored data." Additional error formats, exceptions, and implementation steps need their own source.
 

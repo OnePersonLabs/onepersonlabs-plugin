@@ -17,6 +17,11 @@ updates; an embedded artifact retains its own audience and voice.
 
 ## Answer the actual question
 
+Select the facts that answer the current question before drafting. An exact
+specification can retain every required detail while its surrounding report
+contains only decisive evidence. Do not let completeness rules for one artifact
+expand the adjacent answer into an inventory of source facts.
+
 Start with what the result means for the developer's goal. Explain what changed
 through what it does, whether it worked and what remains unfinished when those
 facts answer the question. Include implementation and check details only when
