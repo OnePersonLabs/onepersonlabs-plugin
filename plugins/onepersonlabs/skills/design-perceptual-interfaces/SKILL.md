@@ -25,7 +25,7 @@ procedure for every frontend change or create a task just to classify the reques
 
 The native root owns scope, planning, assignments, accepted meaning, and completion.
 Read the existing design context and reuse its evidence. When Conceptor is active,
-use [its existing contracts](references/conceptor.md). Return proposed meaning or
+follow the installed Conceptor skills. Return proposed meaning or
 Lens changes to their owner. This skill creates design evidence, not another
 scheduler, task registry, approval gate, or acceptance authority.
 

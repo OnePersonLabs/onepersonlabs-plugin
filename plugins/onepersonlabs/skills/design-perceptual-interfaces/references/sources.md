@@ -32,7 +32,3 @@ from these pinned versions. The report's broader claims about proprietary image
 models and measured motion extraction are research context, not guarantees of
 these local helpers. The capture helper asserts readiness rather than inheriting
 the upstream fixed-wait assumption. Curve fitting remains approximate.
-
-The Projector adapter was checked against `projector-v5`, branch `v5`, revision
-`40b36a96cb0f973014e5123f8e155401b6dcd31f`. Follow the project's installed contracts
-when they change; do not write guessed fields or counterfeit receipts.

@@ -50,6 +50,11 @@ python scripts/design_evidence.py capture --manifest capture.json --out run-01
 python scripts/design_evidence.py verify --evidence run-01/evidence.json
 ```
 
+Capture artifacts before running a check that verifies them. If a Conceptor Lens
+uses this evidence, its check should run `verify` against the frozen capture
+without rewriting its declared inputs. Keep capture outside that check so the
+check evaluates the existing evidence instead of replacing it.
+
 Use a new output directory. Inspect the actual PNGs and contact sheet. Keep the
 manifest and source bindings. Capture records readiness, browser/host time brackets,
 viewport, motion setting, and requested frame labels. Requested time is not measured
