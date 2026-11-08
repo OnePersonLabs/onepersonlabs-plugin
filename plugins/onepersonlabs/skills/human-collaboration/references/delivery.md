@@ -13,12 +13,13 @@ The terminal shows startup, incoming requests, response status, and shutdown.
 It also prints the full pairing URL, including the GUID and bearer token.
 Logs omit URL queries, authentication headers, and request bodies. Close the
 terminal window or press Ctrl+C to stop the server.
-Use `pause-for-refresh` and `resume-after-refresh` only for the [$onepersonlabs:human-collaboration](../SKILL.md#local-plugin-refresh);
+Use `pause-for-refresh` and `resume-after-refresh` only for the refresh lifecycle in [$onepersonlabs:human-collaboration](../SKILL.md#local-plugin-refresh);
 ordinary recovery does not stop or start the service.
 `serve` still runs a foreground service for an individual workspace;
 `serve --catalog <runtime-directory>` serves registered workspaces. The default is `127.0.0.1:8766`.
-After the service responds, [$onepersonlabs:human-collaboration](../SKILL.md#deliver-the-pairing-link)
-to the requesting user in chat. Its bearer token belongs in that link; keep the
+After the service responds, deliver its complete clickable pairing URL to the
+requesting user in chat, following [$onepersonlabs:human-collaboration](../SKILL.md#deliver-the-pairing-link).
+Its bearer token belongs in that link; keep the
 link out of repository files, shared documents, and activity logs.
 `--host lan --allow-lan` selects an active physical Windows adapter,
 preferring one with a gateway and then the lowest interface metric. On POSIX it
