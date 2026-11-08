@@ -1,0 +1,6 @@
+interface:
+  display_name: "Write Documentation"
+  short_description: "Guides grounded in product behavior and reader tasks"
+  default_prompt: "Use $onepersonlabs:write-documentation to write or update this guide and verify the affected reader journey."
+policy:
+  allow_implicit_invocation: true

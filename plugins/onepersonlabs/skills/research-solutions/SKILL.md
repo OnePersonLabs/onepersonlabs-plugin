@@ -18,7 +18,7 @@ through the required parts, owners and relationships. Preserve existing project
 decisions unless the user authorizes a change. Separate missing product choices
 from facts that source inspection can resolve.
 
-Read applicable [project knowledge](../agent-instructions/references/project-knowledge.md)
+Read applicable [project knowledge](../write-agent-instructions/references/project-knowledge.md)
 when local rules or learned constraints could change qualification. Cite the
 entries that affect candidate selection or integration.
 

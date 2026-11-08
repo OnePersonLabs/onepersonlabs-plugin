@@ -4,9 +4,12 @@ Apply the clarity principles of ASD-STE100 to eligible software prose. This skil
 
 ## Route by purpose and reader
 
-- **Normative or operational:** For requirements, acceptance criteria, procedures, and instructions another agent must act on, state one action or testable claim at a time. Put conditions before their effects. Name the actor when it matters. Reuse one term for each concept.
+- **Normative or operational:** For specifications, requirements, plans, acceptance criteria, procedures, and instructions someone must implement or follow, state one action or testable claim at a time. Put conditions before their effects. Name the actor when it matters. Reuse one term for each concept.
+- **Developer-facing responses:** For answers, findings, progress and delivery reports, use direct language, clear referents, consistent terms and concise explanations of concrete behavior. Preserve the reason and limitations that change the answer.
 - **Implementation guidance:** For technical explanations that guide a design or implementation, use direct verbs and short, coherent paragraphs. Retain the vocabulary needed for precision; do not force a controlled dictionary.
-- **Human-facing prose:** When the primary purpose is to explain, teach, or persuade a person, preserve the voice and structure suited to that reader. Do not apply a controlled register solely because the subject is technical.
+- **Embedded human-facing artifacts:** When the primary purpose is to explain, teach, or persuade a person, preserve the voice and structure suited to that reader. Preserve their audience and voice; developer-response guidance does not flatten delivered emails, UI or creative work.
+
+Apply clarity principles across all branches without forcing a controlled dictionary. Concise UI labels can be fragments; procedural explanations keep complete grammar.
 
 Purpose outranks filename. If one artifact contains different kinds of text, apply the rules to the eligible sections rather than flattening the whole artifact.
 

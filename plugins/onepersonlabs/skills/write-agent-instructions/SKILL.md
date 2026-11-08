@@ -1,9 +1,9 @@
 ---
-name: agent-instructions
-description: Author, consolidate, audit, or score agent instructions and skill packages.
+name: write-agent-instructions
+description: Create, revise, consolidate, audit, or score AGENTS.md files, skills, prompts, tool descriptions, and agent instructions. Resolve conflicting rules, incorrect activation, duplicated guidance, and missing behavioral requirements.
 ---
 
-# Agent Instructions
+# Write agent instructions
 
 Treat an instruction system as a production control surface. Make future agents
 take a predictable process without forcing identical output.
@@ -27,13 +27,12 @@ duplicate or contradictory guidance before adding another rule.
 For current Codex product or format claims, use official OpenAI documentation.
 Prefer installed source and executable help for local tool behavior.
 
-For instruction prose, read
-[$onepersonlabs:write](../write/SKILL.md) and its
-[technical-English reference](../write/references/technical-english.md) and
-apply it while drafting and revising. This includes requirements, procedures,
-agent instructions, and implementation guidance. Preserve quotations, code,
-identifiers, and commands exactly. Use the appropriate human-facing writing
-mode for quoted or generated text intended for non-instruction use.
+For instruction prose, use [$onepersonlabs:write-technical](../write-technical/SKILL.md)
+and its [technical-English reference](../write-technical/references/technical-english.md).
+This skill owns the instruction system; that skill supplies precise wording.
+Preserve quotations, code, identifiers and commands exactly. Embedded human-facing
+artifacts retain their own audience and voice. Reuse loaded guidance without
+reciprocal dispatch.
 
 ## Select the Surface
 
@@ -97,9 +96,9 @@ sequence only when visible later steps cause premature completion of a fuzzy
 earlier step. Otherwise, prefer co-location: keep a concept's definition,
 rules, and caveats together.
 
-End each operational step with a checkable completion criterion. Make it
-exhaustive when missing one item would matter. Sharpen a vague bound before
-adding more process.
+Derive checkable completion criteria from the authorized behavior. Preserve every
+required condition; do not add obligations merely to make a step testable. Identify
+a missing consequential decision instead of inventing one.
 
 ## Write for Behavioral Force
 

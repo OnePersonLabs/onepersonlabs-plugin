@@ -22,7 +22,7 @@ project evidence, and the cost of choosing incorrectly. Read applicable accepted
 decisions and project instructions. Use `$onepersonlabs:research-solutions`
 when current implementations, external constraints, or technical integration
 facts could change which approaches are viable. Reuse relevant research instead
-of repeating it. Load applicable [project knowledge](../agent-instructions/references/project-knowledge.md)
+of repeating it. Load applicable [project knowledge](../write-agent-instructions/references/project-knowledge.md)
 and preserve citations.
 
 Separate known requirements from assumptions. Define comparison criteria from

@@ -49,7 +49,9 @@ For a skill change, edit `plugins/onepersonlabs/skills/<name>/SKILL.md` and revi
 its `agents/openai.yaml` activation metadata. Keep examples and references
 consistent with its actual consumer. Add scripts or abstractions only for an
 established need. Document changed reader actions, prerequisites, and results
-with `$onepersonlabs:write`.
+with the appropriate writing skill: `$onepersonlabs:write-technical` for
+instructions, `$onepersonlabs:write-documentation` for guides, and
+`$onepersonlabs:write-ui` for application copy.
 
 `plugins/onepersonlabs/AGENTS.md` is the shipped instruction template. When its
 content changes, increment its positive `onepersonlabs-instructions-version`

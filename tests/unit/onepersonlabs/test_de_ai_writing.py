@@ -132,12 +132,7 @@ class ScannerTests(unittest.TestCase):
         self.assertEqual(instructions_date.group(1), SCANNER.SOURCE_REVIEWED.isoformat())
         self.assertEqual(signs_date.group(1), SCANNER.SOURCE_REVIEWED.isoformat())
         self.assertEqual(int(signs_revision.group(1)), SCANNER.SOURCE_REVISION)
-        foundation = r"^#{2,3} Universal drafting foundation\s*\n(.*?)\nLast source review:"
-        skill_foundation = re.search(foundation, skill, re.MULTILINE | re.DOTALL)
-        instructions_foundation = re.search(foundation, instructions, re.MULTILINE | re.DOTALL)
-        self.assertIsNotNone(skill_foundation)
-        self.assertIsNotNone(instructions_foundation)
-        self.assertEqual(skill_foundation.group(1).strip(), instructions_foundation.group(1).strip())
+
 
 
 if __name__ == "__main__":

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Write UI"
+  short_description: "Understandable actions, interface states and errors"
+  default_prompt: "Use $onepersonlabs:write-ui to improve this interface copy against the actual behavior and surrounding controls."
+policy:
+  allow_implicit_invocation: true

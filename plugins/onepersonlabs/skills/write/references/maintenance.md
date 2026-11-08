@@ -1,6 +1,6 @@
 # Maintain the shared drafting foundation, catalogue, and scanner
 
-Use this workflow when the `Last source review` date in `SKILL.md` is at least 30 days old, or when the user asks to refresh `$onepersonlabs:write`, update its Wikipedia basis, or check source freshness. Ordinary writing must not make a network request before the interval expires.
+During catalogue-based rewriting or audits, use this workflow when the `Last source review` date in `SKILL.md` is at least 30 days old. Also use it for an explicit source-refresh request. Ordinary drafting and developer replies do not initiate maintenance; do not make a source request before the interval expires unless explicitly asked.
 
 ## Source
 
@@ -26,12 +26,12 @@ After every successful due or forced check and any required source review, updat
 
 1. Record the latest revision ID and timestamp. Use its permanent `oldid` URL for the review.
 2. Compare the current reference with the source sections about content, language and grammar, style, communication intended for the user, signs of human writing, ineffective indicators, and historical indicators. Ignore Wikipedia-only markup, citation, category, edit-summary, and moderation rules.
-3. Reconcile the Universal drafting foundation in the plugin `AGENTS.md` and this skill's `SKILL.md` from the reviewed source. Keep their wording identical. Preserve useful voice and real qualifications; the source describes patterns, not universal word bans. Keep Caveman and technical-English rules under their own provenance. Increment the plugin instruction revision when its content changes. Then update `references/signs.md` as an adaptation for general prose. Preserve stable local rule IDs. Record additions, removals, and changes in classification through the reference text itself; do not add a changelog.
+3. Review the shared drafting foundation at its sole owner, the plugin `AGENTS.md`, against the source. Update affected consumers only when its meaning changes. Preserve useful voice and real qualifications; the source describes patterns, not universal word bans. Keep concise-response examples and technical-English rules under their own provenance in `write-technical`. Increment the plugin instruction revision when its content changes. Then update `references/signs.md` as an adaptation for general prose. Preserve stable local rule IDs. Record additions, removals, and changes in classification through the reference text itself; do not add a changelog.
 4. Update `SOURCE_REVISION`, `SOURCE_TIMESTAMP`, `SOURCE_REVIEWED`, and the applicable rule definitions in `scripts/check_ai_signs.py`. Add a mechanical rule only when it has a specific signal with acceptable false positives. Keep contextual judgments in the reference.
 5. Update focused unit cases for every changed scanner behavior. Keep network access mocked in deterministic tests.
 6. Run the existing focused scanner tests and the installed-package checkpoint required by the repository instructions; that checkpoint includes contract and unit checks. Do not add permanent skill-invocation tests. Task-specific AI verification follows the shared policy in the plugin `AGENTS.md`; optional broader evaluations require separate authorization and a budget.
 
-The plugin instruction template, skill entrypoint, reference, and scanner must name the same review date, and the reference and scanner must name the same source revision, before the refresh is complete. Do not automate prose changes directly from Wikipedia text: the source can reclassify a sign, add Wikipedia-specific material, or change examples without creating a useful scanner rule.
+The plugin instruction template, write skill entrypoint, signs reference, and scanner must name the same Wikipedia review date, and the reference and scanner must name the same source revision, before the refresh is complete. Do not automate prose changes directly from Wikipedia text: the source can reclassify a sign, add Wikipedia-specific material, or change examples without creating a useful scanner rule.
 
 ## Source and installed copies
 

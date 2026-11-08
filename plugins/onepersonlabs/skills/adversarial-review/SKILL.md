@@ -13,7 +13,7 @@ Establish the review boundary from the request and existing checkpoint. Inspect
 recoverable source before asking for missing context. State unavailable evidence
 and limit conclusions to what can be inspected.
 
-Load applicable [project knowledge](../agent-instructions/references/project-knowledge.md)
+Load applicable [project knowledge](../write-agent-instructions/references/project-knowledge.md)
 when reviewing project conventions or previously learned failure modes. Use each
 relevant rule in the review criteria and cite it in any resulting finding.
 

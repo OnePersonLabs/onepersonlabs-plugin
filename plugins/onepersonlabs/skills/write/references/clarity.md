@@ -13,7 +13,7 @@ signs catalogue; this review does not refresh that catalogue or its review dates
 The local guidance combines these findings: start from the reader's goal, explain
 concrete functionality before unfamiliar names, make headings informative, remove
 nonessential content, and preserve the limits that make claims accurate. The
-examples in Caveman are local illustrations, not quotations or source findings.
+examples in write-technical/references/concise-responses.md are local illustrations, not quotations or source findings.
 No fixed sentence length, reading grade, or word-reduction quota is imposed.
 
 An empty heading, an unexplained internal name, or an omitted limit fails because
@@ -21,3 +21,15 @@ of its relationship to the surrounding text and the reader's task. A phrase can
 be appropriate in another context. Review the whole artifact for those failures;
 do not turn them into keyword bans or add scanner rules. Mechanical checks remain
 advisory and cannot establish usability, factual completeness, or comprehension.
+
+## OpenAI prompting guidance
+
+Reviewed 2026-11-08: [Using GPT-6, prompting best practices](https://developers.openai.com/api/docs/guides/latest-model?model=gpt-6-astra#prompting-best-practices).
+The shared foundation adapts its connected concise paragraphs, audience-appropriate
+technical detail, direct verbs, useful parallel delegation and proportional
+verification. Its wording examples guide contextual editing, not scanner bans.
+Keep exact technical terms, consequential limitations and the requested voice.
+This review does not refresh the Wikipedia catalogue or its dates.
+
+Source-linked fenced excerpts with omitted irrelevant content marked by `...`
+are the user's requested source-visibility format, not wording from that passage.

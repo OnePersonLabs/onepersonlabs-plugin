@@ -52,7 +52,7 @@ For current adoption or replacement, route through `$onepersonlabs:research-solu
 for current implementations, integration, maintenance, and recovery evidence. A
 clear, locally answerable question needs no broad survey. If the needed source
 cannot be verified, hold the position and say exactly what evidence would change
-that. Read [project knowledge](../agent-instructions/references/project-knowledge.md)
+that. Read [project knowledge](../write-agent-instructions/references/project-knowledge.md)
 when a rule or local convention could govern the decision; cite any rule that shaped the result.
 
 ## Choose and explain

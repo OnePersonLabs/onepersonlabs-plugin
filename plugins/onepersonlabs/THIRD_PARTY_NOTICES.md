@@ -75,14 +75,14 @@ SOFTWARE.
 Source: https://github.com/sdi2200262/elements-of-style-for-agents/tree/8317879ad0270a4a687eab7fffe570d26024cf25
 
 AGENTS.md and the elements-of-style skill inform the shared drafting guidance,
-reader-oriented composition, artifact guidance, and concise replies in `$onepersonlabs:write`.
+reader-oriented composition, artifact guidance, and concise replies in the shared foundation and writing skills.
 Adapted for automatic layered routing, semantic preservation, and flexible length.
 The source is dedicated to the public domain under CC0 1.0 Universal:
 https://creativecommons.org/publicdomain/zero/1.0/
 
 ## Wikipedia: Signs of AI writing
 
-The `$onepersonlabs:write` drafting foundation and signs catalogue adapt Wikipedia's Signs of AI
+The shared AGENTS.md drafting foundation and `$onepersonlabs:write` signs catalogue adapt Wikipedia's Signs of AI
 writing. Its pinned revision, review date, changes, and CC BY-SA 4.0 attribution
 are retained in `skills/write/references/signs.md`. These adapted materials remain
 under CC BY-SA 4.0: https://creativecommons.org/licenses/by-sa/4.0/
@@ -93,7 +93,7 @@ Source: https://github.com/JuliusBrussee/caveman/tree/9b68f7ed12b05e7efaff18e65c
 
 Copyright 2026 Julius Brussee.
 
-The `skills/caveman/SKILL.md` instructions inform `write/references/caveman.md`
+The `skills/caveman/SKILL.md` instructions inform `write-technical/references/concise-responses.md`
 and the plugin's concise-reply defaults. Changes remove modes, hooks, fixed
 ceilings and forced fragments; preserve uncertainty; and use native routing.
 No runtime, CLI, fonts or other Caveman packages are included.
@@ -324,3 +324,10 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## OpenAI prompting guidance
+
+Source: https://developers.openai.com/api/docs/guides/latest-model?model=gpt-6-astra#prompting-best-practices
+Reviewed 2026-11-08. The shared writing, delegation and verification guidance
+adapts the documented prompting examples. Source-linked fenced excerpts are a
+separate user preference. Existing third-party attribution above remains applicable.

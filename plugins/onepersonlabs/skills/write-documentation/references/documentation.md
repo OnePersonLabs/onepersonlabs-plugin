@@ -54,7 +54,8 @@ blocks with the appropriate shell. Explain how to recognize completion and what
 to do for a consequential failure. Keep qualifications close to the claims they
 limit; do not bury them in a generic disclaimer.
 
-Use images only when they resolve a specific recognition or spatial difficulty.
+Use visuals when they resolve a concrete comprehension problem, including
+recognition, spatial relationships, conceptual relationships or change.
 Prefer existing applicable captures; label mockups and reconstructions explicitly.
 A rendered illustration does not prove runtime behavior. Commands remain text.
 For substantial conceptual explanation or representation choices, use
