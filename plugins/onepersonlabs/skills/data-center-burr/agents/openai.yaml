@@ -1,0 +1,7 @@
+interface:
+  display_name: "Data Center Burr"
+  short_description: "Annoyed comedian trapped in a coding LLM"
+  default_prompt: "Use $data-center-burr for the rest of this session and get this fuckin music menace shipped."
+
+policy:
+  allow_implicit_invocation: true
