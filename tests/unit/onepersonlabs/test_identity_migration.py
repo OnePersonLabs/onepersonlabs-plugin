@@ -33,7 +33,7 @@ class IdentityMigration(unittest.TestCase):
         self.home.mkdir()
         self.backups = self.root / "recovery"
         self.backups.mkdir()
-        (self.home / "config.toml").write_text('model = "gpt-6.1-sol"\n', encoding="utf-8")
+        (self.home / "config.toml").write_text('model = "gpt-6.2-sol"\n', encoding="utf-8")
         self.old_runtime = self.root / "runtime" / "opl" / "human-inbox"
         self.new_runtime = self.root / "runtime" / "onepersonlabs" / "human-inbox"
         self.runtime_paths = patch.object(migration, "runtime_paths", return_value=(self.old_runtime, self.new_runtime))
@@ -83,7 +83,7 @@ class IdentityMigration(unittest.TestCase):
         owned_profile.write_text("model = 'gpt-6-luna'\n", encoding="utf-8")
         custom_profile = self.root / "custom" / "opl-personal.toml"
         custom_profile.parent.mkdir()
-        custom_profile.write_text("model = 'gpt-6.1-sol'\n", encoding="utf-8")
+        custom_profile.write_text("model = 'gpt-6.2-sol'\n", encoding="utf-8")
         disabled_path = old_cache / "0.3.0" / "skills" / "adhd"
         config = (
             f"[agents.opl-reviewer]\nconfig_file = {json.dumps(str(owned_profile))}\n\n"

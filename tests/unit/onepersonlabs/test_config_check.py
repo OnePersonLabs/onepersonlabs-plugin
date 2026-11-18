@@ -221,7 +221,7 @@ class ConfigCheckTests(unittest.TestCase):
     def test_ignore_marker_uses_bom_crlf_and_schema_position(self):
         self.config.write_bytes(
             b"\xef\xbb\xbf#:schema https://developers.openai.com/codex/config-schema.json\r\n\r\n"
-            b"# General documentation\r\nmodel = \"gpt-6.1-sol\"\r\n"
+            b"# General documentation\r\nmodel = \"gpt-6.2-sol\"\r\n"
         )
         report, status = checker.command_ignore(self.home, self.plugin)
         self.assertEqual(status, 0)
@@ -230,7 +230,7 @@ class ConfigCheckTests(unittest.TestCase):
             self.config.read_bytes(),
             b"\xef\xbb\xbf#:schema https://developers.openai.com/codex/config-schema.json\r\n"
             b"# onepersonlabs:ignore-config-check version=0.2.0\r\n\r\n"
-            b"# General documentation\r\nmodel = \"gpt-6.1-sol\"\r\n",
+            b"# General documentation\r\nmodel = \"gpt-6.2-sol\"\r\n",
         )
 
     def test_stale_marker_is_observed_read_only_then_removed_by_explicit_fix(self):
@@ -275,14 +275,14 @@ class ConfigCheckTests(unittest.TestCase):
     def test_explicit_reconcile_and_ignore_replace_stale_markers_transactionally(self):
         for command in (checker.command_reconcile, checker.command_ignore):
             with self.subTest(command=command.__name__):
-                original = b"# onepersonlabs:ignore-config-check version=0.1.0\nmodel = \"gpt-6.1-sol\"\n"
+                original = b"# onepersonlabs:ignore-config-check version=0.1.0\nmodel = \"gpt-6.2-sol\"\n"
                 self.config.write_bytes(original)
                 report, status = command(self.home, self.plugin)
                 self.assertEqual(status, 0)
                 self.assertTrue(report["applied"]["changed"])
                 receipt = json.loads(Path(report["applied"]["receipt"]).read_text(encoding="utf-8"))
                 self.assertEqual(Path(receipt["files"][0]["backup"]).read_bytes(), original)
-                self.assertEqual(self.parsed()["model"], "gpt-6.1-sol")
+                self.assertEqual(self.parsed()["model"], "gpt-6.2-sol")
                 matching, stale = checker.marker_state(self.config.read_bytes(), "0.2.0")
                 self.assertEqual(stale, [])
                 self.assertEqual(matching, command == checker.command_ignore)
@@ -310,7 +310,7 @@ class ConfigCheckTests(unittest.TestCase):
     def test_defaults_file_drives_repair_and_preserves_explicit_child_preferences(self):
         self.agent("role.toml")
         (self.plugin / "config.defaults.toml").write_text(
-            "[features]\nhooks = false\n\n[agents]\ndefault_subagent_model = \"gpt-6.1-sol\"\nmax_depth = 3\n",
+            "[features]\nhooks = false\n\n[agents]\ndefault_subagent_model = \"gpt-6.2-sol\"\nmax_depth = 3\n",
             encoding="utf-8",
         )
         self.config.write_text("[features]\nhooks = true\n\n[agents]\ndefault_subagent_model = \"gpt-6-luna\"\nmax_depth = 1\n", encoding="utf-8")

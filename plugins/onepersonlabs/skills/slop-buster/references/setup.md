@@ -6,7 +6,13 @@ Configuration is `$CODEX_HOME/slop-buster.toml`, falling back to `~/.codex/slop-
 
 For this installation, use `C:\dev\projects\slop-intelligence`. Include native Windows and the user's default WSL Codex homes when available; Docker's distribution is not a user source. Deduplicate aliases of the same session.
 
-The manual daily launcher starts one Codex root at gpt-6.1-sol/medium and invokes this skill. Readers use gpt-6-luna/medium; justified abstract synthesis uses gpt-6.1-sol/high. Verify actual delegation in a finite synthetic smoke before corpus processing. Do not silently substitute models.
+When there is work to review, the manual daily launcher starts one Codex root
+using `[models.orchestrator]`. The shipped default is `gpt-6.2-sol` at medium
+effort. An explicit orchestrator model or effort in `slop-buster.toml` takes
+precedence over the defaults. Reader roles use `gpt-6-luna` at medium effort.
+Use `gpt-6.2-sol` at high effort for justified abstract synthesis. Verify actual
+delegation in a finite synthetic smoke before corpus processing. Do not silently
+substitute models.
 
 Run `scripts/slop.py daily` manually when you want a bounded audit. The launcher resumes or prepares work and delegates it; it must not recursively invoke itself. No-new-work runs finish without model analysis. The 30-minute deadline checkpoints incomplete work without skipping the backlog.
 

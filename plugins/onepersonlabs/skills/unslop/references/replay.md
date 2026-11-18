@@ -61,8 +61,8 @@ existing POSIX environment, launch the forged session in its interactive runner:
 bash "${UNSLOP_SKILL_DIR}/scripts/run-replay.sh" "<forged-session-id>" "<rule-file>" "<workspace-dir>" --agent <claude|codex>
 ```
 
-For Codex, the runner defaults to Sol 6.1/medium. Use `--model` and `--effort`
-to match the original session when that route remains available. Record a model
+For Codex, the runner defaults to `gpt-6.2-sol` at medium effort. Use `--model`
+and `--effort` to match the original session when that route remains available. Record a model
 change as a causal limitation; do not call it equivalent reproduction.
 
 Choose `--agent` from the target failure session, not from the worker. The script launches the matching interactive CLI inside a detached tmux session and captures output via `tmux capture-pane`.

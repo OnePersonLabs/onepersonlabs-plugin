@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[3]
 SCRIPT = ROOT / "plugins/onepersonlabs/skills/configure-harness/scripts/harness.py"
@@ -81,10 +82,22 @@ class HarnessRuns(unittest.TestCase):
         harness.record(self.home, run, {**entry(status="blocked", calls=0), "model": None})
         item = {"candidateId": "docs", "verdict": "supported", "caseIds": ["a"], "reason": "Looks good"}
         with self.assertRaisesRegex(ValueError, "conclusive"):
-            harness.report(self.home, run, {"model": "gpt-6.1-sol", "recommendations": [item]})
+            harness.report(self.home, run, {"model": "gpt-6.2-sol", "recommendations": [item]})
         item["verdict"] = "inconclusive"
-        result = harness.report(self.home, run, {"model": "gpt-6.1-sol", "recommendations": [item]})
+        result = harness.report(self.home, run, {"model": "gpt-6.2-sol", "recommendations": [item]})
         self.assertTrue(Path(result["report"]).exists())
+
+    def test_report_uses_the_evaluator_approved_in_the_run_plan(self):
+        original_evaluator = "gpt-6.1-sol"
+        with patch.object(harness, "MODELS", {**harness.MODELS, "evaluator": original_evaluator}):
+            run = harness.plan(self.home, spec())["run"]
+
+        harness.record(self.home, run, entry())
+        item = {"candidateId": "docs", "verdict": "supported", "caseIds": ["a"], "reason": "Observed result"}
+        with self.assertRaisesRegex(ValueError, "selected Sol evaluator"):
+            harness.report(self.home, run, {"model": harness.MODELS["evaluator"], "recommendations": [item]})
+        result = harness.report(self.home, run, {"model": original_evaluator, "recommendations": [item]})
+        self.assertEqual(harness.read(Path(result["report"]))["model"], original_evaluator)
 
     def test_followup_respects_total_and_production_cases_bind_model(self):
         configuration = spec()
@@ -96,11 +109,11 @@ class HarnessRuns(unittest.TestCase):
         configuration["cases"][0]["phase"] = "selection"
         with self.assertRaisesRegex(ValueError, "executionModel"):
             harness.plan(self.home, configuration)
-        configuration["cases"][0]["executionModel"] = "gpt-6.1-sol"
+        configuration["cases"][0]["executionModel"] = "gpt-6.2-sol"
         run = harness.plan(self.home, configuration)["run"]
         with self.assertRaisesRegex(ValueError, "planned"):
             harness.record(self.home, run, entry())
-        harness.record(self.home, run, {**entry(), "model": "gpt-6.1-sol", "usage": {"outputTokens": 42}})
+        harness.record(self.home, run, {**entry(), "model": "gpt-6.2-sol", "usage": {"outputTokens": 42}})
 
     def test_cannot_cite_another_candidate_or_nonexistent_artifact(self):
         run = harness.plan(self.home, spec())["run"]
@@ -109,14 +122,14 @@ class HarnessRuns(unittest.TestCase):
         harness.record(self.home, run, entry())
         item = {"candidateId": "other", "verdict": "supported", "caseIds": ["a"], "reason": "Looks good"}
         with self.assertRaises(ValueError):
-            harness.report(self.home, run, {"model": "gpt-6.1-sol", "recommendations": [item]})
+            harness.report(self.home, run, {"model": "gpt-6.2-sol", "recommendations": [item]})
 
     def test_failed_only_evidence_cannot_support_positive_capability(self):
         run = harness.plan(self.home, spec())["run"]
         harness.record(self.home, run, entry(status="failed"))
         item = {"candidateId": "docs", "verdict": "supported", "caseIds": ["a"], "reason": "Speculative usefulness"}
         with self.assertRaisesRegex(ValueError, "successful"):
-            harness.report(self.home, run, {"model": "gpt-6.1-sol", "recommendations": [item]})
+            harness.report(self.home, run, {"model": "gpt-6.2-sol", "recommendations": [item]})
 
     def test_symlinked_evidence_cannot_redirect_append(self):
         run = harness.plan(self.home, spec())["run"]
@@ -142,7 +155,7 @@ class HarnessRuns(unittest.TestCase):
         run = cli("plan", "--spec", str(source))["run"]
         harness.write(source, entry())
         cli("record", "--run", run, "--record", str(source))
-        harness.write(source, {"model": "gpt-6.1-sol", "recommendations": [{"candidateId": "docs", "verdict": "supported", "caseIds": ["a"], "reason": "Meets the specified rubric"}]})
+        harness.write(source, {"model": "gpt-6.2-sol", "recommendations": [{"candidateId": "docs", "verdict": "supported", "caseIds": ["a"], "reason": "Meets the specified rubric"}]})
         cli("report", "--run", run, "--report", str(source))
 
     def test_evidence_artifact_modification_is_detected(self):
@@ -152,7 +165,7 @@ class HarnessRuns(unittest.TestCase):
         harness.record(self.home, run, {**entry(), "artifacts": [artifact.name]})
         artifact.write_text("Changed after measurement")
         with self.assertRaisesRegex(ValueError, "artifact changed"):
-            harness.report(self.home, run, {"model": "gpt-6.1-sol", "recommendations": [{"candidateId": "docs", "verdict": "supported", "caseIds": ["a"], "reason": "Observed result"}]})
+            harness.report(self.home, run, {"model": "gpt-6.2-sol", "recommendations": [{"candidateId": "docs", "verdict": "supported", "caseIds": ["a"], "reason": "Observed result"}]})
 
     def test_native_cli_review_apply_rollback(self):
         self.home.mkdir()

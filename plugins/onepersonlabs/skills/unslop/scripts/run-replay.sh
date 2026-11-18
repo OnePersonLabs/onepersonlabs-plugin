@@ -21,7 +21,7 @@ shift 3
 
 AGENT=""
 TIMEOUT=300
-MODEL="gpt-6.1-sol"
+MODEL="gpt-6.2-sol"
 EFFORT="medium"
 while [[ $# -gt 0 ]]; do
     case "$1" in

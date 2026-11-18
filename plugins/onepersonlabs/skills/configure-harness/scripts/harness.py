@@ -15,7 +15,7 @@ import uuid
 
 sys.dont_write_bytecode = True
 SCHEMA = 1
-MODELS = {"executor": "gpt-6-luna", "evaluator": "gpt-6.1-sol"}
+MODELS = {"executor": "gpt-6-luna", "evaluator": "gpt-6.2-sol"}
 PHASES = {"capability", "selection", "recovery"}
 
 
@@ -129,7 +129,7 @@ def plan(home, spec):
     if not isinstance(candidates, dict) or not candidates or any(not isinstance(v, str) or not v for v in candidates.values()):
         raise ValueError("candidates must map selected IDs to exact version or content-hash strings")
     if spec.get("models") != MODELS:
-        raise ValueError("models must explicitly select executor gpt-6-luna and evaluator gpt-6.1-sol")
+        raise ValueError("models must explicitly select executor gpt-6-luna and evaluator gpt-6.2-sol")
     budget = spec.get("budget", {})
     positive(budget.get("maxCases"), "maxCases")
     positive(budget.get("maxToolCalls"), "maxToolCalls")
@@ -210,7 +210,7 @@ def record(home, run, entry):
             raise ValueError("record status must be success, failed, blocked, or skipped")
         positive(entry.get("toolCalls"), "toolCalls", zero=True)
         no_executor = entry.get("model") is None and entry["status"] in {"blocked", "skipped"} and entry["toolCalls"] == 0
-        expected_model = MODELS["executor"] if cases[key]["phase"] == "capability" else cases[key]["executionModel"]
+        expected_model = manifest["models"]["executor"] if cases[key]["phase"] == "capability" else cases[key]["executionModel"]
         if not no_executor and entry.get("model") != expected_model:
             raise ValueError("record the planned executing model; report unavailable rather than substitute")
         if not isinstance(entry.get("observation"), str) or not entry["observation"].strip():
@@ -255,7 +255,8 @@ def report(home, run, assessment):
                 artifact = (folder / name).resolve()
                 if not artifact.is_relative_to(folder.resolve()) or not artifact.is_file() or hashlib.sha256(artifact.read_bytes()).hexdigest() != digest:
                     raise ValueError("recorded evidence artifact changed or is missing; preserve original evidence and rerun the affected case")
-        if assessment.get("model") != MODELS["evaluator"]:
+        evaluator = manifest["models"]["evaluator"]
+        if assessment.get("model") != evaluator:
             raise ValueError("report requires the selected Sol evaluator")
         recommendations = assessment.get("recommendations")
         if not isinstance(recommendations, list) or not recommendations:
@@ -274,7 +275,7 @@ def report(home, run, assessment):
                 raise ValueError("blocked or absent experiments cannot support a conclusive verdict")
             if item["verdict"] in {"supported", "conditional"} and not any(rows[ref]["status"] == "success" for ref in refs):
                 raise ValueError("a positive capability verdict requires a successful observation")
-        result = {"schemaVersion": SCHEMA, "model": MODELS["evaluator"], "recommendations": recommendations,
+        result = {"schemaVersion": SCHEMA, "model": evaluator, "recommendations": recommendations,
                   "missingCases": sorted({c["id"] for c in manifest["cases"]} - rows.keys()),
                   "budgetExceeded": any(row["budgetExceeded"] for row in rows.values()),
                   "evidenceSha256": hashlib.sha256((folder / "evidence.jsonl").read_bytes()).hexdigest() if rows else None}

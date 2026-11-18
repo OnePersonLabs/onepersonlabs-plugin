@@ -20,7 +20,7 @@ Resolve `scripts/slop.py` relative to this file. Use `python -B -X utf8` on Wind
 
 ## Model and context boundaries
 
-The root orchestrates at **gpt-6.1-sol / medium**. Assign prose reading and routine classification to **gpt-6-luna / medium**. Escalate a concrete unresolved causal or cross-incident question to **gpt-6.1-sol / high**. Do not silently substitute an expensive model or have the root consume bulk prose.
+The root orchestrates at **gpt-6.2-sol / medium**. Assign prose reading and routine classification to **gpt-6-luna / medium**. Escalate a concrete unresolved causal or cross-incident question to **gpt-6.2-sol / high**. Do not silently substitute an expensive model or have the root consume bulk prose.
 
 Use in-process subagents with bounded packets and fresh, focused context. Use a small concurrent pool within host capacity. The daily launcher starts one Codex root; the invoked skill must not launch itself again. If delegation or required models are unavailable, preserve pending work and report the blocker.
 
@@ -53,7 +53,6 @@ Separate observations from inferred causes. Apologies, agreement, admissions, an
 Report duration, scope, scan/review counts, evidence and catalog changes, feedback, available model usage, and remaining work. Distinguish complete filtering from full prose evaluation.
 
 Replay remains in $onepersonlabs:unslop. Unrelated instruction changes remain proposals; automatic adaptation is limited to this system's validated detectors and constrained conditional steering.
-
 
 Hooks provide advisory steering and persist findings for later audit. They do
 not force a Stop continuation or require a Boolean self-rating. This gives up
