@@ -155,9 +155,13 @@ class HumanUiTests(unittest.TestCase):
         self.page.get_by_role("button", name="Send contribution", exact=True).click()
         expect(self.page.locator("#notice")).to_contain_text("retained for retry")
         self.page.reload()
-        self.page.get_by_role("button", name="Review a page", exact=True).click()
-        # Reopening the named page reattaches its source window after an inbox reload.
-        review.wait_for_load_state(); review.add_script_tag(path=str(script))
+        # Reopening navigates the existing popup. Wait for the new document.
+        with review.expect_event(
+            "framenavigated", predicate=lambda frame: frame == review.main_frame and frame.url == target
+        ):
+            self.page.get_by_role("button", name="Review a page", exact=True).click()
+        review.wait_for_load_state()
+        review.add_script_tag(path=str(script))
         review.evaluate("options => onepersonlabsAnnotate(options)", options)
         review.get_by_role("button", name="Review in inbox").click()
         expect(self.page.locator("#new-body")).to_have_value(body)
