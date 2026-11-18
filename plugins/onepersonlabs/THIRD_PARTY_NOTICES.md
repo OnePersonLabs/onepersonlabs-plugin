@@ -327,7 +327,7 @@ SOFTWARE.
 
 ## OpenAI prompting guidance
 
-Source: https://developers.openai.com/api/docs/guides/latest-model?model=gpt-6-astra#prompting-best-practices
-Reviewed 2026-11-08. The shared writing, delegation and verification guidance
-adapts the documented prompting examples. Source-linked fenced excerpts are a
-separate user preference. Existing third-party attribution above remains applicable.
+The writing, delegation, and verification guidance adapts examples from
+[OpenAI's GPT-6 prompting guide](https://developers.openai.com/api/docs/guides/latest-model?model=gpt-6-astra#prompting-best-practices),
+reviewed 2026-11-08. The [GPT-6.2 review](skills/write/references/clarity.md#openai-prompting-guidance)
+covers the current writing guidance.
