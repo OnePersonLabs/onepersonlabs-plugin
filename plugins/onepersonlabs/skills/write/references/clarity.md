@@ -24,12 +24,15 @@ advisory and cannot establish usability, factual completeness, or comprehension.
 
 ## OpenAI prompting guidance
 
-Reviewed 2026-11-08: [Using GPT-6, prompting best practices](https://developers.openai.com/api/docs/guides/latest-model?model=gpt-6-astra#prompting-best-practices).
-The shared foundation adapts its connected concise paragraphs, audience-appropriate
-technical detail, direct verbs, useful parallel delegation and proportional
-verification. Its wording examples guide contextual editing, not scanner bans.
-Keep exact technical terms, consequential limitations and the requested voice.
-This review does not refresh the Wikipedia catalogue or its dates.
+Reviewed 2026-11-18 against [GPT-6.2 prompting best practices](https://developers.openai.com/api/docs/guides/latest-model?model=gpt-6.2-astra#prompting-best-practices).
+OpenAI recommends revisiting generic brevity prompts for Astra because it tends
+to write more concisely and directly by default. The examples for Astra and Sol
+recommend leading with the main point, using the reader's and sources' terms,
+and keeping the details that make the explanation precise. They call for giving
+outside readers the background they need, preserving the author's wording beyond
+the requested edits, and writing final answers that stand on their own without
+progress updates or internal shorthand. For UI copy, keep text that informs
+the user, guides an action, or communicates status.
 
-Source-linked fenced excerpts with omitted irrelevant content marked by `...`
-are the user's requested source-visibility format, not wording from that passage.
+The user's source-visibility format uses a source link and a fenced excerpt,
+with `...` for omissions that preserve the meaning.
