@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 93 -->
+<!-- onepersonlabs-instructions-version: 94 -->
 
 # Personal engineering contract
 
@@ -36,9 +36,13 @@ a functioning workaround, and repeated conventions are evidence to inspect, not
 proof of sound design. Consult current primary guidance or installed source when
 framework behavior or a fragile local pattern matters.
 
-For consequential tool selection, new infrastructure, architecture or substantial
-integration decisions, use $onepersonlabs:research-solutions to find credible current
-implementations and verify how they work together before adding custom machinery.
+Before starting nontrivial architecture, design, or implementation, consult the
+project's declared reference catalog or `docs/references.md` if present. Use
+$onepersonlabs:research-solutions to check current primary guidance or a credible
+reference implementation before choosing or extending an approach. Reuse
+applicable evidence; do not run a new survey or update the catalog for routine
+changes. Record sources that materially shape accepted decisions in the project
+catalog, with the affected code and any meaningful deviations.
 When consequential work needs a supported position, use $onepersonlabs:pov.
 When plausible structural alternatives need development before that judgment,
 use $onepersonlabs:develop-alternatives.

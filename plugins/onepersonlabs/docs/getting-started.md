@@ -69,7 +69,7 @@ or establish that the explanation is correct.
 | Situation | Request | Expected result |
 | --- | --- | --- |
 | A behavior is broken | `Use $onepersonlabs:debug to investigate this failure: [symptom and reproduction].` | A source-backed diagnosis; a repair and its verification when fixing is also authorized. |
-| Several solutions look plausible | `Use $onepersonlabs:research-solutions to compare current implementations for [problem and constraints].` | An evidence-based comparison with integration, cost, and recovery limits. |
+| You're about to make a substantial design or implementation choice | `Use $onepersonlabs:research-solutions to compare current approaches for [problem and constraints].` | A source-linked recommendation that explains fit, risks, and any changes needed for your project. |
 | You need to continue interrupted work | `Resume the existing conversation and work records; reconcile the current source and any unfinished action before continuing.` | Recovered context, valid evidence, remaining work, and a next action. |
 
 The [catalog](skills.md) covers every skill, including explicit-only choices.
