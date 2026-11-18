@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 95 -->
+<!-- onepersonlabs-instructions-version: 96 -->
 
 # Personal engineering contract
 
@@ -70,9 +70,8 @@ dependents. Do not wait for a separate cleanup request.
 Complete necessary cohesive refactors; avoiding churn does not justify leaving
 the requested behavior dependent on a faulty responsibility or contract.
 
-When deciding what temporary evidence, diagnostics, or rollback backups to keep
-or remove, read `@.agents/references/temporary-artifacts.md` relative to this
-`AGENTS.md`.
+Before saving or removing temporary evidence, receipts, diagnostics, or rollback
+backups, read `@.agents/references/temporary-artifacts.md` relative to this `AGENTS.md`.
 
 When behavior changes, inspect and update affected reader instructions in the
 same work. Use $onepersonlabs:write-documentation for README creation, user guides, and

@@ -36,11 +36,11 @@ vague task. Workers should ask for a missing decisive fact instead of inventing
 it. Anthropic observed misinterpretation and duplicated searches from weak briefs.
 [Anthropic's research system](https://www.anthropic.com/research/multi-agent-research-system)
 
-Select `fork_turns: "none"` explicitly for a fresh native child; the current
-host defaults to inherited history. An App Server `thread/start` without a
-parent transcript supplies a fresh initial worker. Related follow-ups and
-repairs can resume that worker's own session. Calling an assignment independent
-does not itself change the host's context selection.
+Start independent planning, independent review, and self-contained assignments
+with fresh context and a complete brief. Select `fork_turns: "none"` explicitly
+for a fresh native child. An App Server `thread/start` without a parent transcript
+supplies a fresh worker. Resume the same worker's session for related follow-ups
+and repairs.
 
 ## Coordinate the complete change
 
