@@ -56,6 +56,24 @@ test('matching version stays silent and newer version does not suggest downgrade
   assert.match(JSON.parse(f.run().stdout).systemMessage, /newer.*rather than downgrade/u)
 })
 
+test('startup reports a stale managed reference without replacing user content', (t) => {
+  const f = fixture(t)
+  const installed = join(f.home, 'plugins/cache/onepersonlabs/onepersonlabs/0.5.0')
+  const reference = '.agents/references/api.md'
+  mkdirSync(join(installed, '.agents/references'), { recursive: true })
+  cpSync(join(f.installed, 'skills'), join(installed, 'skills'), { recursive: true })
+  writeFileSync(join(installed, reference), 'API decisions')
+  writeFileSync(join(installed, 'AGENTS.md'), text(3) + `Read \`@${reference}\` for API work.\n`)
+  const original = text(3) + `Read \`@plugins/cache/onepersonlabs/onepersonlabs/0.4.0/${reference}\` for API work.\nCustom rule.\n`
+  writeFileSync(f.target, original)
+  const result = f.run({}, { ...f.env, PLUGIN_ROOT: installed })
+  assert.equal(result.status, 0, result.stderr)
+  const output = JSON.parse(result.stdout)
+  assert.match(output.systemMessage, /earlier installed reference directory/u)
+  assert.match(output.hookSpecificOutput.additionalContext, /preserves other text/u)
+  assert.equal(readFileSync(f.target, 'utf8'), original)
+})
+
 test('missing and malformed markers are actionable; override takes precedence', (t) => {
   const f = fixture(t)
   const missing = JSON.parse(f.run().stdout)

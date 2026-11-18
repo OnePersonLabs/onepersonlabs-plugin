@@ -1,15 +1,15 @@
 ---
 name: update-instructions
-description: Update outdated global AGENTS.md from installed OnePersonLabs defaults under established authorization, with a verified seven-day rollback backup.
+description: Update outdated global AGENTS.md or repair its installed OnePersonLabs reference paths under established authorization, with a verified seven-day backup.
 ---
 
 # Update OnePersonLabs Instructions
 
-The user owns their global instructions. When an update is available, inspect
-the effective target and installed OnePersonLabs version, then reuse applicable update authorization or ask once whether to replace
-the target with the installed `AGENTS.md`. Explain that active custom rules will
-be replaced and the existing file will be saved for a bounded rollback window. A clear yes
-authorizes that update; do not ask the user to review a candidate or diff.
+The user owns their global instructions. Inspect the effective target and
+installed version. Reuse applicable update authorization or ask once to apply
+the reported change. A version update replaces active custom rules. A reference
+repair preserves them. The helper saves the previous file for a bounded
+rollback window.
 
 ## Inspect and establish authorization
 
@@ -20,7 +20,11 @@ including override precedence, and reports `target`, `sha256`,
 the user selected a home; use `--plugin-root PATH` when the intended OnePersonLabs
 instructions are outside this installed plugin.
 
-- Matching versions: report that the target is current and stop.
+- Matching versions with status `current`: report that the target is current and stop.
+- Status `references`: the instruction revision matches and an earlier installed reference
+  path needs repair. Use the same apply command under applicable update authorization.
+  It changes only managed reference paths. Establish permission before applying when
+  no existing authorization covers the repair.
 - User version above installed version: report that this installation is older
   and stop. Never downgrade the target.
 - Missing, unversioned, or invalid target: include that state in the update
@@ -28,16 +32,17 @@ instructions are outside this installed plugin.
   preserve any existing bytes in a backup.
 - Older valid version: state both versions and establish authorization to update.
 
-If update authorization already covers this target and replacement, proceed
-within that scope. Otherwise, before asking, explain that replacing the target
-discards active custom rules.
-The user can recover them from the exact backup, but they are not merged into
-the new file. If the user declines, stop without writing files.
+If update authorization already covers this target and change, proceed within
+that scope. If the user declines, stop without writing files. The backup keeps
+the previous instruction bytes. A reference to a removed package may also need
+that package restored to become readable.
 
 ## Apply after approval
 
-On approval, run the helper's `apply` command. It reads the installed OnePersonLabs
-`AGENTS.md` directly:
+On approval, run the helper's `apply` command. For a version update, it reads the
+installed `AGENTS.md` and renders its inline `@.agents/references/…` paths relative
+to the global instruction file. For a reference repair, it updates only the managed
+paths in the current file.
 
 ```text
 python scripts/instructions.py apply --expected-sha256 HASH --expected-target TARGET --expected-bundled-sha256 BUNDLED_HASH
@@ -68,8 +73,9 @@ or unknown ownership remains an explicit recovery obligation. Report cleanup
 failures instead of silently extending retention. An inactive home is cleaned
 on the next applicable invocation, not by a background timer.
 
-Re-run inspection and confirm the effective target has the installed version
-and hash. The apply helper confirms exact readback and removes expired,
+Re-run inspection and confirm status `current` and that the effective target has
+the revision and output `sha256` returned by `apply`. The installed template and
+rendered global file can have different hashes. The apply helper confirms exact readback and removes expired,
 helper-owned backups on the next update or explicit `cleanup` invocation. Check
 cleanup output and report unresolved recovery paths. Report the new backup
 location while its rollback window remains. Ask the user to start a fresh

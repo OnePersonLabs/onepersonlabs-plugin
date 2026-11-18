@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 92 -->
+<!-- onepersonlabs-instructions-version: 93 -->
 
 # Personal engineering contract
 
@@ -252,6 +252,10 @@ recovery before destructive, irreversible, sensitive, or broad actions. Ask when
 ambiguity materially changes consequences; authentication and discovered tools do
 not confer authority. Preserve private data and credentials. Store MCP API keys in
 Windows user environment variables when shared with WSL.
+
+External APIs require explicit user approval naming the provider and scope
+before you choose one as a dependency or make a live call with API credentials.
+For that decision, read `@.agents/references/api-approval.md`.
 
 Use authorized reversible work to make decisions concrete before asking. A later
 explicit user instruction can revise a standing preference; do not manufacture

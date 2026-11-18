@@ -116,23 +116,28 @@ than adding a counterweight. Delete tutorials, motivational prose, history,
 restated environment facts, and sentences that do not change model behavior.
 Treat size as an attention cost, not a quality signal.
 
-## Optional phrase scrutiny and comparison
+## Justify each instruction against the default behavior
 
-When an instruction is costly, ambiguous, or unreliable, inspect its clauses:
-what outcome does each preserve, what changes if it is removed, and where should
-it load? Replace a faulty instruction instead of adding a counterweight.
-Use the smallest wording that preserves the required outcome and permission
-boundary. Do not turn judgment into an exhaustive mechanical checklist.
+For authoring, updates, and audits, account for every instructive line and
+significant clause in the affected files. Apply this to `AGENTS.md`, `SKILL.md`,
+and instruction references under skill `references/` and `.agents/references/`.
+For each, identify what the agent would do without it, what supported change
+in behavior the instruction supplies, and why it belongs on that surface.
+Use evidence from governing instructions, existing behavior, source, or
+representative cases. Preserve material conditions, exceptions and permissions,
+and keep one owner for each rule.
 
-When wording uncertainty could change the decision, read
-[bounded comparisons](references/behavioral-tests.md). Compare the baseline and
-proposal under equivalent conditions with an independent observable criterion.
-Use deterministic evidence for syntax and facts. Task-specific AI verification
-follows the shared verification policy in the plugin's `AGENTS.md`, including
-its standing authorization for necessary test-and-fix rounds. Respect explicit
-user budgets and host permission rules; keep AI calls out of routine test gates.
-Report untested behavior honestly. Authoring a skill does not require invoking
-another optimizer or comparing every phrase experimentally.
+Work in meaningful groups. Start with deletion and retain it when the required
+behavior survives. If deletion loses a material requirement, try the smallest
+replacement that restores it. Revert a proposed edit when its gain is
+insufficient for its cost or risk. Batch as many independent changes as you can
+attribute to distinct behaviors. Separate changes whose effects could mask or
+explain each other, then check that the accepted changes still work together.
+
+Measure only when a material uncertainty about agent behavior can change the
+decision. Read [bounded comparisons](references/behavioral-tests.md) for that
+case. Use deterministic evidence for structure and facts, and report the limits
+of the evidence for behavior.
 
 ## Complete the Work
 

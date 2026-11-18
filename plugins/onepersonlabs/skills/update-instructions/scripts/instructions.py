@@ -14,6 +14,7 @@ import sys
 import tempfile
 import time
 import uuid
+from collections import Counter
 from contextlib import contextmanager
 
 MARKERS = (
@@ -21,6 +22,9 @@ MARKERS = (
     ("opl-instructions-version", re.compile(r"^<!-- opl-instructions-version: ([1-9][0-9]*) -->$", re.MULTILINE)),
 )
 BACKUP_RETENTION_SECONDS = 7 * 24 * 60 * 60
+_REFERENCE_PREFIX = ".agents/references/"
+_REFERENCE = re.compile(r"(?<![\\`])`@(?P<path>[^`\r\n]+)`(?!`)")
+_FENCE = re.compile(r"^ {0,3}(?P<marker>`{3,}|~{3,})(?P<info>[^\r\n]*)")
 _BACKUP_NAME = re.compile(
     r"^(?:AGENTS\.md|AGENTS\.override\.md)"
     r"(?:\.onepersonlabs-backup-[0-9]{8}-[0-9]{3,}(?:\.pending|\.expires-[0-9]+)?"
@@ -59,6 +63,96 @@ def plugin_path(value=None) -> Path:
     return Path(value or os.environ.get("PLUGIN_ROOT") or Path(__file__).resolve().parents[3]).resolve()
 
 
+def _prose_lines(lines: list[str]):
+    fence = ""
+    for index, line in enumerate(lines):
+        match = _FENCE.match(line)
+        if fence:
+            if match and match["marker"].startswith(fence) and not match["info"].strip():
+                fence = ""
+        elif match:
+            fence = match["marker"]
+        else:
+            yield index, line
+
+
+def _installed_references(template: str, target: Path, root: Path) -> dict[str, str]:
+    paths = {}
+    tokens = (token for _, line in _prose_lines(template.splitlines()) for token in _REFERENCE.finditer(line))
+    for token in tokens:
+        path = token["path"]
+        if not path.startswith(_REFERENCE_PREFIX) or path in paths:
+            continue
+        if (not path.endswith(".md") or any(part in {"", ".", ".."} for part in path.split("/"))
+                or any(character in path for character in "\\:")):
+            raise ValueError(f"invalid instruction reference: {path}")
+        reference = root / path
+        if not reference.is_file() or not reference.resolve().is_relative_to(root / _REFERENCE_PREFIX):
+            raise ValueError(f"instruction reference must be a file inside {root / _REFERENCE_PREFIX}: {path}")
+        try:
+            relative = Path(os.path.relpath(reference, target.parent)).as_posix()
+        except ValueError as error:
+            raise ValueError(f"cannot reference {reference} relative to {target.parent}") from error
+        if any(character in relative for character in "`\r\n"):
+            raise ValueError(f"installed reference path cannot be written as an inline code span: {relative}")
+        paths[path] = relative
+    return paths
+
+
+def _render_line(text: str, paths: dict[str, str]) -> str:
+    return _REFERENCE.sub(lambda token: f"`@{paths[token['path']]}`" if token["path"] in paths else token[0], text)
+
+
+def _repair_references(text: str, template: str, paths: dict[str, str], home: Path, root: Path) -> str:
+    cache = home / "plugins" / "cache"
+    if not paths or not root.is_relative_to(cache):
+        return text
+    package = root.relative_to(cache).parts
+    if len(package) != 3 or package[1] != "onepersonlabs":
+        return text
+    old_prefix = root.parent.relative_to(home).as_posix() + "/"
+
+    def to_template(token):
+        path = token["path"]
+        if path.startswith(old_prefix):
+            _, _, logical = path[len(old_prefix):].partition("/")
+            if logical in paths:
+                return f"`@{logical}`"
+        return token[0]
+
+    # An unchanged instruction line identifies the managed occurrence. A path
+    # alone could also appear in someone's custom instructions or an example.
+    source_lines = Counter(line for _, line in _prose_lines(template.splitlines()))
+    lines = text.splitlines(keepends=True)
+    authored = {index: _REFERENCE.sub(to_template, line).rstrip("\r\n") for index, line in _prose_lines(lines)}
+    occurrences = Counter(authored.values())
+    for index, authored_line in authored.items():
+        line = lines[index]
+        if authored_line not in source_lines or authored_line == line.rstrip("\r\n"):
+            continue
+        updated = _render_line(authored_line, paths)
+        if updated == line.rstrip("\r\n"):
+            continue
+        if source_lines[authored_line] != 1 or occurrences[authored_line] != 1:
+            raise ValueError(f"cannot identify a unique managed reference in: {authored_line}")
+        lines[index] = updated + line[len(line.rstrip("\r\n")):]
+    return "".join(lines)
+
+
+def _reference_update(data: bytes | None, bundled: bytes, target: Path, home: Path, root: Path,
+                      status: str) -> tuple[str, bytes]:
+    template = bundled.decode("utf-8")
+    paths = _installed_references(template, target, root)
+    if status == "current" and data is not None:
+        original = data.decode("utf-8")
+        repaired = _repair_references(original, template, paths, home, root)
+        return ("current" if repaired == original else "references"), repaired.encode("utf-8")
+    lines = template.splitlines(keepends=True)
+    for index, line in _prose_lines(lines):
+        lines[index] = _render_line(line, paths)
+    return status, "".join(lines).encode("utf-8")
+
+
 def snapshot(home: Path, root: Path) -> dict:
     target = effective_target(home)
     data = target.read_bytes() if target.exists() else None
@@ -70,6 +164,8 @@ def snapshot(home: Path, root: Path) -> dict:
     bundled = (root / "AGENTS.md").read_bytes()
     current = version(bundled)
     state = "invalid" if error else "setup" if previous is None else "current" if previous == current else "update" if previous < current else "newer"
+    if state in {"setup", "current", "update"}:
+        state, _ = _reference_update(data, bundled, target, home, root, state)
     return {
         "home": str(home),
         "target": str(target),
@@ -176,8 +272,8 @@ def _apply_installed(home: Path, root: Path, expected: str, expected_target: str
         raise ValueError("instruction target is a symlink; reconcile its destination explicitly")
 
     source = root / "AGENTS.md"
-    replacement = source.read_bytes()
-    installed_version = version(replacement)
+    bundled = source.read_bytes()
+    installed_version = version(bundled)
     if installed_version != before["bundled_version"]:
         raise ValueError("installed OnePersonLabs instructions have an inconsistent version")
     if before["user_version"] is not None and before["user_version"] > installed_version:
@@ -185,9 +281,12 @@ def _apply_installed(home: Path, root: Path, expected: str, expected_target: str
     if source.resolve() == target.resolve():
         raise ValueError("installed instructions and effective target resolve to the same file")
 
-    cleanup = _cleanup_backups_unlocked(home)
-
     original = target.read_bytes() if target.exists() else None
+    status = "current" if before["status"] == "references" else before["status"]
+    replacement_status, replacement = _reference_update(original, bundled, target, home, root, status)
+    if replacement_status != before["status"] or hashlib.sha256(bundled).hexdigest() != expected_bundled:
+        raise ValueError("instructions changed during application; update stopped")
+    cleanup = _cleanup_backups_unlocked(home)
     if original == replacement:
         return {"target": str(target), "changed": False, "backup": None}
 
@@ -221,7 +320,7 @@ def _apply_installed(home: Path, root: Path, expected: str, expected_target: str
 
         final = snapshot(home, root)
         if (final["target"] != str(target) or final["sha256"] != expected
-                or final["bundled_sha256"] != expected_bundled):
+                or final["bundled_sha256"] != expected_bundled or final["status"] != replacement_status):
             raise ValueError("instructions changed during application; update stopped")
         os.replace(temporary, target)
         temporary = None

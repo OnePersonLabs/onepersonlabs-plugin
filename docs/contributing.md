@@ -59,6 +59,17 @@ marker and stage the bump with the content. The pre-commit hook checks staged
 content against `HEAD`. Ordinary guide edits do not require an instruction
 revision or a timestamp version bump.
 
+Use a backticked token such as `@.agents/references/api-approval.md` to route
+agents to Markdown they need only for a particular decision. The path is
+relative to the `AGENTS.md` containing the token. In the shipped template, put
+targets under `.agents/references/`. The updater requires an existing Markdown
+file in that directory and rejects paths that escape it.
+
+When the updater writes the user's global `AGENTS.md`, it renders each token
+with the path from that file to the installed reference. Agents read the
+reference on demand. Keep the logical token in the shipped template. The updater
+leaves the user's `.agents` directory alone.
+
 Preserve unrelated local changes and stage only files for this change. Keep each
 change coherent and preserve the reason for any exceptional choice.
 

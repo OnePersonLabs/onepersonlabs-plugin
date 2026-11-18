@@ -1,7 +1,8 @@
-# Optional instruction comparisons
+# Bounded instruction comparisons
 
-Use a comparison when an instruction decision needs model-behavior evidence.
-Existing checks and source inspection come first. Necessary task-specific
+Use a comparison when material uncertainty about the default behavior or a
+proposed instruction can change an instruction decision. Existing checks and
+source inspection come first. Necessary task-specific
 verification and test-and-fix rounds have standing authorization under the
 plugin's `AGENTS.md`; do not request separate permission for each run. Respect
 explicit user budgets. Do not create permanent invocation tests or a mandatory
@@ -14,6 +15,12 @@ the baseline and candidate, then keep task input, environment, tools, model,
 effort, and evaluator criteria equal. Use disposable repositories and isolated
 Codex homes outside the target checkout, supported authentication, and no unrelated
 plugins or hooks. Do not expose private logs or credentials in the result.
+
+Use one comparison for as many changes as have distinct, independently checkable
+outcomes. If two changes can affect the same outcome, compare them separately.
+After accepting changes on separate evidence, check the combined instructions for
+interactions that could undo a required behavior. Use an additional model run
+only when the interaction is materially uncertain.
 
 Before attributing a difference to changed instructions, measure repeated runs
 of the same frozen build under the same conditions (A/A). Verify that the runner

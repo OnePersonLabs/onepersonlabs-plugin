@@ -31,11 +31,18 @@ def main():
     messages = {
         "setup": "OnePersonLabs instructions are not set up in your active global instructions.",
         "update": f"OnePersonLabs instructions version {state['bundled_version']} is available (your baseline: {state['user_version']}).",
+        "references": "OnePersonLabs global instructions still point to an earlier installed reference directory.",
         "newer": f"Your OnePersonLabs instructions baseline ({state['user_version']}) is newer than installed OnePersonLabs ({state['bundled_version']}). Keep your instructions; update the installed plugin rather than downgrade them.",
         "invalid": "Your OnePersonLabs instructions version marker is invalid.",
     }
     message = messages[state["status"]] + f" File: {state['target']}"
-    if state["status"] in {"setup", "update", "invalid"}:
+    if state["status"] == "references":
+        guidance = (
+            " Continue the pending task. Use $onepersonlabs:update-instructions when the repair "
+            "is authorized. It updates the managed reference paths and preserves other text. "
+            "Do not mutate instructions from this startup check."
+        )
+    elif state["status"] in {"setup", "update", "invalid"}:
         guidance = (
             " Report this notice briefly if relevant and continue the pending task. "
             "Use $onepersonlabs:update-instructions when an update is authorized; it saves a dated "

@@ -120,6 +120,74 @@ class InstructionUpdates(unittest.TestCase):
         self.assertIsNone(result["backup"])
         self.assertEqual(self.target.read_bytes(), (self.plugin / "AGENTS.md").read_bytes())
 
+    def test_installed_references_render_from_the_effective_global_file(self):
+        self.plugin = self.home / "plugins/cache/onepersonlabs/onepersonlabs/0.4.0"
+        self.target = self.home / "AGENTS.override.md"
+        self.target.write_bytes(content(2))
+        path = ".agents/references/decisions/API dates.md"
+        reference = self.plugin / path
+        reference.parent.mkdir(parents=True)
+        reference.write_text("API decisions", encoding="utf-8")
+        template = content(3, f"Read `@{path}` before proposing API use. Ask @operator."
+                              "\n\n~~~md\nRead `@.agents/references/missing.md`.\n~~~")
+        (self.plugin / "AGENTS.md").write_bytes(template)
+        result = self.apply(hashlib.sha256(content(2)).hexdigest())
+        relative = reference.relative_to(self.home).as_posix()
+        self.assertEqual(self.target.read_bytes(), template.replace(f"`@{path}`".encode(), f"`@{relative}`".encode()))
+        self.assertEqual((self.target.parent / relative).read_text(encoding="utf-8"), "API decisions")
+        self.assertEqual(instructions.snapshot(self.home, self.plugin)["status"], "current")
+        self.assertEqual(result["sha256"], hashlib.sha256(self.target.read_bytes()).hexdigest())
+        self.assertFalse((self.home / ".agents").exists())
+
+    def test_same_revision_repairs_only_a_managed_reference_to_a_prior_install(self):
+        self.plugin = self.home / "plugins/cache/onepersonlabs/onepersonlabs/0.5.0"
+        path = ".agents/references/api.md"
+        reference = self.plugin / path
+        reference.parent.mkdir(parents=True)
+        reference.write_text("API decisions", encoding="utf-8")
+        line = f"Read `@{path}` before proposing API use."
+        (self.plugin / "AGENTS.md").write_bytes(content(3, line))
+        old = f"plugins/cache/onepersonlabs/onepersonlabs/0.4.0/{path}"
+        original = content(3, line.replace(path, old)).replace(b"\n", b"\r\n")
+        original += f"\r\nCompare `@{old}` in the archived review.\r\nUse `@.agents/references/custom.md` locally.\r\n".encode()
+        original += f"\r\n```md\r\n{line.replace(path, old)}\r\n```\r\n".encode()
+        self.target.write_bytes(original)
+        self.assertEqual(instructions.snapshot(self.home, self.plugin)["status"], "references")
+
+        result = self.apply(hashlib.sha256(original).hexdigest())
+        relative = reference.relative_to(self.home).as_posix()
+        expected = original.replace(line.replace(path, old).encode(), line.replace(path, relative).encode(), 1)
+        self.assertEqual(self.target.read_bytes(), expected)
+        self.assertEqual(Path(result["backup"]).read_bytes(), original)
+        self.assertEqual(instructions.snapshot(self.home, self.plugin)["status"], "current")
+        self.assertFalse(self.apply(result["sha256"])["changed"])
+
+    def test_invalid_reference_rejects_the_update_before_writing(self):
+        original = content(2)
+        self.target.write_bytes(original)
+        for path in [".agents/references/missing.md", ".agents/references/../../AGENTS.md"]:
+            with self.subTest(path=path):
+                (self.plugin / "AGENTS.md").write_bytes(content(3, f"Read `@{path}`."))
+                with self.assertRaisesRegex(ValueError, "instruction reference"):
+                    self.apply(hashlib.sha256(original).hexdigest())
+                self.assertEqual(self.target.read_bytes(), original)
+                self.assertEqual(list(self.home.glob("AGENTS.md.onepersonlabs-backup-*")), [])
+
+    def test_reference_symlink_cannot_escape_the_installed_reference_directory(self):
+        path = ".agents/references/api.md"
+        reference = self.plugin / path
+        reference.parent.mkdir(parents=True)
+        outside = self.root / "other.md"
+        outside.write_text("other instructions", encoding="utf-8")
+        try:
+            reference.symlink_to(outside)
+        except OSError:
+            self.skipTest("creating symlinks is unavailable")
+        (self.plugin / "AGENTS.md").write_bytes(content(3, f"Read `@{path}`."))
+        with self.assertRaisesRegex(ValueError, "inside"):
+            self.apply("missing")
+        self.assertFalse(self.target.exists())
+
     def test_cleanup_removes_only_expired_owned_backups_and_supports_preview(self):
         now = time.time()
         old = self.home / f"AGENTS.md.onepersonlabs-backup-20200101-001.expires-{int(now - 1)}"
