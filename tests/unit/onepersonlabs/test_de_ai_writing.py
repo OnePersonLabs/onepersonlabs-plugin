@@ -119,17 +119,13 @@ class ScannerTests(unittest.TestCase):
     def test_source_metadata_stays_synchronized(self):
         skill = SKILL.read_text(encoding="utf-8")
         signs = SIGNS.read_text(encoding="utf-8")
-        instructions = (SCRIPT.parents[3] / "AGENTS.md").read_text(encoding="utf-8")
         skill_date = re.search(r"Last source review: `([0-9]{4}-[0-9]{2}-[0-9]{2})`", skill)
-        instructions_date = re.search(r"Last source review: `([0-9]{4}-[0-9]{2}-[0-9]{2})`", instructions)
         signs_date = re.search(r"Last reviewed: `([0-9]{4}-[0-9]{2}-[0-9]{2})`", signs)
         signs_revision = re.search(r"Source revision: `([0-9]+)`", signs)
         self.assertIsNotNone(skill_date)
-        self.assertIsNotNone(instructions_date)
         self.assertIsNotNone(signs_date)
         self.assertIsNotNone(signs_revision)
         self.assertEqual(skill_date.group(1), SCANNER.SOURCE_REVIEWED.isoformat())
-        self.assertEqual(instructions_date.group(1), SCANNER.SOURCE_REVIEWED.isoformat())
         self.assertEqual(signs_date.group(1), SCANNER.SOURCE_REVIEWED.isoformat())
         self.assertEqual(int(signs_revision.group(1)), SCANNER.SOURCE_REVISION)
 

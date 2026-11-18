@@ -1,4 +1,4 @@
-<!-- onepersonlabs-instructions-version: 94 -->
+<!-- onepersonlabs-instructions-version: 95 -->
 
 # Personal engineering contract
 
@@ -70,26 +70,9 @@ dependents. Do not wait for a separate cleanup request.
 Complete necessary cohesive refactors; avoiding churn does not justify leaving
 the requested behavior dependent on a faulty responsibility or contract.
 
-Keep temporary work temporary. Before persisting generated evidence, receipts,
-diagnostics, or backups, identify the consumer, validity conditions, disposal
-boundary, and cleanup owner. Return evidence in the current conversation unless
-a concrete consumer needs persistence. Use the existing owner; do not create a
-second archive or a sidecar for each document. Prefer a recognizable filename,
-directory name, or field in an existing record for a disposal signal when that
-is sufficient. Past usefulness and speculative future use do not justify retention.
-
-Delete disposable artifacts when their purpose ends, including completion,
-cancellation, supersession, and abandonment. Prefer immediate cleanup plus
-opportunistic sweeps at existing startup, refresh, or next-operation boundaries.
-Do not add a ledger, scheduler, or elaborate crash protocol just to guarantee
-deletion at an exact time. Let later sweeps remove interrupted cleanup leftovers.
-Use a seven-day recovery window for inactive temporary diagnostics and verified
-rollback backups unless their owning contract specifies another bound. Reading
-an artifact does not renew its lifetime. Reconcile uncertain operations before
-deleting recovery state; preserve only what that obligation still needs. Retain
-qualification evidence only while its exact claim and version have a consumer.
-Preserve authored content and unresolved human submissions. Report unresolved
-cleanup failures; do not treat an archive or a cleanup log as disposal.
+When deciding what temporary evidence, diagnostics, or rollback backups to keep
+or remove, read `@.agents/references/temporary-artifacts.md` relative to this
+`AGENTS.md`.
 
 When behavior changes, inspect and update affected reader instructions in the
 same work. Use $onepersonlabs:write-documentation for README creation, user guides, and
@@ -142,14 +125,8 @@ apply mechanically determined changes together. Prefer supported programmatic
 transformations when they reduce repetitive work and omission risk.
 
 Establish the required behavior and observable acceptance before implementation.
-Run meaningful checks appropriate to the changed behavior after the affected
-implementation is complete and stable, before delivery. Once applicable checks
-pass, broaden or repeat them only after relevant changes, failures or unresolved
-concerns. Do not write tests that merely mirror reversible, low-impact edits. Prefer existing checks and one-time
-verification of changed behavior, connected consumers and required repository
-gates. Reuse valid evidence; rerun a check only after a failure, a relevant input
-change or an identified coverage gap. Do not duplicate a check solely because
-another worker or workflow stage is involved.
+Verify the final change through its affected consumers and required gates.
+Reuse applicable results.
 
 Run an earlier diagnostic probe only when its result can change the next
 implementation decision or distinguish the cause of an observed failure. Keep
@@ -215,32 +192,15 @@ protocols. Delegation does not start another coordinator or background process.
 Assignments give outcome, boundaries, constraints, dependencies, evidence, and stop
 condition. One writer owns each shared mutable surface; coordinate boundary changes.
 Reuse workers for related work and confirm that assigned work actually started.
-Escalate to Astra only for a concrete unresolved decision that stronger reasoning
-may change, with a bounded assignment.
 
-Choose each worker's model and reasoning effort for its task, including handoff,
-reading, correction and integration cost. Keep the inexpensive configured fallback
-for suitable work; the parent's model alone is not a reason to select Astra.
-Choose context separately. Launch independent planning, independent review and
-self-contained assignments without parent conversation history; explicitly select
-the host's fresh-context option and supply a complete brief. Continue a worker's
-own assignment in its existing session for related follow-ups and repairs.
-Relevant inherited history can suit other continuing coupled work. A fork is a
-starting snapshot; communicate later decisions before dependent work continues.
-Inspect the active tool contract, role overrides and observed runtime rather than
-assuming that a requested model or inherited history determines model selection.
+Before choosing a subagent's model, effort or context, or when diagnosing a
+delegation problem, read `skills/configure-harness/references/subagents.md`
+from the installed OnePersonLabs plugin.
 
-When configuring subagents or diagnosing model, context, cache, cost or coordination
-problems, read [the maintained subagent guidance](skills/configure-harness/references/subagents.md)
-from the installed OnePersonLabs plugin. Resolve that relative path against the
-plugin root when these instructions are copied to a user-level file. Cache
-eligibility does not prove a hit or lower subscription usage. Keep the root
-responsible for integration and the complete outcome, with or without optional
-project coordination or meaning tools.
-
-The root integrates and verifies. Independent initial reviews receive requirements,
-baseline, actual change, and facts without the builder's verdict. Start after writers
-stop changing that scope; identify the reviewed commit or diff. Independent review
+The root owns integration, verification and the complete outcome. Independent
+initial reviews receive requirements, baseline, actual change, and facts without
+the builder's verdict. Start after writers stop changing that scope; identify the
+reviewed commit or diff. Independent review
 and verification may overlap against that stable scope. Reuse the reviewer
 for repairs and invalidated evidence. Review correctness and human comprehension.
 Independently review substantial plans before dependent implementation, then
@@ -382,12 +342,6 @@ Conversational wit, emoji cues and playful fragments belong to surrounding chat
 when appropriate; they must not obscure meaning or spill into an artifact's
 required voice. Structured results preserve their schemas and exact values;
 apply writing guidance inside their text fields.
-
-Last source review: `2026-10-31`. This is the Wikipedia catalogue review date.
-Catalogue-based editing and audits use $onepersonlabs:write's source-maintenance
-workflow when due; ordinary drafting and replies do not initiate maintenance.
-OpenAI prompting guidance and the foundation's other sources are recorded in
-`skills/write/references/clarity.md`; keep their provenance separate.
 
 ### Writing guidance by purpose
 

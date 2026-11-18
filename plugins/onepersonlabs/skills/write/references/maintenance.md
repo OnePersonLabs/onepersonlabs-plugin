@@ -20,25 +20,25 @@ python -B -X utf8 scripts/check_ai_signs.py --source-status
 
 Use `python3` on POSIX. Before the 30-day interval expires, the command reports the next due date without making a request. Pass `--force-source-check` only when the user explicitly asks for an early check. Exit status `0` means the check is not due or the recorded revision is current, `1` means a different revision exists, and `2` means the check failed.
 
-After every successful due or forced check and any required source review, update the `Last source review` date in the plugin `AGENTS.md` and `SKILL.md`, `Last reviewed` in `references/signs.md`, and `SOURCE_REVIEWED` in the scanner to the current date. Do this even when the revision is unchanged so another automatic check is not made for 30 days.
+After a successful due or forced check, finish any required source review before updating the review date. Set `Last source review` in `SKILL.md`, `Last reviewed` in `references/signs.md`, and `SOURCE_REVIEWED` in the scanner to the current date. Do this even when the revision is unchanged so another automatic check is not made for 30 days.
 
 ## Refresh
 
 1. Record the latest revision ID and timestamp. Use its permanent `oldid` URL for the review.
 2. Compare the current reference with the source sections about content, language and grammar, style, communication intended for the user, signs of human writing, ineffective indicators, and historical indicators. Ignore Wikipedia-only markup, citation, category, edit-summary, and moderation rules.
-3. Review the shared drafting foundation at its sole owner, the plugin `AGENTS.md`, against the source. Update affected consumers only when its meaning changes. Preserve useful voice and real qualifications; the source describes patterns, not universal word bans. Keep concise-response examples and technical-English rules under their own provenance in `write-technical`. Increment the plugin instruction revision when its content changes. Then update `references/signs.md` as an adaptation for general prose. Preserve stable local rule IDs. Record additions, removals, and changes in classification through the reference text itself; do not add a changelog.
+3. Review the shared drafting foundation in the plugin `AGENTS.md` against the revised source. Update the foundation and affected consumers only when the revised source changes the meaning of that guidance. Preserve useful voice and real qualifications. Assess each sign in context. Keep concise-response examples and technical-English rules under their own provenance in `write-technical`. Increment the plugin instruction revision when its content changes. Update `references/signs.md` as an adaptation for general prose. Preserve stable local rule IDs. Record additions, removals, and changes in classification in the reference text itself.
 4. Update `SOURCE_REVISION`, `SOURCE_TIMESTAMP`, `SOURCE_REVIEWED`, and the applicable rule definitions in `scripts/check_ai_signs.py`. Add a mechanical rule only when it has a specific signal with acceptable false positives. Keep contextual judgments in the reference.
 5. Update focused unit cases for every changed scanner behavior. Keep network access mocked in deterministic tests.
 6. Run the existing focused scanner tests and the installed-package checkpoint required by the repository instructions; that checkpoint includes contract and unit checks. Do not add permanent skill-invocation tests. Task-specific AI verification follows the shared policy in the plugin `AGENTS.md`; optional broader evaluations require separate authorization and a budget.
 
-The plugin instruction template, write skill entrypoint, signs reference, and scanner must name the same Wikipedia review date, and the reference and scanner must name the same source revision, before the refresh is complete. Do not automate prose changes directly from Wikipedia text: the source can reclassify a sign, add Wikipedia-specific material, or change examples without creating a useful scanner rule.
+Before completing a refresh, verify that the write skill entrypoint, signs reference, and scanner name the same review date. Verify that the signs reference and scanner name the same source revision. Do not automate prose changes directly from Wikipedia text: the source can reclassify a sign, add Wikipedia-specific material, or change examples without creating a useful scanner rule.
 
 ## Source and installed copies
 
-Perform maintenance in the registered source checkout. Update the shared foundation,
-metadata, catalogue, and scanner in one coherent change. An installed cache is not
-the source owner. Use the existing authorized refresh and global-instruction update
-workflows to propagate the change; preserve personal additions and recovery policy.
+Perform maintenance in the registered source checkout. Keep metadata, catalogue,
+and scanner changes together. Include any affected shared drafting guidance.
+Use the existing authorized refresh and global-instruction update workflows to
+propagate the change. Preserve personal additions and recovery policy.
 Do not report installed or session-loaded guidance as current from a source edit alone.
 If the source request or review fails, retain the previous reviewed revision and
 date, report the failure, and use the last reviewed guidance without claiming freshness.
